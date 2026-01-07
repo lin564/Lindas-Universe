@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio - Your Name</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-wrapper">
+            <a href="index.html" class="brand">Your Name</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="portfolio.html" class="active">Work</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Page Hero -->
+    <section class="page-hero">
+        <div class="container">
+            <h1 class="page-title">My Work</h1>
+            <p class="page-subtitle">
+                Educational products and experiences that have reached millions of learners worldwide
+            </p>
+        </div>
+    </section>
+
+    <!-- Portfolio Gallery -->
+    <section class="portfolio-gallery">
+        <div class="container">
+            
+            <!-- Filter/Category Tags (Optional) -->
+            <div class="portfolio-filters">
+                <button class="filter-btn active" data-filter="all">All Work</button>
+                <button class="filter-btn" data-filter="apps">Mobile Apps</button>
+                <button class="filter-btn" data-filter="platforms">Platforms</button>
+                <button class="filter-btn" data-filter="tools">Learning Tools</button>
+            </div>
+
+            <!-- Gallery Grid -->
+            <div class="gallery-grid">
+                
+                <!-- Gallery Item 1 -->
+                <div class="gallery-item" data-category="apps" data-id="1">
+                    <div class="gallery-image">
+                        <div class="image-placeholder">App Screenshot</div>
+                        <div class="gallery-overlay">
+                            <div class="overlay-content">
+                                <h3>Math Learning App</h3>
+                                <p>Mobile Application</p>
+                                <span class="view-icon">👁️ Click to View</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gallery Item 2 -->
+                <div class="gallery-item" data-category="platforms" data-id="2">
+                    <div class="gallery-image">
+                        <div class="image-placeholder">Platform UI</div>
+                        <div class="gallery-overlay">
+                            <div class="overlay-content">
+                                <h3>Teacher Dashboard</h3>
+                                <p>Web Platform</p>
+                                <span class="view-icon">👁️ Click to View</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gallery Item 3 -->
+                <div class="gallery-item" data-category="apps" data-id="3">
+                    <div class="gallery-image">
+                        <div class="image-placeholder">App Design</div>
+                        <div class="gallery-overlay">
+                            <div class="overlay-content">
+                                <h3>Language Learning</h3>
+                                <p>iOS & Android</p>
+                                <span class="view-icon">👁️ Click to View</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gallery Item 4 -->
+                <div class="gallery-item" data-category="tools" data-id="4">
+                    <div class="gallery-image">
+                        <div class="image-placeholder">Tool Interface</div>
+                        <div class="gallery-overlay">
+                            <div class="overlay-content">
+                                <h3>Assessment Builder</h3>
+                                <p>Educational Tool</p>
+                                <span class="view-icon">👁️ Click to View</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gallery Item 5 -->
+                <div class="gallery-item" data-category="platforms" data-id="5">
+                    <div class="gallery-image">
+                        <div class="image-placeholder">Platform View</div>
+                        <div class="gallery-overlay">
+                            <div class="overlay-content">
+                                <h3>Learning Management System</h3>
+                                <p>Enterprise Platform</p>
+                                <span class="view-icon">👁️ Click to View</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gallery Item 6 -->
+                <div class="gallery-item" data-category="apps" data-id="6">
+                    <div class="gallery-image">
+                        <div class="image-placeholder">App Screens</div>
+                        <div class="gallery-overlay">
+                            <div class="overlay-content">
+                                <h3>STEM Learning App</h3>
+                                <p>Educational Game</p>
+                                <span class="view-icon">👁️ Click to View</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gallery Item 7 -->
+                <div class="gallery-item" data-category="tools" data-id="7">
+                    <div class="gallery-image">
+                        <div class="image-placeholder">Tool Demo</div>
+                        <div class="gallery-overlay">
+                            <div class="overlay-content">
+                                <h3>Interactive Whiteboard</h3>
+                                <p>Collaboration Tool</p>
+                                <span class="view-icon">👁️ Click to View</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gallery Item 8 -->
+                <div class="gallery-item" data-category="platforms" data-id="8">
+                    <div class="gallery-image">
+                        <div class="image-placeholder">Dashboard</div>
+                        <div class="gallery-overlay">
+                            <div class="overlay-content">
+                                <h3>Analytics Platform</h3>
+                                <p>Data Visualization</p>
+                                <span class="view-icon">👁️ Click to View</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gallery Item 9 -->
+                <div class="gallery-item" data-category="apps" data-id="9">
+                    <div class="gallery-image">
+                        <div class="image-placeholder">Mobile UI</div>
+                        <div class="gallery-overlay">
+                            <div class="overlay-content">
+                                <h3>Reading Companion</h3>
+                                <p>Literacy App</p>
+                                <span class="view-icon">👁️ Click to View</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal/Lightbox -->
+    <div id="imageModal" class="modal">
+        <span class="modal-close">&times;</span>
+        <div class="modal-content-wrapper">
+            <div class="modal-image-container">
+                <div class="modal-image-placeholder">Large Image View</div>
+            </div>
+            <div class="modal-details">
+                <h2 id="modalTitle">Project Title</h2>
+                <p class="modal-category" id="modalCategory">Category</p>
+                <div class="modal-description">
+                    <h3>About This Project</h3>
+                    <p id="modalDescription">
+                        Detailed description of the project goes here. This is where you 
+                        explain the challenge, your solution, the impact, and key features 
+                        of the educational product.
+                    </p>
+                    
+                    <h3>Key Features</h3>
+                    <ul id="modalFeatures">
+                        <li>Feature 1 description</li>
+                        <li>Feature 2 description</li>
+                        <li>Feature 3 description</li>
+                    </ul>
+
+                    <h3>Impact</h3>
+                    <p id="modalImpact">
+                        Impact metrics and results. Number of users, satisfaction scores, 
+                        learning outcomes, etc.
+                    </p>
+
+                    <div class="modal-tags">
+                        <span class="tag">Tag 1</span>
+                        <span class="tag">Tag 2</span>
+                        <span class="tag">Tag 3</span>
+                    </div>
+
+                    <div class="modal-links">
+                        <a href="#" class="btn btn-small btn-primary">View Live</a>
+                        <a href="#" class="btn btn-small btn-outline">Case Study</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button class="modal-nav modal-prev" id="modalPrev">‹</button>
+        <button class="modal-nav modal-next" id="modalNext">›</button>
+    </div>
+
+    <!-- CTA Section -->
+    <section class="cta-home">
+        <div class="container">
+            <div class="cta-box">
+                <h2>Want to Collaborate?</h2>
+                <p>
+                    I'm always interested in new projects and partnerships that push 
+                    the boundaries of educational technology.
+                </p>
+                <a href="contact.html" class="btn btn-light-large">Let's Talk</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h3>Your Name</h3>
+                    <p>Educational entrepreneur passionate about transforming learning through technology.</p>
+                </div>
+                <div class="footer-nav">
+                    <h4>Navigate</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="portfolio.html">Work</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-connect">
+                    <h4>Connect</h4>
+                    <ul>
+                        <li><a href="#">LinkedIn</a></li>
+                        <li><a href="#">Twitter</a></li>
+                        <li><a href="#">Email</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Your Name. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="portfolio.js"></script>
+</body>
+</html>
