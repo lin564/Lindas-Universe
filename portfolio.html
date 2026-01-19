@@ -8,6 +8,245 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Portfolio Page Custom Styles */
+        .projects-section {
+            padding: 4rem 0;
+            background: linear-gradient(180deg, #f8fafa 0%, #ffffff 100%);
+        }
+
+        .project-card {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+            padding: 3rem;
+            margin-bottom: 3rem;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 38, 66, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 38, 66, 0.12);
+        }
+
+        .project-card:nth-child(even) {
+            direction: rtl;
+        }
+
+        .project-card:nth-child(even) > * {
+            direction: ltr;
+        }
+
+        .project-image {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            aspect-ratio: 16/10;
+            background: linear-gradient(135deg, #002642 0%, #0a4d7a 100%);
+        }
+
+        .project-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .project-card:hover .project-image img {
+            transform: scale(1.05);
+        }
+
+        .project-image-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.7);
+            font-size: 1.1rem;
+            background: linear-gradient(135deg, #002642 0%, #0a4d7a 50%, #5bc0eb 100%);
+        }
+
+        .project-content h3 {
+            font-family: 'Lora', serif;
+            font-size: 2rem;
+            color: #002642;
+            margin-bottom: 0.5rem;
+        }
+
+        .project-role {
+            display: inline-block;
+            background: linear-gradient(135deg, #FF3B0A 0%, #ff6b3d 100%);
+            color: white;
+            padding: 0.35rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 1.25rem;
+        }
+
+        .project-content p {
+            color: #4a4a4a;
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+
+        .project-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .project-tag {
+            background: #f1f5f9;
+            color: #002642;
+            padding: 0.4rem 0.9rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease;
+        }
+
+        .project-tag:hover {
+            background: #002642;
+            color: white;
+            border-color: #002642;
+        }
+
+        .project-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #FF3B0A;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+        }
+
+        .project-link:hover {
+            background: #002642;
+            transform: translateX(5px);
+        }
+
+        .project-link svg {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.3s ease;
+        }
+
+        .project-link:hover svg {
+            transform: translateX(3px);
+        }
+
+        /* Hero enhancement for futuristic feel */
+        .page-hero {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(91, 192, 235, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .page-hero::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255, 59, 10, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        /* Section header */
+        .section-header-center {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-header-center h2 {
+            font-family: 'Lora', serif;
+            font-size: 2.5rem;
+            color: #002642;
+        }
+
+        .section-intro {
+            color: #4a4a4a;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .project-card {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .project-card:nth-child(even) {
+                direction: ltr;
+            }
+
+            .project-content h3 {
+                font-size: 1.6rem;
+            }
+        }
+
+        /* Stats banner */
+        .stats-banner {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            padding: 2.5rem 3rem;
+            background: linear-gradient(135deg, #002642 0%, #0a4d7a 100%);
+            border-radius: 20px;
+            margin: 3rem 0;
+        }
+
+        .stat-item {
+            text-align: center;
+            color: white;
+        }
+
+        .stat-number {
+            font-family: 'Lora', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #5bc0eb;
+        }
+
+        .stat-label {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            margin-top: 0.25rem;
+        }
+
+        @media (max-width: 600px) {
+            .stats-banner {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Navigation -->
@@ -28,177 +267,97 @@
         <div class="container">
             <h1 class="page-title">My Work</h1>
             <p class="page-subtitle">
-                Educational products and experiences that have reached millions of learners worldwide
+                Educational products and experiences that transform how students learn
             </p>
         </div>
     </section>
 
-    <!-- Portfolio Gallery -->
-    <section class="portfolio-gallery">
-        <div class="container">
-            <!-- Filter/Category Tags -->
-            <div class="portfolio-filters">
-                <button class="filter-btn active" data-filter="all">All Work</button>
-                <button class="filter-btn" data-filter="platforms">Platforms</button>
-                <button class="filter-btn" data-filter="games">Learning Games</button>
-                <button class="filter-btn" data-filter="tools">AI Tools</button>
+    <!-- Stats Banner -->
+    <section class="container">
+        <div class="stats-banner">
+            <div class="stat-item">
+                <div class="stat-number">10+</div>
+                <div class="stat-label">Products Launched</div>
             </div>
-
-            <!-- Gallery Grid -->
-            <div class="gallery-grid">
-                <!-- QuestSim -->
-                <div class="gallery-item" data-category="platforms" data-id="1">
-                    <div class="gallery-image">
-                        <div class="image-placeholder">QuestSim Platform</div>
-                        <div class="gallery-overlay">
-                            <div class="overlay-content">
-                                <h3>QuestSim</h3>
-                                <p>3D Learning Platform</p>
-                                <span class="view-icon">👁️ Click to View</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Odysseus: The Hero's Journey -->
-                <div class="gallery-item" data-category="games" data-id="2">
-                    <div class="gallery-image">
-                        <div class="image-placeholder">Odysseus Game</div>
-                        <div class="gallery-overlay">
-                            <div class="overlay-content">
-                                <h3>Odysseus: The Hero's Journey</h3>
-                                <p>3D Adventure Learning Game</p>
-                                <span class="view-icon">👁️ Click to View</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Team Lab -->
-                <div class="gallery-item" data-category="games" data-id="3">
-                    <div class="gallery-image">
-                        <div class="image-placeholder">Team Lab</div>
-                        <div class="gallery-overlay">
-                            <div class="overlay-content">
-                                <h3>Team Lab</h3>
-                                <p>Social Skills Game</p>
-                                <span class="view-icon">👁️ Click to View</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- EveryLearner.AI -->
-                <div class="gallery-item" data-category="tools" data-id="4">
-                    <div class="gallery-image">
-                        <div class="image-placeholder">EveryLearner.AI</div>
-                        <div class="gallery-overlay">
-                            <div class="overlay-content">
-                                <h3>EveryLearner.AI</h3>
-                                <p>AI Lesson Planning Tool</p>
-                                <span class="view-icon">👁️ Click to View</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="stat-item">
+                <div class="stat-number">2σ</div>
+                <div class="stat-label">Learning Improvement</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">95%</div>
+                <div class="stat-label">User Satisfaction</div>
             </div>
         </div>
     </section>
 
-    <!-- Modal/Lightbox -->
-    <div id="imageModal" class="modal">
-        <span class="modal-close">&times;</span>
-        <div class="modal-content-wrapper">
-            <div class="modal-image-container">
-                <div class="modal-image-placeholder">Large Image View</div>
-            </div>
-            <div class="modal-details">
-                <h2 id="modalTitle">Project Title</h2>
-                <p class="modal-category" id="modalCategory">Category</p>
-                <div class="modal-description">
-                    <h3>About This Project</h3>
-                    <p id="modalDescription">
-                        Detailed description of the project goes here.
-                    </p>
-                    <h3>Key Features</h3>
-                    <ul id="modalFeatures">
-                        <li>Feature 1 description</li>
-                        <li>Feature 2 description</li>
-                        <li>Feature 3 description</li>
-                    </ul>
-                    <h3>Impact</h3>
-                    <p id="modalImpact">
-                        Impact metrics and results.
-                    </p>
-                    <div class="modal-tags">
-                        <span class="tag">Tag 1</span>
-                        <span class="tag">Tag 2</span>
-                        <span class="tag">Tag 3</span>
-                    </div>
-                    <div class="modal-links">
-                        <a href="#" class="btn btn-small btn-primary">View Live</a>
-                        <a href="#" class="btn btn-small btn-outline">Case Study</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <button class="modal-nav modal-prev" id="modalPrev">‹</button>
-        <button class="modal-nav modal-next" id="modalNext">›</button>
-    </div>
-
-    <!-- Project Details Section -->
-    <section class="project-details-section">
+    <!-- Projects Section -->
+    <section class="projects-section">
         <div class="container">
             <div class="section-header-center">
-                <h2 class="section-title">Project Highlights</h2>
+                <h2>Featured Projects</h2>
+                <p class="section-intro">Immersive learning experiences powered by narrative, simulation, and AI</p>
             </div>
 
-            <!-- QuestSim Detail -->
-            <div class="project-detail-card">
-                <div class="project-detail-content">
+            <!-- QuestSim -->
+            <article class="project-card">
+                <div class="project-image">
+                    <img src="https://www.questsim.com/img/HeroJourney4.png" alt="QuestSim Platform - Durable Skills Development">
+                </div>
+                <div class="project-content">
                     <h3>QuestSim</h3>
-                    <p class="project-role">Co-Founder & Chief Learning Officer</p>
+                    <span class="project-role">Co-Founder & Chief Learning Officer</span>
                     <p>
-                        QuestSim is a narrative-based 3D learning adventure platform that transforms how students engage with educational content. Our unique learning environments allow students to safely practice essential career skills, from professional communication to critical thinking.
+                        A narrative-based 3D learning adventure platform that transforms how students engage with educational content. Our unique learning environments allow students to safely practice essential career skills, from professional communication to critical thinking.
                     </p>
                     <p>
-                        The platform offers immersive simulation-based learning experiences that dramatically increase student engagement while building durable skills like problem solving, resilience, and creativity. Research shows simulation learning provides a 2-sigma improvement in understanding compared to conventional teaching methods.
+                        Research shows simulation learning provides a 2-sigma improvement in understanding compared to conventional teaching methods.
                     </p>
                     <div class="project-tags">
-                        <span class="tag">3D Learning</span>
-                        <span class="tag">Simulation</span>
-                        <span class="tag">K-12 Education</span>
-                        <span class="tag">EdTech Platform</span>
+                        <span class="project-tag">3D Simulation</span>
+                        <span class="project-tag">K-12 Education</span>
+                        <span class="project-tag">Game-Based Learning</span>
+                        <span class="project-tag">EdTech Platform</span>
                     </div>
-                    <a href="https://www.questsim.com" target="_blank" class="btn btn-primary">Visit QuestSim</a>
+                    <a href="https://www.questsim.com" target="_blank" class="project-link">
+                        Visit QuestSim
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                    </a>
                 </div>
-            </div>
+            </article>
 
-            <!-- Odysseus Detail -->
-            <div class="project-detail-card">
-                <div class="project-detail-content">
+            <!-- Odysseus -->
+            <article class="project-card">
+                <div class="project-image">
+                    <img src="https://www.questsim.com/img/Odysseus.jpg" alt="Odysseus: The Hero's Journey - 3D Adventure Learning Game">
+                </div>
+                <div class="project-content">
                     <h3>Odysseus: The Hero's Journey</h3>
-                    <p class="project-role">Product Lead</p>
+                    <span class="project-role">Product Lead</span>
                     <p>
                         A 3D adventure learning game that immerses students in the world between the pages of Homer's "The Odyssey." Students don't just read about Odysseus's journey—they live it, making decisions, facing challenges, and experiencing the epic narrative firsthand.
                     </p>
                     <p>
-                        Designed for English and Social Studies classrooms, this game makes ancient literature accessible and engaging for modern students while building reading comprehension, critical thinking, and narrative analysis skills.
+                        Designed for English and Social Studies classrooms, this game makes ancient literature accessible and engaging for modern students while building reading comprehension and critical thinking skills.
                     </p>
                     <div class="project-tags">
-                        <span class="tag">English/ELA</span>
-                        <span class="tag">Social Studies</span>
-                        <span class="tag">Game-Based Learning</span>
-                        <span class="tag">Literature</span>
+                        <span class="project-tag">English/ELA</span>
+                        <span class="project-tag">Social Studies</span>
+                        <span class="project-tag">Literature</span>
+                        <span class="project-tag">Narrative Learning</span>
                     </div>
                 </div>
-            </div>
+            </article>
 
-            <!-- Team Lab Detail -->
-            <div class="project-detail-card">
-                <div class="project-detail-content">
+            <!-- Team Lab -->
+            <article class="project-card">
+                <div class="project-image">
+                    <img src="https://www.questsim.com/img/TeamLab.jpg" alt="Team Lab - Interactive Workforce Readiness Simulation">
+                </div>
+                <div class="project-content">
                     <h3>Team Lab</h3>
-                    <p class="project-role">Learning Design Lead</p>
+                    <span class="project-role">Learning Design Lead</span>
                     <p>
                         An interactive, persona-based game designed to teach students essential social skills and prepare them for the workforce. Students navigate realistic workplace scenarios, learning to collaborate, communicate, and resolve conflicts effectively.
                     </p>
@@ -206,19 +365,26 @@
                         Team Lab bridges the gap between academic learning and real-world professional success, helping students develop the soft skills that employers consistently rank as most important.
                     </p>
                     <div class="project-tags">
-                        <span class="tag">Social-Emotional Learning</span>
-                        <span class="tag">Workforce Readiness</span>
-                        <span class="tag">Collaboration Skills</span>
-                        <span class="tag">Simulation</span>
+                        <span class="project-tag">Social-Emotional Learning</span>
+                        <span class="project-tag">Workforce Readiness</span>
+                        <span class="project-tag">Collaboration</span>
+                        <span class="project-tag">Simulation</span>
                     </div>
                 </div>
-            </div>
+            </article>
 
-            <!-- EveryLearner.AI Detail -->
-            <div class="project-detail-card">
-                <div class="project-detail-content">
+            <!-- EveryLearner.AI -->
+            <article class="project-card">
+                <div class="project-image" style="background: linear-gradient(135deg, #5bc0eb 0%, #002642 50%, #FF3B0A 100%); display: flex; align-items: center; justify-content: center;">
+                    <div style="text-align: center; color: white; padding: 2rem;">
+                        <div style="font-size: 3rem; margin-bottom: 0.5rem;">🤖</div>
+                        <div style="font-family: 'Lora', serif; font-size: 1.8rem; font-weight: 700;">EveryLearner.AI</div>
+                        <div style="font-size: 0.9rem; opacity: 0.9; margin-top: 0.5rem;">AI-Powered Lesson Planning</div>
+                    </div>
+                </div>
+                <div class="project-content">
                     <h3>EveryLearner.AI</h3>
-                    <p class="project-role">Founder</p>
+                    <span class="project-role">Founder</span>
                     <p>
                         An AI-powered lesson planning tool designed specifically for K-12 teachers. EveryLearner.AI gives teachers an intelligent partner for differentiation, because no teacher should have to choose between personalization and sanity.
                     </p>
@@ -226,13 +392,13 @@
                         The platform helps teachers create personalized learning experiences for every student in their classroom, dramatically reducing planning time while improving the quality and accessibility of instruction.
                     </p>
                     <div class="project-tags">
-                        <span class="tag">AI/Machine Learning</span>
-                        <span class="tag">Teacher Tools</span>
-                        <span class="tag">Differentiation</span>
-                        <span class="tag">K-12</span>
+                        <span class="project-tag">AI/Machine Learning</span>
+                        <span class="project-tag">Teacher Tools</span>
+                        <span class="project-tag">Differentiation</span>
+                        <span class="project-tag">K-12</span>
                     </div>
                 </div>
-            </div>
+            </article>
         </div>
     </section>
 
@@ -279,7 +445,5 @@
             </div>
         </div>
     </footer>
-
-    <script src="portfolio.js"></script>
 </body>
 </html>
