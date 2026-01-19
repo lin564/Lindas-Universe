@@ -82,43 +82,78 @@
                 <h2 class="section-title">Design Philosophy</h2>
             </div>
 
-            <div class="philosophy-grid">
-                <div class="philosophy-card">
-                    <div class="philosophy-number">01</div>
-                    <h3>Learner-Centered</h3>
-                    <p>
-                        Everything starts with understanding the learner. Their needs, 
-                        motivations, and contexts drive every decision.
-                    </p>
-                </div>
-
-                <div class="philosophy-card">
-                    <div class="philosophy-number">02</div>
-                    <h3>Evidence-Based</h3>
-                    <p>
-                        I ground my work in learning science and educational research, 
-                        ensuring that products are both engaging and effective.
-                    </p>
-                </div>
-
-                <div class="philosophy-card">
-                    <div class="philosophy-number">03</div>
-                    <h3>Iterative Development</h3>
-                    <p>
-                        I believe in rapid prototyping, testing with real users, and 
-                        continuously improving based on feedback and data.
-                    </p>
-                </div>
-
-                <div class="philosophy-card">
-                    <div class="philosophy-number">04</div>
-                    <h3>Accessible & Inclusive</h3>
-                    <p>
-                        Quality education should be accessible to all. I design for 
-                        diversity and ensure our products work for every learner.
-                    </p>
-                </div>
-            </div>
+            <style>
+                .philosophy-table {
+                    width: 100%;
+                    border-collapse: separate;
+                    border-spacing: 1.5rem;
+                    margin: 0 -1.5rem;
+                }
+                .philosophy-table td {
+                    width: 25%;
+                    vertical-align: top;
+                    background: #ffffff;
+                    padding: 2rem;
+                    border-radius: 16px;
+                    box-shadow: 0 4px 15px rgba(0, 38, 66, 0.08);
+                    transition: transform 0.3s ease, box-shadow 0.3s ease;
+                }
+                .philosophy-table td:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 8px 25px rgba(0, 38, 66, 0.12);
+                }
+                .philosophy-table .philosophy-number {
+                    font-family: 'Lora', serif;
+                    font-size: 2rem;
+                    font-weight: 700;
+                    color: #5bc0eb;
+                    margin-bottom: 1rem;
+                }
+                .philosophy-table h3 {
+                    font-family: 'Lora', serif;
+                    font-size: 1.25rem;
+                    color: #002642;
+                    margin-bottom: 0.75rem;
+                }
+                .philosophy-table p {
+                    color: #4a4a4a;
+                    font-size: 0.95rem;
+                    line-height: 1.6;
+                }
+                @media (max-width: 900px) {
+                    .philosophy-table, .philosophy-table tbody, .philosophy-table tr, .philosophy-table td {
+                        display: block;
+                        width: 100%;
+                    }
+                    .philosophy-table td {
+                        margin-bottom: 1rem;
+                    }
+                }
+            </style>
+            <table class="philosophy-table">
+                <tr>
+                    <td>
+                        <div class="philosophy-number">01</div>
+                        <h3>Learner-Centered</h3>
+                        <p>Everything starts with understanding the learner. Their needs, motivations, and contexts drive every decision.</p>
+                    </td>
+                    <td>
+                        <div class="philosophy-number">02</div>
+                        <h3>Evidence-Based</h3>
+                        <p>I ground my work in learning science and educational research, ensuring that products are both engaging and effective.</p>
+                    </td>
+                    <td>
+                        <div class="philosophy-number">03</div>
+                        <h3>Iterative Development</h3>
+                        <p>I believe in rapid prototyping, testing with real users, and continuously improving based on feedback and data.</p>
+                    </td>
+                    <td>
+                        <div class="philosophy-number">04</div>
+                        <h3>Accessible & Inclusive</h3>
+                        <p>Quality education should be accessible to all. I design for diversity and ensure our products work for every learner.</p>
+                    </td>
+                </tr>
+            </table>
         </div>
     </section>
 
@@ -192,9 +227,9 @@
                     <div class="timeline-marker"></div>
                     <div class="timeline-content">
                         <span class="timeline-year">2024</span>
-                        <h3>RoleplayEd & ASU+GSV Award</h3>
+                        <h3>RoleplayEd & SparkNC Partnership</h3>
                         <p>
-                            Created RoleplayEd, an AI-powered immersive training environment with applications across education, healthcare, defense, and commercial sectors. Won first prize for Impact at the 2024 Education Innovation Showcase at ASU+GSV Summit.
+                            Created RoleplayEd, an AI-powered immersive training environment with applications across education, healthcare, defense, and commercial sectors. Through our partnership with SparkNC, we helped develop their platform which won first prize for Impact at the 2024 Education Innovation Showcase at ASU+GSV Summit.
                         </p>
                     </div>
                 </div>
@@ -255,8 +290,8 @@
 
             <div class="recognition-grid">
                 <div class="recognition-item">
-                    <h4>First Prize for Impact</h4>
-                    <p>ASU+GSV Education Innovation Showcase • 2024</p>
+                    <h4>SparkNC Partnership</h4>
+                    <p>First Prize for Impact • ASU+GSV Summit 2024</p>
                 </div>
                 <div class="recognition-item">
                     <h4>Featured In</h4>
