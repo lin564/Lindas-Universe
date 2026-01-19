@@ -78,35 +78,187 @@ Index · HTML
                     I blend educational expertise with entrepreneurial vision to create learning products that engage and inspire learners.
                 </p>
             </div>
-            <div class="services-grid">
-                <article class="service-card">
-                    <div class="service-icon"></div>
-                    <h3>EdTech Product Development</h3>
-                    <p>
-                        Designing and building 3D adventure learning games and platforms that solve real learning challenges with innovative technology solutions.
-                    </p>
-                </article>
-                <article class="service-card">
-                    <div class="service-icon"></div>
-                    <h3>Learning Experience Design</h3>
-                    <p>
-                        Creating engaging, effective learning experiences grounded in pedagogy and enhanced by thoughtful design.
-                    </p>
-                </article>
-                <article class="service-card">
-                    <div class="service-icon"></div>
-                    <h3>Product Strategy</h3>
-                    <p>
-                        Developing go-to-market strategies and growth plans for educational products from concept to scale.
-                    </p>
-                </article>
-                <article class="service-card">
-                    <div class="service-icon"></div>
-                    <h3>Innovation Consulting</h3>
-                    <p>
-                        Helping organizations transform their educational offerings through strategic innovation and user-centered design.
-                    </p>
-                </article>
+            <style>
+                .services-table {
+                    width: 100%;
+                    border-collapse: separate;
+                    border-spacing: 1.5rem;
+                    margin: 0 -1.5rem;
+                }
+                .services-table td {
+                    width: 25%;
+                    vertical-align: top;
+                    background: #ffffff;
+                    padding: 2rem;
+                    border-radius: 16px;
+                    box-shadow: 0 4px 15px rgba(0, 38, 66, 0.08);
+                    transition: transform 0.3s ease, box-shadow 0.3s ease;
+                }
+                .services-table td:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 8px 25px rgba(0, 38, 66, 0.12);
+                }
+                .services-table h3 {
+                    font-family: 'Lora', serif;
+                    font-size: 1.25rem;
+                    color: #002642;
+                    margin-bottom: 0.75rem;
+                }
+                .services-table p {
+                    color: #4a4a4a;
+                    font-size: 0.95rem;
+                    line-height: 1.6;
+                }
+                .service-icon-emoji {
+                    font-size: 2.5rem;
+                    margin-bottom: 1rem;
+                    display: block;
+                }
+                @media (max-width: 900px) {
+                    .services-table, .services-table tbody, .services-table tr, .services-table td {
+                        display: block;
+                        width: 100%;
+                    }
+                    .services-table td {
+                        margin-bottom: 1rem;
+                    }
+                }
+            </style>
+            <table class="services-table">
+                <tr>
+                    <td>
+                        <span class="service-icon-emoji">🎮</span>
+                        <h3>EdTech Product Development</h3>
+                        <p>Designing and building 3D adventure learning games and platforms that solve real learning challenges with innovative technology solutions.</p>
+                    </td>
+                    <td>
+                        <span class="service-icon-emoji">✨</span>
+                        <h3>Learning Experience Design</h3>
+                        <p>Creating engaging, effective learning experiences grounded in pedagogy and enhanced by thoughtful design.</p>
+                    </td>
+                    <td>
+                        <span class="service-icon-emoji">🚀</span>
+                        <h3>Product Strategy</h3>
+                        <p>Developing go-to-market strategies and growth plans for educational products from concept to scale.</p>
+                    </td>
+                    <td>
+                        <span class="service-icon-emoji">💡</span>
+                        <h3>Innovation Consulting</h3>
+                        <p>Helping organizations transform their educational offerings through strategic innovation and user-centered design.</p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </section>
+
+    <!-- Featured Work Preview -->
+    <section class="featured-work">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Featured Work</h2>
+                <p class="section-intro">Immersive learning experiences powered by narrative, simulation, and AI</p>
+            </div>
+            <style>
+                .work-preview-grid-updated {
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 2rem;
+                    margin-bottom: 2rem;
+                }
+                .work-preview-item-updated {
+                    background: #ffffff;
+                    border-radius: 16px;
+                    overflow: hidden;
+                    box-shadow: 0 4px 15px rgba(0, 38, 66, 0.08);
+                    transition: transform 0.3s ease, box-shadow 0.3s ease;
+                }
+                .work-preview-item-updated:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 8px 25px rgba(0, 38, 66, 0.12);
+                }
+                .work-video-container {
+                    position: relative;
+                    width: 100%;
+                    aspect-ratio: 16/9;
+                    background: linear-gradient(135deg, #002642 0%, #0a4d7a 100%);
+                    overflow: hidden;
+                }
+                .work-video-container video {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+                .work-image-container {
+                    position: relative;
+                    width: 100%;
+                    aspect-ratio: 16/9;
+                    background: linear-gradient(135deg, #002642 0%, #0a4d7a 100%);
+                    overflow: hidden;
+                }
+                .work-image-container img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    transition: transform 0.5s ease;
+                }
+                .work-preview-item-updated:hover .work-image-container img {
+                    transform: scale(1.05);
+                }
+                .work-info-updated {
+                    padding: 1.5rem;
+                }
+                .work-info-updated h3 {
+                    font-family: 'Lora', serif;
+                    font-size: 1.3rem;
+                    color: #002642;
+                    margin-bottom: 0.5rem;
+                }
+                .work-info-updated p {
+                    color: #4a4a4a;
+                    font-size: 0.95rem;
+                    line-height: 1.5;
+                }
+                @media (max-width: 900px) {
+                    .work-preview-grid-updated {
+                        grid-template-columns: 1fr;
+                    }
+                }
+            </style>
+            <div class="work-preview-grid-updated">
+                <div class="work-preview-item-updated">
+                    <div class="work-video-container">
+                        <video autoplay muted loop playsinline>
+                            <source src="trailer_Odyssey_PowerSchool.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                    <div class="work-info-updated">
+                        <h3>Odysseus: The Hero's Journey</h3>
+                        <p>3D adventure learning game that immerses students in the world between the pages of Homer's "The Odyssey"</p>
+                    </div>
+                </div>
+                <div class="work-preview-item-updated">
+                    <div class="work-video-container">
+                        <video autoplay muted loop playsinline>
+                            <source src="QuestSimPan.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                    <div class="work-info-updated">
+                        <h3>QuestSim Platform</h3>
+                        <p>Browser-based 3D learning adventures that enhance curriculum standards and foster critical thinking</p>
+                    </div>
+                </div>
+                <div class="work-preview-item-updated">
+                    <div class="work-image-container">
+                        <img src="https://www.questsim.com/img/TeamLab.jpg" alt="Team Lab">
+                    </div>
+                    <div class="work-info-updated">
+                        <h3>Team Lab</h3>
+                        <p>An interactive AI-powered simulation that trains people to ask good questions and conduct interviews</p>
+                    </div>
+                </div>
+            </div>
+            <div class="view-all-container">
+                <a href="portfolio.html" class="btn btn-large">View Full Portfolio</a>
             </div>
         </div>
     </section>
@@ -140,49 +292,6 @@ Index · HTML
                         </li>
                     </ul>
                 </div>
-            </div>
-        </div>
-        </div>
-    </section>
-
-    <!-- Featured Work Preview -->
-    <section class="featured-work">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Featured Work</h2>
-                <p class="section-intro">A glimpse into recent projects</p>
-            </div>
-            <div class="work-preview-grid">
-                <div class="work-preview-item">
-                    <div class="work-image">
-                        <div class="image-placeholder">Project 1</div>
-                    </div>
-                    <div class="work-info">
-                        <h3>Odysseus: The Hero's Journey</h3>
-                        <p>3D adventure learning game that immerses students in the world between the pages of Homer's "The Odyssey"</p>
-                    </div>
-                </div>
-                <div class="work-preview-item">
-                    <div class="work-image">
-                        <div class="image-placeholder">Project 2</div>
-                    </div>
-                    <div class="work-info">
-                        <h3>Team Lab</h3>
-                        <p>An interactive, persona-based game designed to teach students social skills and prepare them for the workforce</p>
-                    </div>
-                </div>
-                <div class="work-preview-item">
-                    <div class="work-image">
-                        <div class="image-placeholder">Project 3</div>
-                    </div>
-                    <div class="work-info">
-                        <h3>EveryLearner.AI</h3>
-                        <p>Lesson planning tool for K12 teachers</p>
-                    </div>
-                </div>
-            </div>
-            <div class="view-all-container">
-                <a href="portfolio.html" class="btn btn-large">View Full Portfolio</a>
             </div>
         </div>
     </section>
