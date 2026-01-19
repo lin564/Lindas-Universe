@@ -18,6 +18,148 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* About Page Section Frames */
+        .story-section {
+            padding: 2.5rem 0;
+            background: linear-gradient(180deg, #f8fafa 0%, #ffffff 100%);
+        }
+
+        .story-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 2.5rem;
+            align-items: start;
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 38, 66, 0.08);
+        }
+
+        .philosophy-section {
+            padding: 2.5rem 0;
+            background: linear-gradient(180deg, #ffffff 0%, #f8fafa 100%);
+        }
+
+        .expertise-section {
+            padding: 2.5rem 0;
+            background: linear-gradient(180deg, #f8fafa 0%, #ffffff 100%);
+        }
+
+        .expertise-columns {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .expertise-column {
+            background: #ffffff;
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0, 38, 66, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .expertise-column:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 38, 66, 0.12);
+        }
+
+        .expertise-column h3 {
+            font-family: 'Lora', serif;
+            font-size: 1.15rem;
+            color: #002642;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #5bc0eb;
+        }
+
+        .expertise-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .expertise-list li {
+            padding: 0.5rem 0;
+            color: #4a4a4a;
+            font-size: 0.95rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .expertise-list li:last-child {
+            border-bottom: none;
+        }
+
+        .journey-section {
+            padding: 2.5rem 0;
+            background: linear-gradient(180deg, #ffffff 0%, #f8fafa 100%);
+        }
+
+        .recognition-section {
+            padding: 2.5rem 0;
+            background: linear-gradient(180deg, #f8fafa 0%, #ffffff 100%);
+        }
+
+        .recognition-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+        }
+
+        .recognition-item {
+            background: #ffffff;
+            padding: 1.25rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0, 38, 66, 0.08);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .recognition-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 38, 66, 0.12);
+        }
+
+        .recognition-item h4 {
+            font-family: 'Lora', serif;
+            font-size: 1rem;
+            color: #002642;
+            margin-bottom: 0.5rem;
+        }
+
+        .recognition-item p {
+            color: #4a4a4a;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        /* Timeline container with frame */
+        .timeline {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 38, 66, 0.08);
+        }
+
+        @media (max-width: 900px) {
+            .story-layout {
+                grid-template-columns: 1fr;
+            }
+            .expertise-columns {
+                grid-template-columns: 1fr;
+            }
+            .recognition-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .recognition-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Navigation -->
