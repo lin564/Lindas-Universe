@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Balance Keeper — A QuestSim Algebra Adventure</title>
+    <meta name="description" content="A 3D browser-based adventure that teaches Algebra 1 linear equations and inequalities. Restore the floating Isle of Equilibria by balancing its ancient mechanisms.">
+    <link rel="icon" href="../../favicon.svg">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Three.js is vendored locally so the game works behind school
+         firewalls that block CDNs. -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "./vendor/three.module.js"
+        }
+    }
+    </script>
+</head>
+<body>
+    <canvas id="scene"></canvas>
+
+    <!-- Intro / title screen -->
+    <div id="intro-screen" class="overlay">
+        <div class="intro-card">
+            <p class="studio-line">QuestSim presents</p>
+            <h1 class="game-title">The Balance Keeper</h1>
+            <p class="tagline">An algebra adventure on the Isle of Equilibria</p>
+            <div class="story">
+                <p>The old Keeper has vanished, and the Great Balance that holds
+                these islands in the sky is failing. One by one, the lights are
+                going out.</p>
+                <p>You are the new apprentice. Every mechanism on the isle runs on
+                a single law: <em>whatever you do to one side, you must do to the
+                other.</em> Restore the balance. Restore the isle.</p>
+            </div>
+            <div class="controls-hint">
+                <span><strong>Move:</strong> WASD or Arrow Keys</span>
+                <span><strong>Interact:</strong> E or click the prompt</span>
+            </div>
+            <button id="begin-btn" class="primary-btn">Begin the Quest</button>
+        </div>
+    </div>
+
+    <!-- HUD -->
+    <div id="hud" class="hidden">
+        <div id="objective-card">
+            <span class="objective-label">Quest</span>
+            <span id="objective-text">Cross the old bridge to the first mechanism.</span>
+        </div>
+        <div id="progress-card" title="Mechanisms restored">
+            <span class="gem" data-gem="0"></span><span class="gem" data-gem="1"></span><span class="gem" data-gem="2"></span><span class="gem" data-gem="3"></span><span class="gem" data-gem="4"></span><span class="gem" data-gem="5"></span><span class="gem" data-gem="6"></span>
+        </div>
+        <button id="mute-btn" title="Toggle sound">♪</button>
+    </div>
+
+    <!-- Interact prompt -->
+    <button id="interact-prompt" class="hidden">Restore the mechanism <kbd>E</kbd></button>
+
+    <!-- Dialogue bar -->
+    <div id="dialogue-bar" class="hidden">
+        <div id="dialogue-portrait"></div>
+        <div class="dialogue-body">
+            <div id="dialogue-name">Axiom</div>
+            <div id="dialogue-text"></div>
+        </div>
+        <div class="dialogue-advance">click / Enter ▸</div>
+    </div>
+
+    <!-- Balance puzzle modal -->
+    <div id="puzzle-modal" class="overlay hidden">
+        <div class="puzzle-card">
+            <div class="puzzle-header">
+                <h2 id="puzzle-title">The Gate of First Steps</h2>
+                <button id="puzzle-close" title="Step away (your work is saved)">✕</button>
+            </div>
+            <p id="puzzle-flavor" class="puzzle-flavor"></p>
+
+            <div id="equation-readout">x + 3 = 7</div>
+
+            <div id="balance-area">
+                <div id="balance-board">
+                    <div class="pan" id="pan-left"><div class="pan-tiles" id="tiles-left"></div><div class="pan-dish"></div></div>
+                    <div id="fulcrum"><span id="relation-symbol">=</span></div>
+                    <div class="pan" id="pan-right"><div class="pan-tiles" id="tiles-right"></div><div class="pan-dish"></div></div>
+                </div>
+            </div>
+
+            <div id="puzzle-message" class="puzzle-message">&nbsp;</div>
+
+            <div id="palette">
+                <span class="palette-label">Add to <em>both</em> sides:</span>
+                <button class="token-btn token-u-pos" data-op="+1">+1</button>
+                <button class="token-btn token-u-neg" data-op="-1">−1</button>
+                <button class="token-btn token-x-pos" data-op="+x">+x</button>
+                <button class="token-btn token-x-neg" data-op="-x">−x</button>
+                <span class="palette-sep"></span>
+                <span class="palette-label">Split both sides:</span>
+                <button class="divide-btn" data-k="2">÷2</button>
+                <button class="divide-btn" data-k="3">÷3</button>
+                <button class="divide-btn" data-k="4">÷4</button>
+                <button class="divide-btn" data-k="5">÷5</button>
+            </div>
+
+            <div class="puzzle-footer">
+                <button id="hint-btn">Ask Axiom for a hint</button>
+                <button id="reset-btn">Restore the scene</button>
+                <div id="steps-log" title="Your steps"></div>
+            </div>
+
+            <div id="puzzle-success" class="hidden">
+                <div id="solution-banner">x = 4</div>
+                <button id="keystone-btn" class="primary-btn">Set the Keystone</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ferry (inequality solution-set) modal -->
+    <div id="ferry-modal" class="overlay hidden">
+        <div class="puzzle-card">
+            <div class="puzzle-header">
+                <h2>The Ferryman's Test</h2>
+            </div>
+            <p class="puzzle-flavor">You found that <strong id="ferry-rule">x ≤ 6</strong>.
+            The ferry can only carry stones whose weight keeps that true.
+            <strong>Load every stone the ferry can safely carry</strong> — and leave the rest on the dock.</p>
+            <div id="ferry-boat">
+                <div id="stone-dock"></div>
+            </div>
+            <div id="ferry-message" class="puzzle-message">&nbsp;</div>
+            <div class="puzzle-footer">
+                <button id="launch-btn" class="primary-btn">Launch the Ferry</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- End screen -->
+    <div id="end-screen" class="overlay hidden">
+        <div class="intro-card">
+            <p class="studio-line">The Heart of Equilibria beats again</p>
+            <h1 class="game-title">Balance Restored</h1>
+            <div class="story">
+                <p>Light returns to the isle. The mechanisms hum, the bridges hold,
+                and the Great Balance is whole — because you learned its law:
+                <em>whatever you do to one side, you must do to the other.</em></p>
+                <p id="end-stats"></p>
+                <p>The Keeper's journal mentions distant isles where the crystals
+                multiply and the balances tip and flip… <em>To be continued.</em></p>
+            </div>
+            <button id="replay-btn" class="primary-btn">Play Again</button>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
