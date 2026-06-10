@@ -127,7 +127,7 @@ export class Player {
                     // must actually move us, and stay near where the player
                     // aimed; among those, prefer the most progress (so the
                     // bridge corridor beats a micro-step along the rim)
-                    if (reach < step * 0.25 || offTarget > 3.5) continue;
+                    if (reach < step * 0.25 || offTarget > 4.6) continue;
                     if (reach > bestScore) {
                         bestScore = reach;
                         best = q;

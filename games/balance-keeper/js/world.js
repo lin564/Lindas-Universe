@@ -17,15 +17,25 @@ const ISLAND_DEFS = [
 
 const ISLAND_HUES = [0x4f8a5b, 0x4f8a5b, 0x55955e, 0x4a8568, 0x55955e, 0x4f8a5b, 0x4a8568, 0x3f9d7a];
 
-function jitterGeometry(geo, amount) {
+function jitterGeometry(geo, amount, yAmount = amount * 0.5) {
+    // Geometries duplicate vertices at seams (cap centers, cap/side edges);
+    // co-located vertices must receive the same offset or the surface tears.
+    // yAmount 0 keeps a surface planar — used for island tops, where vertical
+    // jitter tilts cap triangles into shadow and reads as cracks.
     const pos = geo.attributes.position;
+    const offsets = new Map();
     for (let i = 0; i < pos.count; i++) {
-        pos.setXYZ(
-            i,
-            pos.getX(i) + (Math.random() - 0.5) * amount,
-            pos.getY(i) + (Math.random() - 0.5) * amount * 0.5,
-            pos.getZ(i) + (Math.random() - 0.5) * amount
-        );
+        const key = `${pos.getX(i).toFixed(3)},${pos.getY(i).toFixed(3)},${pos.getZ(i).toFixed(3)}`;
+        let off = offsets.get(key);
+        if (!off) {
+            off = [
+                (Math.random() - 0.5) * amount,
+                (Math.random() - 0.5) * yAmount,
+                (Math.random() - 0.5) * amount,
+            ];
+            offsets.set(key, off);
+        }
+        pos.setXYZ(i, pos.getX(i) + off[0], pos.getY(i) + off[1], pos.getZ(i) + off[2]);
     }
     geo.computeVertexNormals();
     return geo;
@@ -96,7 +106,7 @@ export class World {
 
         const grassMat = new THREE.MeshStandardMaterial({ color: ISLAND_HUES[index], flatShading: true });
         const top = new THREE.Mesh(
-            jitterGeometry(new THREE.CylinderGeometry(def.r, def.r * 0.92, 1.6, 11, 1), 0.45),
+            jitterGeometry(new THREE.CylinderGeometry(def.r, def.r * 0.92, 1.6, 11, 1), 0.45, 0),
             grassMat
         );
         top.position.y = -0.8;
@@ -201,6 +211,7 @@ export class World {
             plank.position.y = -0.1 + Math.sin(t * Math.PI) * 0.35; // gentle arc
             plank.lookAt(endEdge.x, plank.position.y, endEdge.z);
             plank.scale.setScalar(0.001);
+            plank.visible = false;
             group.add(plank);
             planks.push(plank);
         }
@@ -214,6 +225,7 @@ export class World {
         bridge.planks.forEach((plank, idx) => {
             const local = THREE.MathUtils.clamp(t * bridge.planks.length - idx, 0, 1);
             plank.scale.setScalar(Math.max(0.001, local));
+            plank.visible = local > 0.02;
         });
     }
 
@@ -239,16 +251,24 @@ export class World {
         group.add(column);
 
         const beamMat = new THREE.MeshStandardMaterial({ color: 0xb08d3e, flatShading: true, metalness: 0.4, roughness: 0.5 });
-        const beam = new THREE.Mesh(new THREE.BoxGeometry(4.2, 0.18, 0.3), beamMat);
-        beam.position.y = 2.6;
+        const beam = new THREE.Mesh(new THREE.BoxGeometry(4.2, 0.32, 0.5), beamMat);
+        beam.position.y = 2.8;
         beam.rotation.z = 0.18; // out of balance until solved
         group.add(beam);
 
         const panMat = new THREE.MeshStandardMaterial({ color: 0x8f7434, flatShading: true, metalness: 0.4, roughness: 0.6 });
-        const panL = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.55, 0.25, 8), panMat);
-        const panR = panL.clone();
-        panL.position.set(-1.9, 2.0, 0);
-        panR.position.set(1.9, 2.0, 0);
+        const chainMat = new THREE.MeshStandardMaterial({ color: 0x5e4a22, flatShading: true });
+        const makePan = () => {
+            const pan = new THREE.Group();
+            const chain = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.8, 5), chainMat);
+            chain.position.y = -0.4;
+            const dish = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.55, 0.25, 8), panMat);
+            dish.position.y = -0.85;
+            pan.add(chain, dish);
+            return pan;
+        };
+        const panL = makePan();
+        const panR = makePan();
         group.add(panL, panR);
 
         const gem = new THREE.Mesh(
@@ -264,7 +284,18 @@ export class World {
 
         group.position.set(island.def.x, 0, island.def.z);
         this.scene.add(group);
-        this.pedestals.push({ group, beam, gem, glow, solved: false, wobblePhase: Math.random() * 6 });
+        const ped = { group, beam, panL, panR, gem, glow, solved: false, wobblePhase: Math.random() * 6 };
+        this.hangPans(ped);
+        this.pedestals.push(ped);
+    }
+
+    // pans hang plumb from the beam ends, wherever the beam tilts
+    hangPans(ped) {
+        const a = ped.beam.rotation.z;
+        const armX = 1.9 * Math.cos(a);
+        const armY = 1.9 * Math.sin(a);
+        ped.panL.position.set(-armX, ped.beam.position.y - armY, 0);
+        ped.panR.position.set(armX, ped.beam.position.y + armY, 0);
     }
 
     solvePedestal(chamberIndex) {
@@ -274,6 +305,7 @@ export class World {
             t: 0, dur: 1.0,
             fn: (k) => {
                 ped.beam.rotation.z = 0.18 * (1 - k);
+                this.hangPans(ped);
                 ped.gem.material.emissive.setRGB(0.05 + 0.6 * k, 0.5 * k + 0.2, 0.45 * k + 0.1);
                 ped.gem.material.color.lerpColors(new THREE.Color(0x2c3e50), new THREE.Color(0x3fd6c0), k);
                 ped.glow.intensity = 0.35 + 1.4 * k;
@@ -378,7 +410,8 @@ export class World {
             const ap = new THREE.Vector2(pos.x - a.x, pos.z - a.z);
             const t = THREE.MathUtils.clamp(ap.dot(ab) / ab.lengthSq(), 0, 1);
             const closest = new THREE.Vector2(a.x + ab.x * t, a.z + ab.y * t);
-            if (closest.distanceTo(new THREE.Vector2(pos.x, pos.z)) < 2.2) return true;
+            // half-width just inside the planks (1.3) so feet stay on wood
+            if (closest.distanceTo(new THREE.Vector2(pos.x, pos.z)) < 1.25) return true;
         }
         return false;
     }
@@ -404,7 +437,7 @@ export class World {
             const cx = a.x + ab.x * t, cz = a.z + ab.y * t;
             const dx = pos.x - cx, dz = pos.z - cz;
             const dist = Math.hypot(dx, dz) || 0.001;
-            const k = Math.min(dist, 2.1) / dist;
+            const k = Math.min(dist, 1.15) / dist;
             out.push(new THREE.Vector3(cx + dx * k, 0, cz + dz * k));
         }
         return out;
@@ -441,6 +474,7 @@ export class World {
         this.pedestals.forEach((ped) => {
             if (!ped.solved) {
                 ped.beam.rotation.z = 0.18 + Math.sin(this.time * 1.7 + ped.wobblePhase) * 0.06;
+                this.hangPans(ped);
             }
             ped.gem.rotation.y += dt * (ped.solved ? 1.4 : 0.3);
         });
