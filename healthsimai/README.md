@@ -48,3 +48,5 @@ DNS/nameserver changes usually propagate within an hour.
 
 - The contact form opens the visitor's mail client addressed to `info@healthsimai.com`. For a real lead pipeline, swap it for a form service (Formspree, Basin) or the host's form handling — only the `<form>` action and the submit handler in `script.js` need changing.
 - ROI calculator benchmarks live in `calcROI()` in `script.js` and are easy to tune.
+
+Deploys run automatically via GitHub Actions (.github/workflows/deploy-healthsimai.yml) on pushes to main.
