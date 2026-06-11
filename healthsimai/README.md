@@ -4,32 +4,45 @@ Single-page marketing site for **HealthSimAI.com** — hospital digital twin int
 
 ## Contents
 
-- `index.html` — full single-page site (hero, solutions, platform, proof, resources, leadership, contact)
-- `styles.css` — all styling, responsive down to mobile
-- `script.js` — tabs, case-study carousel, interactive ROI calculator, animated counters, mobile nav
-- `favicon.svg` — hospital digital twin mark
+- `public/index.html` — full single-page site (hero, solutions, platform, proof, resources, leadership, contact)
+- `public/styles.css` — all styling, responsive down to mobile
+- `public/script.js` — tabs, case-study carousel, interactive ROI calculator, animated counters, mobile nav
+- `public/favicon.svg` — hospital digital twin mark
+- `wrangler.jsonc` — Cloudflare Workers config (serves `public/` as static assets)
 
 No build step, no dependencies — pure static HTML/CSS/JS. Fonts load from Google Fonts.
 
 ## Preview locally
 
 ```bash
-cd healthsimai
+cd healthsimai/public
 python3 -m http.server 8000
 # open http://localhost:8000
 ```
 
-## Deploying to HealthSimAI.com (domain at Hover)
+## Deploying to Cloudflare
 
-Host the static files anywhere, then point Hover DNS at the host:
+This folder is set up for Cloudflare Workers static assets. With the repo
+connected in the Cloudflare dashboard (Workers & Pages → Create →
+Connect to Git), use these build settings:
 
-1. **Pick a host** (all have free tiers): Cloudflare Pages, Netlify, Vercel, or GitHub Pages. Upload or connect this `healthsimai/` folder as the site root.
-2. **In Hover** (hover.com → your domain → DNS):
-   - Add the records your host gives you — typically an **A record** on `@` and a **CNAME** on `www` pointing to the host's domain.
-   - Remove Hover's default parking A records.
-3. **Add the custom domain** in the host's dashboard so it provisions HTTPS automatically.
+- **Root directory:** `/healthsimai`
+- **Build command:** none
+- **Deploy command:** `npx wrangler deploy`
 
-DNS changes usually propagate within an hour.
+Or deploy manually from a machine with Cloudflare credentials:
+
+```bash
+cd healthsimai
+npx wrangler deploy
+```
+
+### Pointing HealthSimAI.com at it (domain at Hover)
+
+1. In the Worker's **Domains** tab, add `healthsimai.com` and `www.healthsimai.com` as custom domains.
+2. If the domain isn't on Cloudflare yet, Cloudflare will prompt to add the zone — it then gives you two **nameservers** to set at Hover (hover.com → domain → Nameservers). Using Cloudflare nameservers is simplest; HTTPS is automatic.
+
+DNS/nameserver changes usually propagate within an hour.
 
 ## Notes
 
