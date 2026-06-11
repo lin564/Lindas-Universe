@@ -87,6 +87,12 @@ fodder for a closing discussion.
 
 ## Roadmap ideas (beyond the slice)
 
+> **Status (June 2026):** a Unity port of this game is underway in
+> `ultisim/pythagoras-unity` — see `docs/balance-keeper-port-plan.md` there.
+> The equation engine and all seven chambers are ported to a pure-logic C#
+> assembly with an NUnit suite. This Three.js build remains the live demo
+> and playtest reference; pedagogy findings here feed the Unity build.
+
 - Multiplying both sides; dividing/multiplying inequalities by negatives (the "balances that tip and flip" teased in the ending)
 - Distributive property as "unpacking crystal clusters"
 - Progress save (localStorage) and a teacher dashboard with per-step misconception data — the engine already logs every move
