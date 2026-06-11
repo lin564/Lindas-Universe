@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HealthSimAI — Transform Hospital Operations with Digital Twin Intelligence</title>
+  <meta name="description" content="HealthSimAI creates live digital twins of hospital operations: real-time patient flow optimization, predictive facility management, and operational excellence. 60% ALOS reduction. $2.3M annual savings per 300-bed facility.">
+  <meta property="og:title" content="HealthSimAI — Hospital Digital Twin Intelligence">
+  <meta property="og:description" content="Real-time patient flow optimization, predictive facility management, and operational excellence through hospital digital twins.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://healthsimai.com">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ===== FIXED NAVIGATION HEADER ===== -->
+  <header class="site-header" id="siteHeader">
+    <div class="container header-inner">
+      <a href="#top" class="logo" aria-label="HealthSimAI home">
+        <svg class="logo-icon" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+          <rect x="6" y="12" width="28" height="22" rx="2" stroke="currentColor" stroke-width="2"/>
+          <path d="M20 12V6M14 6h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M20 19v8M16 23h8" stroke="#21d4c5" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="6" cy="12" r="2.5" fill="#21d4c5"/>
+          <circle cx="34" cy="34" r="2.5" fill="#21d4c5"/>
+          <circle cx="34" cy="12" r="2" fill="currentColor" opacity=".5"/>
+        </svg>
+        <span class="logo-word">HealthSim<span class="logo-ai">AI</span></span>
+      </a>
+      <nav class="main-nav" id="mainNav" aria-label="Primary">
+        <a href="#solutions">Solutions</a>
+        <a href="#platform">Platform</a>
+        <a href="#proof">Proof</a>
+        <a href="#resources">Resources</a>
+        <a href="#leadership">Leadership</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <div class="header-ctas">
+        <a href="#resources" class="btn btn-ghost btn-sm">AI Readiness Assessment</a>
+        <a href="#contact" class="btn btn-primary btn-sm">Schedule Demo</a>
+      </div>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="top">
+
+    <!-- ===== SECTION 1: HERO ===== -->
+    <section class="hero" id="hero">
+      <div class="hero-bg" aria-hidden="true">
+        <div class="grid-overlay"></div>
+        <div class="glow glow-1"></div>
+        <div class="glow glow-2"></div>
+      </div>
+      <div class="container hero-inner">
+        <div class="hero-copy">
+          <h1>Transform Hospital Operations with <span class="accent">Digital Twin Intelligence</span></h1>
+          <p class="hero-sub">Real-time patient flow optimization, predictive facility management, and operational excellence through hospital digital twins.</p>
+          <div class="hero-ctas">
+            <a href="#contact" class="btn btn-primary btn-lg">See HealthSimAI in Action</a>
+            <a href="#roi-calculator" class="btn btn-outline btn-lg">Try the ROI Calculator</a>
+          </div>
+          <p class="trust-bar">Led by 30+ years of mission-critical simulation expertise&nbsp;&bull;&nbsp;Proven digital twin methodologies&nbsp;&bull;&nbsp;Powered by <strong>UltiSim</strong></p>
+        </div>
+
+        <!-- Animated hospital digital twin -->
+        <div class="hero-visual" aria-hidden="true">
+          <svg viewBox="0 0 520 420" class="twin-svg">
+            <defs>
+              <linearGradient id="bldg" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#21d4c5" stop-opacity=".9"/>
+                <stop offset="1" stop-color="#2b6cf6" stop-opacity=".35"/>
+              </linearGradient>
+            </defs>
+            <!-- hospital wireframe -->
+            <g class="twin-building" stroke="url(#bldg)" stroke-width="1.6" fill="none">
+              <path d="M120 330 L120 180 L210 130 L300 180 L300 330 Z"/>
+              <path d="M120 180 L210 230 L300 180"/>
+              <path d="M210 230 L210 380 M120 330 L210 380 L300 330"/>
+              <path d="M300 200 L400 150 L400 300 L300 350"/>
+              <path d="M400 150 L460 180 L460 320 L400 300"/>
+              <!-- cross -->
+              <path d="M198 168 h24 M210 156 v24" stroke="#21d4c5" stroke-width="4" stroke-linecap="round"/>
+              <!-- windows -->
+              <g class="twin-windows" stroke-width="1">
+                <path d="M140 210 h18 M140 240 h18 M140 270 h18 M140 300 h18"/>
+                <path d="M250 210 h18 M250 240 h18 M250 270 h18 M250 300 h18"/>
+                <path d="M330 210 h40 M330 240 h40 M330 270 h40 M330 300 h40"/>
+              </g>
+            </g>
+            <!-- data flow paths -->
+            <g class="data-paths" fill="none" stroke-width="1.4">
+              <path class="dp dp-1" d="M60 80 C140 60 180 110 210 156"/>
+              <path class="dp dp-2" d="M470 70 C420 100 410 120 400 150"/>
+              <path class="dp dp-3" d="M40 360 C90 350 100 340 120 330"/>
+              <path class="dp dp-4" d="M490 380 C470 360 470 340 460 320"/>
+            </g>
+            <!-- data nodes -->
+            <g class="data-nodes">
+              <circle class="node n1" cx="60" cy="80" r="6"/>
+              <circle class="node n2" cx="470" cy="70" r="6"/>
+              <circle class="node n3" cx="40" cy="360" r="6"/>
+              <circle class="node n4" cx="490" cy="380" r="6"/>
+              <circle class="pulse p1" cx="210" cy="230" r="5"/>
+              <circle class="pulse p2" cx="400" cy="225" r="4"/>
+              <circle class="pulse p3" cx="160" cy="300" r="4"/>
+            </g>
+            <!-- floating labels -->
+            <g class="twin-labels" font-family="Inter, sans-serif" font-size="11">
+              <g class="label-chip lc-1"><rect x="20" y="52" width="120" height="24" rx="12"/><text x="80" y="68" text-anchor="middle">EHR · Live Census</text></g>
+              <g class="label-chip lc-2"><rect x="392" y="42" width="118" height="24" rx="12"/><text x="451" y="58" text-anchor="middle">IoT Sensors</text></g>
+              <g class="label-chip lc-3"><rect x="8" y="376" width="130" height="24" rx="12"/><text x="73" y="392" text-anchor="middle">Bed Management</text></g>
+              <g class="label-chip lc-4"><rect x="388" y="392" width="124" height="24" rx="12"/><text x="450" y="408" text-anchor="middle">HVAC · Med Gas</text></g>
+            </g>
+          </svg>
+          <div class="twin-readout">
+            <div class="readout-row"><span class="dot dot-live"></span> Live Digital Twin <span class="readout-status">SYNCED</span></div>
+            <div class="readout-metric">ED Wait: <strong>14 min</strong> ▼</div>
+            <div class="readout-metric">Bed Occupancy: <strong>87%</strong></div>
+            <div class="readout-metric">OR Utilization: <strong>91%</strong> ▲</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Immediate value props -->
+      <div class="container value-props">
+        <div class="vp-card reveal">
+          <div class="vp-number" data-count="60" data-suffix="%">0%</div>
+          <h3>ALOS Reduction</h3>
+          <p>From 11.5 to 4.4 days average length of stay through predictive patient flow.</p>
+        </div>
+        <div class="vp-card reveal">
+          <div class="vp-number" data-count="35" data-suffix="%">0%</div>
+          <h3>OR Efficiency</h3>
+          <p>Through predictive scheduling and intelligent resource optimization.</p>
+        </div>
+        <div class="vp-card reveal">
+          <div class="vp-number" data-count="2.3" data-prefix="$" data-suffix="M" data-decimals="1">$0M</div>
+          <h3>Annual Savings</h3>
+          <p>Per 300-bed facility through real-time operational intelligence.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 2: SOLUTIONS ===== -->
+    <section class="section" id="solutions">
+      <div class="container">
+        <p class="kicker">Solutions</p>
+        <h2 class="section-title">Hospitals operate blind to real-time patient flow, equipment status, and space utilization—<span class="accent">until now.</span></h2>
+        <p class="section-lead">HealthSimAI creates live digital twins of your hospital operations for predictive insights and automated optimization.</p>
+
+        <!-- Tabbed interface -->
+        <div class="tabs" id="solutionTabs">
+          <div class="tab-list" role="tablist" aria-label="Core solutions">
+            <button class="tab active" role="tab" aria-selected="true" data-tab="flow">
+              <span class="tab-icon">🛏️</span> Patient Flow Optimization
+            </button>
+            <button class="tab" role="tab" aria-selected="false" data-tab="facility">
+              <span class="tab-icon">📐</span> Facility Planning &amp; Design
+            </button>
+            <button class="tab" role="tab" aria-selected="false" data-tab="maintenance">
+              <span class="tab-icon">⚙️</span> Predictive Maintenance
+            </button>
+          </div>
+
+          <div class="tab-panel active" id="panel-flow" role="tabpanel">
+            <div class="panel-grid">
+              <ul class="check-list">
+                <li>Real-time bed management and discharge prediction</li>
+                <li>Emergency department wait time reduction and capacity management</li>
+                <li>Surgical suite coordination and equipment staging</li>
+                <li>Ambulatory flow optimization from check-in to discharge</li>
+              </ul>
+              <div class="roi-chip">
+                <span class="roi-chip-label">Proven ROI</span>
+                <strong>60% ALOS reduction</strong>
+                <span>4.4-day average stays</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="panel-facility" role="tabpanel" hidden>
+            <div class="panel-grid">
+              <ul class="check-list">
+                <li>Virtual commissioning — test new layouts before construction</li>
+                <li>Space utilization optimization for existing facilities</li>
+                <li>Construction planning with minimal operational disruption</li>
+                <li>Scenario simulation for capacity expansion decisions</li>
+              </ul>
+              <div class="roi-chip">
+                <span class="roi-chip-label">Proven ROI</span>
+                <strong>$500K+ savings</strong>
+                <span>per major renovation project</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="panel-maintenance" role="tabpanel" hidden>
+            <div class="panel-grid">
+              <ul class="check-list">
+                <li>Equipment failure prediction before patient impact</li>
+                <li>Environmental systems optimization — HVAC, medical gas</li>
+                <li>Real-time asset tracking and performance monitoring</li>
+                <li>Automated compliance and maintenance reporting</li>
+              </ul>
+              <div class="roi-chip">
+                <span class="roi-chip-label">Proven ROI</span>
+                <strong>40% reduction</strong>
+                <span>in unplanned maintenance events</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ROI Calculator -->
+        <div class="roi-calc reveal" id="roi-calculator">
+          <div class="roi-calc-head">
+            <h3>Interactive ROI Calculator</h3>
+            <p>Estimate your facility's potential annual savings with a hospital digital twin.</p>
+          </div>
+          <div class="roi-calc-body">
+            <div class="roi-inputs">
+              <label class="roi-field">
+                <span class="roi-label">Licensed beds <output id="bedsOut">300</output></span>
+                <input type="range" id="bedsInput" min="50" max="1200" step="10" value="300">
+              </label>
+              <label class="roi-field">
+                <span class="roi-label">Current avg. length of stay (days) <output id="alosOut">7.5</output></span>
+                <input type="range" id="alosInput" min="3" max="14" step="0.5" value="7.5">
+              </label>
+              <label class="roi-field">
+                <span class="roi-label">Operating rooms <output id="orOut">12</output></span>
+                <input type="range" id="orInput" min="2" max="60" step="1" value="12">
+              </label>
+            </div>
+            <div class="roi-results">
+              <div class="roi-result">
+                <span class="roi-result-label">Estimated annual savings</span>
+                <span class="roi-result-value" id="totalSavings">$2.3M</span>
+              </div>
+              <div class="roi-breakdown">
+                <div><span>Patient flow &amp; ALOS</span><strong id="flowSavings">$1.4M</strong></div>
+                <div><span>OR optimization</span><strong id="orSavings">$0.6M</strong></div>
+                <div><span>Predictive maintenance</span><strong id="maintSavings">$0.3M</strong></div>
+              </div>
+              <a href="#contact" class="btn btn-primary">Get a Detailed ROI Analysis</a>
+              <p class="roi-disclaimer">Estimates derived from HealthSimAI deployment benchmarks. Actual results vary by facility.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 3: PLATFORM ===== -->
+    <section class="section section-dark" id="platform">
+      <div class="container">
+        <p class="kicker">Platform</p>
+        <h2 class="section-title">The HealthSimAI Engine</h2>
+        <p class="section-lead">A layered architecture that fuses your hospital's data into a living, predictive model of operations.</p>
+
+        <div class="arch-diagram reveal" role="img" aria-label="HealthSimAI engine architecture: data fusion layer feeds the digital twin core, which powers AI analytics and the command dashboard">
+          <div class="arch-layer arch-top">
+            <span class="arch-tag">04</span>
+            <h4>Command Dashboard</h4>
+            <p>Real-time operational intelligence for executives, charge nurses, and facilities teams</p>
+          </div>
+          <div class="arch-connector"></div>
+          <div class="arch-layer">
+            <span class="arch-tag">03</span>
+            <h4>AI Analytics</h4>
+            <p>Predictive modeling, discharge forecasting, and optimization algorithms</p>
+          </div>
+          <div class="arch-connector"></div>
+          <div class="arch-layer arch-core">
+            <span class="arch-tag">02</span>
+            <h4>Digital Twin Core</h4>
+            <p>High-fidelity, real-time replication of your facility, patients, assets, and staff flows</p>
+          </div>
+          <div class="arch-connector"></div>
+          <div class="arch-layer arch-base">
+            <span class="arch-tag">01</span>
+            <h4>Data Fusion Layer</h4>
+            <div class="arch-chips">
+              <span>EHR — Epic · Cerner · MEDITECH</span>
+              <span>IoT &amp; RTLS sensors</span>
+              <span>Building systems — HVAC · nurse call · security</span>
+              <span>Staff systems — badge access · communications</span>
+              <span>Connected medical devices</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="compliance-grid">
+          <div class="comp-card reveal">
+            <div class="comp-badge">HIPAA</div>
+            <h4>HIPAA Compliant</h4>
+            <p>End-to-end PHI protection with full audit trails.</p>
+          </div>
+          <div class="comp-card reveal">
+            <div class="comp-badge">SOC 2</div>
+            <h4>SOC 2 Certified</h4>
+            <p>Enterprise security standards, independently audited.</p>
+          </div>
+          <div class="comp-card reveal">
+            <div class="comp-badge">🔒</div>
+            <h4>Data Sovereignty</h4>
+            <p>Your data stays behind your firewall — on-prem or private cloud.</p>
+          </div>
+          <div class="comp-card reveal">
+            <div class="comp-badge">🛡️</div>
+            <h4>Network Security</h4>
+            <p>VPN, end-to-end encryption, and role-based access controls.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 4: PROOF ===== -->
+    <section class="section" id="proof">
+      <div class="container">
+        <p class="kicker">Proof</p>
+        <h2 class="section-title">Results from the floor, not the lab</h2>
+
+        <div class="carousel" id="caseCarousel">
+          <div class="carousel-track" id="carouselTrack">
+            <article class="case-card">
+              <span class="case-tag">Regional Medical Center</span>
+              <h3>60% ALOS reduction, $2.3M annual savings</h3>
+              <dl class="case-detail">
+                <div><dt>Challenge</dt><dd>11.5-day average length of stay and chronic bed shortages.</dd></div>
+                <div><dt>Solution</dt><dd>Patient flow digital twin with predictive discharge analytics.</dd></div>
+                <div><dt>Result</dt><dd>ALOS cut to 4.4 days; $2.3M in annual operational savings.</dd></div>
+              </dl>
+              <blockquote>"HealthSimAI transformed how we manage patient flow."<cite>— Chief Medical Officer</cite></blockquote>
+            </article>
+
+            <article class="case-card">
+              <span class="case-tag">Major Health System</span>
+              <h3>35% OR efficiency improvement, delays eliminated</h3>
+              <dl class="case-detail">
+                <div><dt>Challenge</dt><dd>OR utilization stuck at 65% with recurring surgical delays.</dd></div>
+                <div><dt>Solution</dt><dd>Surgical suite coordination digital twin with predictive scheduling.</dd></div>
+                <div><dt>Result</dt><dd>35% efficiency improvement and eliminated case delays.</dd></div>
+              </dl>
+              <blockquote>"We can now predict and prevent bottlenecks."<cite>— VP Operations</cite></blockquote>
+            </article>
+
+            <article class="case-card">
+              <span class="case-tag">Hospital Construction Project</span>
+              <h3>$500K construction savings, zero downtime</h3>
+              <dl class="case-detail">
+                <div><dt>Challenge</dt><dd>$50M renovation that had to proceed with minimal disruption.</dd></div>
+                <div><dt>Solution</dt><dd>Virtual commissioning and space optimization before breaking ground.</dd></div>
+                <div><dt>Result</dt><dd>$500K construction savings and zero operational downtime.</dd></div>
+              </dl>
+              <blockquote>"We tested everything virtually first."<cite>— Facilities Director</cite></blockquote>
+            </article>
+          </div>
+          <div class="carousel-controls">
+            <button class="carousel-btn" id="prevCase" aria-label="Previous case study">←</button>
+            <div class="carousel-dots" id="carouselDots"></div>
+            <button class="carousel-btn" id="nextCase" aria-label="Next case study">→</button>
+          </div>
+        </div>
+
+        <div class="heritage reveal">
+          <h3>Technology Heritage</h3>
+          <div class="heritage-grid">
+            <div>
+              <h4>Mission-Critical Foundation</h4>
+              <p>30+ years developing decision-support technologies for complex, high-stakes environments.</p>
+            </div>
+            <div>
+              <h4>Proven Methodologies</h4>
+              <p>Battle-tested simulation capabilities from UltiSim's defense and enterprise heritage, adapted for healthcare.</p>
+            </div>
+            <div>
+              <h4>Enterprise-Grade</h4>
+              <p>Reliability forged in the world's most demanding operational environments.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 5: RESOURCES ===== -->
+    <section class="section section-dark" id="resources">
+      <div class="container">
+        <p class="kicker">Resources</p>
+        <h2 class="section-title">Knowledge Center</h2>
+
+        <div class="resources-grid">
+          <div class="res-col reveal">
+            <h3>Downloads</h3>
+            <a class="res-item" href="#contact">
+              <span class="res-type">PDF</span>
+              <span><strong>Hospital Digital Twin ROI Guide</strong><br><small>Financial impact framework for executives</small></span>
+            </a>
+            <a class="res-item" href="#contact">
+              <span class="res-type">SPEC</span>
+              <span><strong>EHR Integration Architecture</strong><br><small>Technical specs for Epic, Cerner &amp; MEDITECH</small></span>
+            </a>
+            <a class="res-item" href="#contact">
+              <span class="res-type">PAPER</span>
+              <span><strong>Healthcare Facility Optimization</strong><br><small>White paper on space and flow optimization</small></span>
+            </a>
+            <a class="res-item" href="#contact">
+              <span class="res-type">GUIDE</span>
+              <span><strong>Digital Twin Implementation Checklist</strong><br><small>Practical step-by-step deployment guide</small></span>
+            </a>
+          </div>
+          <div class="res-col reveal">
+            <h3>Interactive Tools</h3>
+            <a class="res-item res-tool" href="#contact">
+              <span class="res-type">✓</span>
+              <span><strong>AI Readiness Assessment</strong><br><small>Is your hospital ready for digital twins? Find out in 5 minutes.</small></span>
+            </a>
+            <a class="res-item res-tool" href="#roi-calculator">
+              <span class="res-type">$</span>
+              <span><strong>ROI Calculator</strong><br><small>Estimate savings based on your facility size</small></span>
+            </a>
+            <a class="res-item res-tool" href="#contact">
+              <span class="res-type">📅</span>
+              <span><strong>Demo Scheduler</strong><br><small>Book a personalized demonstration</small></span>
+            </a>
+            <a class="res-item res-tool" href="mailto:info@healthsimai.com">
+              <span class="res-type">💬</span>
+              <span><strong>Talk to an Expert</strong><br><small>Speak with a healthcare digital twin specialist</small></span>
+            </a>
+          </div>
+        </div>
+
+        <div class="recognition reveal">
+          <h3>Media &amp; Recognition</h3>
+          <div class="recognition-row">
+            <span class="badge-pill">Healthcare technology conference presentations</span>
+            <span class="badge-pill">Industry awards &amp; certifications</span>
+            <span class="badge-pill">Customer testimonials &amp; video interviews</span>
+            <span class="badge-pill">SARSAT heritage: 50,000+ lives saved</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 6: LEADERSHIP ===== -->
+    <section class="section" id="leadership">
+      <div class="container">
+        <p class="kicker">Leadership</p>
+        <h2 class="section-title">Proven Digital Twin Leadership</h2>
+
+        <div class="leader-card reveal">
+          <div class="leader-photo" aria-hidden="true">
+            <svg viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="58" fill="none" stroke="#21d4c5" stroke-width="2" opacity=".5"/>
+              <circle cx="60" cy="44" r="20" fill="#1c3358"/>
+              <path d="M22 108 a38 38 0 0 1 76 0" fill="#1c3358"/>
+            </svg>
+          </div>
+          <div class="leader-bio">
+            <h3>Bob Kleinhample</h3>
+            <p class="leader-title">CEO Designate</p>
+            <p>Bob Kleinhample is CEO Designate of HealthSimAI, a healthcare digital twin company transforming hospital operations through AI-powered simulation, predictive analytics, and operational intelligence. He brings decades of mission-critical simulation leadership to healthcare's most complex operational challenges.</p>
+            <div class="leader-creds">
+              <span class="badge-pill">30+ years simulation leadership</span>
+              <span class="badge-pill">Mission-critical systems</span>
+              <span class="badge-pill">Healthcare transformation</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ultisim-block reveal">
+          <h3>The UltiSim Heritage</h3>
+          <p>HealthSimAI brings <strong>UltiSim's</strong> mission-critical simulation expertise to healthcare. UltiSim Inc. has spent 15+ years advancing mission readiness through innovative simulation solutions — including SARSAT mission-critical systems credited with 50,000+ lives saved. That battle-tested platform is the foundation beneath every HealthSimAI digital twin.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CONTACT / CTA ===== -->
+    <section class="section section-cta" id="contact">
+      <div class="container">
+        <h2 class="section-title">See your hospital's digital twin in action</h2>
+        <p class="section-lead">Schedule a personalized demo and we'll model a live scenario from your own operational data.</p>
+        <form class="contact-form" id="contactForm" action="mailto:info@healthsimai.com" method="post" enctype="text/plain">
+          <div class="form-row">
+            <input type="text" name="name" placeholder="Full name" required aria-label="Full name">
+            <input type="email" name="email" placeholder="Work email" required aria-label="Work email">
+          </div>
+          <div class="form-row">
+            <input type="text" name="organization" placeholder="Hospital / health system" aria-label="Organization">
+            <select name="interest" aria-label="Area of interest">
+              <option value="">Area of interest…</option>
+              <option>Patient Flow Optimization</option>
+              <option>Facility Planning &amp; Design</option>
+              <option>Predictive Maintenance</option>
+              <option>Platform / Integration</option>
+            </select>
+          </div>
+          <textarea name="message" rows="4" placeholder="Tell us about your operational challenges…" aria-label="Message"></textarea>
+          <button type="submit" class="btn btn-primary btn-lg">Schedule My Demo</button>
+          <p class="form-note">Or email us directly at <a href="mailto:info@healthsimai.com">info@healthsimai.com</a></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <a href="#top" class="logo logo-footer">
+          <svg class="logo-icon" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+            <rect x="6" y="12" width="28" height="22" rx="2" stroke="currentColor" stroke-width="2"/>
+            <path d="M20 12V6M14 6h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M20 19v8M16 23h8" stroke="#21d4c5" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="6" cy="12" r="2.5" fill="#21d4c5"/>
+            <circle cx="34" cy="34" r="2.5" fill="#21d4c5"/>
+          </svg>
+          <span class="logo-word">HealthSim<span class="logo-ai">AI</span></span>
+        </a>
+        <p>Intelligent digital twins that transform hospital operations. A venture of UltiSim Inc.</p>
+        <div class="footer-badges">
+          <span class="badge-pill">HIPAA Compliant</span>
+          <span class="badge-pill">SOC 2</span>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <a href="#solutions">Solutions Overview</a>
+        <a href="#platform">Platform</a>
+        <a href="#roi-calculator">ROI Calculator</a>
+        <a href="#contact">Contact Sales</a>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <a href="#proof">Case Studies</a>
+        <a href="#resources">White Papers</a>
+        <a href="#resources">Tools &amp; Calculators</a>
+        <a href="#resources">Readiness Assessment</a>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="#leadership">About Us</a>
+        <a href="#leadership">Leadership</a>
+        <a href="#leadership">UltiSim Heritage</a>
+        <a href="#contact">Partners</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <a href="mailto:info@healthsimai.com">info@healthsimai.com</a>
+        <a href="#contact">Schedule Demo</a>
+        <a href="#" rel="nofollow">Privacy Policy</a>
+        <a href="#" rel="nofollow">Terms of Service</a>
+        <a href="#" rel="nofollow">HIPAA Notice</a>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>© 2026 HealthSimAI · A venture of UltiSim Inc. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Sticky mobile CTA -->
+  <a href="#contact" class="sticky-cta" id="stickyCta">Schedule Demo</a>
+
+  <script src="script.js"></script>
+</body>
+</html>
