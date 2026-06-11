@@ -66,6 +66,7 @@
 
   /* ---------- Impact estimator ---------- */
   const bedsInput = document.getElementById('bedsInput');
+  if (bedsInput) {
   const alosInput = document.getElementById('alosInput');
   const orInput = document.getElementById('orInput');
   const fmt = v => v >= 10 ? '$' + Math.round(v) + 'M' : '$' + v.toFixed(1) + 'M';
@@ -103,10 +104,12 @@
     updateSliderFill(input);
   });
   calcROI();
+  }
 
   /* ---------- Dashboard: live clock ---------- */
   const clock = document.getElementById('dashClock');
   function tickClock() {
+    if (!clock) return;
     clock.textContent = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
   }
   tickClock();
@@ -123,6 +126,7 @@
   setInterval(() => {
     const k = kpiRanges[Math.floor(Math.random() * kpiRanges.length)];
     const el = document.getElementById(k.id);
+    if (!el) return;
     const current = parseInt(el.textContent.replace(/,/g, ''), 10);
     let next = current + (Math.random() < 0.5 ? -1 : 1) * (k.comma ? Math.ceil(Math.random() * 8) : 1);
     next = Math.max(k.min, Math.min(k.max, next));
@@ -140,12 +144,13 @@
     function tick(now) {
       const t = Math.min((now - start) / duration, 1);
       const eased = 1 - Math.pow(1 - t, 3);
-      el.textContent = prefix + (target * eased).toFixed(decimals) + suffix;
+      const v = target * eased;
+      el.textContent = prefix + (el.dataset.comma ? Math.round(v).toLocaleString('en-US') : v.toFixed(decimals)) + suffix;
       if (t < 1) requestAnimationFrame(tick);
     }
     requestAnimationFrame(tick);
   }
-  const scenNums = document.querySelectorAll('.scen-num');
+  const scenNums = document.querySelectorAll('.scen-num, .count-up');
   const scenObserver = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -156,13 +161,12 @@
   }, { threshold: 0.4 });
   scenNums.forEach(el => scenObserver.observe(el));
 
-  document.getElementById('runScenario').addEventListener('click', () => {
-    scenNums.forEach(animateCount);
-  });
+  const runBtn = document.getElementById('runScenario');
+  if (runBtn) runBtn.addEventListener('click', () => scenNums.forEach(animateCount));
 
   /* ---------- Contact form ---------- */
   const form = document.getElementById('contactForm');
-  form.addEventListener('submit', e => {
+  if (form) form.addEventListener('submit', e => {
     e.preventDefault();
     const data = new FormData(form);
     const subject = encodeURIComponent('Demo request — ' + (data.get('organization') || data.get('name')));

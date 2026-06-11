@@ -144,7 +144,7 @@
       <a href="#platform">Platform</a>
       <a href="#solutions">Solutions</a>
       <a href="#outcomes">Outcomes</a>
-      <a href="#company">Company</a>
+      <a href="about.html">Company</a>
       <a href="#resources">Resources</a>
     </nav>
     <div class="header-ctas">
@@ -176,7 +176,7 @@
         <div class="dash-top">
           <span class="dash-brand"><svg class="logo-hex sm"><use href="#hexmark"/></svg><span><strong>HealthSim<em>AI</em></strong><small>Healthcare Digital Twin Platform</small></span></span>
           <nav class="dash-tabs" aria-hidden="true">
-            <span class="active">Overview</span><span>Patient Flow</span><span>Capacity</span><span>Staffing</span><span>Resources</span><span>Scenarios</span><span>Analytics</span>
+            <span class="active">Overview</span><span>Patient Flow</span><span>Capacity</span><span>Staffing</span><span>Resources</span><span>Scenarios</span><span>Training</span><span>Analytics</span>
           </nav>
           <span class="dash-icons" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6"/><path d="M10 19a2 2 0 0 0 4 0"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.5-2.4 1a7 7 0 0 0-2-1.2L14 3h-4l-.4 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.5 2 1.5A7 7 0 0 0 5 12c0 .4 0 .8.1 1.2l-2 1.5 2 3.5 2.4-1a7 7 0 0 0 2 1.2L10 21h4l.4-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.5-2-1.5c.1-.4.1-.8.1-1.2Z"/></svg></span>
           <span class="dash-cta">Book a Demo</span>
@@ -375,47 +375,72 @@
   <!-- ===== SOLUTIONS ===== -->
   <section class="section section-light" id="solutions">
     <div class="container">
-      <h2 class="section-title">Solutions for Every <span class="accent-blue">Operational Challenge</span></h2>
-      <p class="section-lead">One digital twin platform, applied where it matters most.</p>
+      <h2 class="section-title">A Digital Twin for <span class="accent-blue">Every Department</span></h2>
+      <p class="section-lead">Four areas of focus — and every department twin runs in two modes, so the same model that optimizes your operations also trains your people.</p>
+
+      <div class="mode-cards">
+        <div class="mode-card reveal">
+          <span class="mode-tag">Mode 01</span>
+          <h3>Systems Engineering</h3>
+          <p>Workflow design and process optimization — test layouts, staffing, and capacity decisions in the twin before anything changes on the floor.</p>
+        </div>
+        <div class="mode-card reveal">
+          <span class="mode-tag">Mode 02</span>
+          <h3>Clinical Training</h3>
+          <p>Clinical staff simulation and scenario rehearsal — teams train inside the same twin that models their own department.</p>
+        </div>
+      </div>
 
       <div class="tabs" id="solutionTabs">
-        <div class="tab-list" role="tablist" aria-label="Core solutions">
-          <button class="tab active" role="tab" aria-selected="true" data-tab="flow">Patient Flow &amp; Capacity</button>
-          <button class="tab" role="tab" aria-selected="false" data-tab="facility">Facility Planning &amp; Design</button>
-          <button class="tab" role="tab" aria-selected="false" data-tab="maintenance">Resources &amp; Maintenance</button>
+        <div class="tab-list" role="tablist" aria-label="Department digital twins">
+          <button class="tab active" role="tab" aria-selected="true" data-tab="or">Operating Room</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="ed">Emergency Dept.</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="icu">Intensive Care Unit</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="floors">Patient Floors</button>
         </div>
 
-        <div class="tab-panel active" id="panel-flow" role="tabpanel">
+        <div class="tab-panel active" id="panel-or" role="tabpanel">
           <div class="panel-grid">
             <ul class="check-list">
-              <li>Real-time bed management and discharge prediction</li>
-              <li>Emergency department wait-time and surge forecasting</li>
-              <li>OR suite coordination and predictive scheduling</li>
-              <li>Ambulatory flow optimization from check-in to discharge</li>
+              <li>Surgical workflow optimization</li>
+              <li>Instrument &amp; staff choreography</li>
+              <li>Pre-op / post-op process simulation</li>
+              <li>Surgical team training scenarios</li>
             </ul>
-            <div class="roi-chip"><span class="roi-chip-label">What you get</span><strong>Shorter stays, fewer bottlenecks</strong><span>See tomorrow's congestion today — and prevent it</span></div>
+            <div class="roi-chip"><span class="roi-chip-label">Systems Engineering + Clinical Training</span><strong>Rehearse the choreography</strong><span>before the first case of the day</span></div>
           </div>
         </div>
-        <div class="tab-panel" id="panel-facility" role="tabpanel" hidden>
+        <div class="tab-panel" id="panel-ed" role="tabpanel" hidden>
           <div class="panel-grid">
             <ul class="check-list">
-              <li>Virtual commissioning — test new layouts before construction</li>
-              <li>Space utilization optimization for existing facilities</li>
-              <li>Construction phasing with minimal operational disruption</li>
-              <li>Scenario simulation for capacity-expansion decisions</li>
+              <li>Triage protocol simulation</li>
+              <li>Mass casualty event rehearsal</li>
+              <li>Staff surge capacity modeling</li>
+              <li>Throughput &amp; boarding analysis</li>
             </ul>
-            <div class="roi-chip"><span class="roi-chip-label">What you get</span><strong>Build it virtually first</strong><span>De-risk capital projects before breaking ground</span></div>
+            <div class="roi-chip"><span class="roi-chip-label">Systems Engineering + Clinical Training</span><strong>Surge-test your ED</strong><span>without waiting for the surge</span></div>
           </div>
         </div>
-        <div class="tab-panel" id="panel-maintenance" role="tabpanel" hidden>
+        <div class="tab-panel" id="panel-icu" role="tabpanel" hidden>
           <div class="panel-grid">
             <ul class="check-list">
-              <li>Equipment failure prediction before patient impact</li>
-              <li>Environmental systems optimization — HVAC, medical gas</li>
-              <li>Real-time asset tracking and performance monitoring</li>
-              <li>Staffing and resource allocation modeling</li>
+              <li>Patient acuity &amp; staffing ratios</li>
+              <li>Ventilator &amp; device integration</li>
+              <li>Critical event response training</li>
+              <li>ICU bed &amp; flow optimization</li>
             </ul>
-            <div class="roi-chip"><span class="roi-chip-label">What you get</span><strong>Right resources, right time</strong><span>Anticipate failures and shortages before they happen</span></div>
+            <div class="roi-chip"><span class="roi-chip-label">Systems Engineering + Clinical Training</span><strong>Critical-event readiness</strong><span>measured, rehearsed, improved</span></div>
+          </div>
+        </div>
+        <div class="tab-panel" id="panel-floors" role="tabpanel" hidden>
+          <div class="panel-grid">
+            <ul class="check-list">
+              <li>Specialty unit configuration</li>
+              <li>Nurse call &amp; response modeling</li>
+              <li>Medication administration flow</li>
+              <li>Discharge planning simulation</li>
+            </ul>
+            <div class="roi-chip"><span class="roi-chip-label">Systems Engineering + Clinical Training</span><strong>Every bed, every shift</strong><span>modeled from admission to discharge</span></div>
           </div>
         </div>
       </div>
@@ -505,39 +530,6 @@
       <div class="results-card reveal">
         <h3>Built in Partnership</h3>
         <p>We collaborate with leading health systems, researchers, and technology partners to advance the future of healthcare operations.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== LEADERSHIP ===== -->
-  <section class="section section-light section-tint" id="company">
-    <div class="container">
-      <h2 class="section-title centered">Leadership That Builds What's Next</h2>
-      <div class="leader-grid">
-        <div class="leader reveal">
-          <span class="avatar"><img src="bob-kleinhample.jpg" alt="Bob Kleinhample" onerror="this.remove()"><i>BK</i></span>
-          <h3>Bob Kleinhample</h3>
-          <p class="leader-role">CEO Designate</p>
-          <p class="leader-bio">30+ years in digital twins and simulation. Former SAIC VP. Founder of PioneerSim. U.S. Army veteran.</p>
-        </div>
-        <div class="leader reveal">
-          <span class="avatar"><svg viewBox="0 0 48 48"><circle cx="24" cy="18" r="8" fill="#b9c6da"/><path d="M8 46a16 16 0 0 1 32 0" fill="#b9c6da"/></svg></span>
-          <h3>CTO</h3>
-          <p class="leader-role">Technology</p>
-          <p class="leader-bio">AI and simulation technology leader with experience scaling complex platforms.</p>
-        </div>
-        <div class="leader reveal">
-          <span class="avatar"><svg viewBox="0 0 48 48"><circle cx="24" cy="18" r="8" fill="#b9c6da"/><path d="M8 46a16 16 0 0 1 32 0" fill="#b9c6da"/></svg></span>
-          <h3>Head of Healthcare Strategy</h3>
-          <p class="leader-role">Strategy</p>
-          <p class="leader-bio">Healthcare operations expert with proven experience in health system transformation.</p>
-        </div>
-        <div class="leader reveal">
-          <span class="avatar"><svg viewBox="0 0 48 48"><circle cx="24" cy="18" r="8" fill="#b9c6da"/><path d="M8 46a16 16 0 0 1 32 0" fill="#b9c6da"/></svg></span>
-          <h3>Head of Product</h3>
-          <p class="leader-role">Product</p>
-          <p class="leader-bio">Product leader focused on digital twin platforms and user-centered innovation.</p>
-        </div>
       </div>
     </div>
   </section>
@@ -639,7 +631,7 @@
       <p>AI-powered hospital digital twins, built on 30+ years of mission-critical simulation expertise. A venture of UltiSim Inc.</p>
     </div>
     <div class="footer-col"><h4>Platform</h4><a href="#why">Why Digital Twins</a><a href="#platform">Digital Twin Platform</a><a href="#solutions">Solutions</a><a href="#roi-calculator">Impact Estimator</a></div>
-    <div class="footer-col"><h4>Company</h4><a href="#company">Leadership</a><a href="#expertise">Our Expertise</a><a href="#results">Partners</a><a href="#contact">Contact</a></div>
+    <div class="footer-col"><h4>Company</h4><a href="about.html">About Us</a><a href="about.html#leadership">Leadership</a><a href="#expertise">Our Expertise</a><a href="#results">Partners</a></div>
     <div class="footer-col"><h4>Contact &amp; Legal</h4><a href="mailto:info@healthsimai.com">info@healthsimai.com</a><a href="#contact">Book a Demo</a><a href="#" rel="nofollow">Privacy Policy</a><a href="#" rel="nofollow">Terms of Service</a><a href="#" rel="nofollow">HIPAA Notice</a></div>
   </div>
   <div class="container footer-bottom"><p>© 2026 HealthSimAI · A venture of UltiSim Inc. All rights reserved.</p></div>

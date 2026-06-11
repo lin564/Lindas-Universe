@@ -4,7 +4,8 @@ Single-page marketing site for **HealthSimAI.com** — hospital digital twin int
 
 ## Contents
 
-- `public/index.html` — full single-page site (hero, solutions, platform, proof, resources, leadership, contact)
+- `public/index.html` — main site (dashboard hero, solutions/department twins, platform, outcomes, resources, contact)
+- `public/about.html` — company page (mission, roadmap targets, two twin modes, leadership)
 - `public/styles.css` — all styling, responsive down to mobile
 - `public/script.js` — tabs, case-study carousel, interactive ROI calculator, animated counters, mobile nav
 - `public/favicon.svg` — hospital digital twin mark
