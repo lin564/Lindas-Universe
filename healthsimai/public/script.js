@@ -1,4 +1,4 @@
-/* ============ HealthSimAI — script.js ============ */
+/* ============ HealthSimAI script.js ============ */
 (function () {
   'use strict';
 
@@ -169,12 +169,12 @@
   if (form) form.addEventListener('submit', e => {
     e.preventDefault();
     const data = new FormData(form);
-    const subject = encodeURIComponent('Demo request — ' + (data.get('organization') || data.get('name')));
+    const subject = encodeURIComponent('Demo request: ' + (data.get('organization') || data.get('name')));
     const body = encodeURIComponent(
       'Name: ' + data.get('name') +
       '\nEmail: ' + data.get('email') +
-      '\nOrganization: ' + (data.get('organization') || '—') +
-      '\nInterest: ' + (data.get('interest') || '—') +
+      '\nOrganization: ' + (data.get('organization') || 'n/a') +
+      '\nInterest: ' + (data.get('interest') || 'n/a') +
       '\n\n' + (data.get('message') || ''));
     window.location.href = 'mailto:info@healthsimai.com?subject=' + subject + '&body=' + body;
     const note = document.createElement('p');
