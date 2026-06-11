@@ -14,36 +14,69 @@ export class Player {
 
         this.group = new THREE.Group();
 
+        // layered robe with golden trim
         const robe = new THREE.Mesh(
-            new THREE.ConeGeometry(0.55, 1.5, 7),
-            new THREE.MeshStandardMaterial({ color: 0x2b4a7a, flatShading: true })
+            new THREE.ConeGeometry(0.55, 1.5, 8),
+            new THREE.MeshStandardMaterial({ color: 0x33567f, flatShading: true, roughness: 0.85 })
         );
         robe.position.y = 0.75;
         this.group.add(robe);
 
+        const skirtTrim = new THREE.Mesh(
+            new THREE.ConeGeometry(0.58, 0.32, 8),
+            new THREE.MeshStandardMaterial({ color: 0xc9a14b, metalness: 0.5, roughness: 0.45, flatShading: true })
+        );
+        skirtTrim.position.y = 0.16;
+        this.group.add(skirtTrim);
+
+        const shoulders = new THREE.Mesh(
+            new THREE.ConeGeometry(0.42, 0.55, 8),
+            new THREE.MeshStandardMaterial({ color: 0x274569, flatShading: true, roughness: 0.85 })
+        );
+        shoulders.position.y = 1.38;
+        this.group.add(shoulders);
+
+        const belt = new THREE.Mesh(
+            new THREE.TorusGeometry(0.34, 0.045, 5, 10),
+            new THREE.MeshStandardMaterial({ color: 0xc9a14b, metalness: 0.5, roughness: 0.45, flatShading: true })
+        );
+        belt.rotation.x = Math.PI / 2;
+        belt.position.y = 0.95;
+        this.group.add(belt);
+
+        const satchel = new THREE.Mesh(
+            new THREE.BoxGeometry(0.26, 0.22, 0.12),
+            new THREE.MeshStandardMaterial({ color: 0x7a5a36, flatShading: true, roughness: 0.9 })
+        );
+        satchel.position.set(-0.42, 0.92, 0.12);
+        satchel.rotation.y = 0.4;
+        this.group.add(satchel);
+
         const head = new THREE.Mesh(
-            new THREE.SphereGeometry(0.32, 8, 6),
-            new THREE.MeshStandardMaterial({ color: 0xe8c39a, flatShading: true })
+            new THREE.SphereGeometry(0.32, 10, 8),
+            new THREE.MeshStandardMaterial({ color: 0xe8c39a, flatShading: true, roughness: 0.8 })
         );
         head.position.y = 1.7;
         this.group.add(head);
 
         const hood = new THREE.Mesh(
-            new THREE.ConeGeometry(0.42, 0.6, 7),
-            new THREE.MeshStandardMaterial({ color: 0x1c3458, flatShading: true })
+            new THREE.ConeGeometry(0.42, 0.62, 8),
+            new THREE.MeshStandardMaterial({ color: 0x1d3a63, flatShading: true, roughness: 0.85 })
         );
-        hood.position.y = 1.95;
+        hood.position.y = 1.96;
         this.group.add(hood);
 
         const staff = new THREE.Group();
         const pole = new THREE.Mesh(
-            new THREE.CylinderGeometry(0.05, 0.05, 1.9, 5),
-            new THREE.MeshStandardMaterial({ color: 0x6b4f33, flatShading: true })
+            new THREE.CylinderGeometry(0.05, 0.06, 1.9, 6),
+            new THREE.MeshStandardMaterial({ color: 0x6b4f33, flatShading: true, roughness: 0.9 })
         );
         pole.position.y = 0.95;
         const staffGem = new THREE.Mesh(
             new THREE.OctahedronGeometry(0.16, 0),
-            new THREE.MeshStandardMaterial({ color: 0x3fd6c0, emissive: 0x1d8a78, flatShading: true })
+            new THREE.MeshStandardMaterial({
+                color: 0x3fd6c0, emissive: 0x25c4a8, emissiveIntensity: 2.2, flatShading: true,
+            })
         );
         staffGem.position.y = 2.0;
         staff.add(pole, staffGem);
@@ -51,20 +84,41 @@ export class Player {
         this.group.add(staff);
         this.staffGem = staffGem;
 
-        const staffLight = new THREE.PointLight(0x3fd6c0, 0.9, 9);
+        const staffLight = new THREE.PointLight(0x3fd6c0, 2.4, 10);
         staffLight.position.set(0.55, 2.0, 0.1);
         this.group.add(staffLight);
 
+        this.group.traverse(o => { if (o.isMesh) { o.castShadow = true; } });
         scene.add(this.group);
 
-        // Axiom the wisp
+        // Axiom the wisp, with an additive halo that blooms
         this.axiom = new THREE.Group();
         const wisp = new THREE.Mesh(
             new THREE.IcosahedronGeometry(0.28, 0),
-            new THREE.MeshStandardMaterial({ color: 0x9fdcf5, emissive: 0x2f93c2, flatShading: true })
+            new THREE.MeshStandardMaterial({
+                color: 0x9fdcf5, emissive: 0x4fb8e8, emissiveIntensity: 2.4, flatShading: true,
+            })
         );
-        const wispLight = new THREE.PointLight(0x5bc0eb, 1.1, 8);
-        this.axiom.add(wisp, wispLight);
+        const haloCanvas = (() => {
+            const c = document.createElement('canvas');
+            c.width = c.height = 128;
+            const g = c.getContext('2d');
+            const grad = g.createRadialGradient(64, 64, 4, 64, 64, 62);
+            grad.addColorStop(0, 'rgba(190,235,255,1)');
+            grad.addColorStop(1, 'rgba(190,235,255,0)');
+            g.fillStyle = grad;
+            g.fillRect(0, 0, 128, 128);
+            const tex = new THREE.CanvasTexture(c);
+            tex.colorSpace = THREE.SRGBColorSpace;
+            return tex;
+        })();
+        const halo = new THREE.Sprite(new THREE.SpriteMaterial({
+            map: haloCanvas, color: 0x9fdcf5, transparent: true, opacity: 0.6,
+            depthWrite: false, blending: THREE.AdditiveBlending,
+        }));
+        halo.scale.setScalar(1.8);
+        const wispLight = new THREE.PointLight(0x5bc0eb, 2.6, 9);
+        this.axiom.add(wisp, halo, wispLight);
         this.axiom.position.set(1.6, 2.6, 1.0);
         scene.add(this.axiom);
         this.wispMesh = wisp;
@@ -176,14 +230,14 @@ export class Player {
         this.wispMesh.rotation.y += dt * 1.5;
         this.wispMesh.rotation.x += dt * 0.8;
 
-        // damped follow camera
-        const camTarget = new THREE.Vector3(this.position.x, 9.5, this.position.z + 12.5);
+        // damped follow camera, gaze lifted so sky and vista stay in frame
+        const camTarget = new THREE.Vector3(this.position.x, 8.6, this.position.z + 12.5);
         this.camera.position.lerp(camTarget, Math.min(dt * 3, 1));
-        this.camera.lookAt(this.position.x, 1.6, this.position.z);
+        this.camera.lookAt(this.position.x, 3.4, this.position.z);
     }
 
     snapCamera() {
-        this.camera.position.set(this.position.x, 9.5, this.position.z + 12.5);
-        this.camera.lookAt(this.position.x, 1.6, this.position.z);
+        this.camera.position.set(this.position.x, 8.6, this.position.z + 12.5);
+        this.camera.lookAt(this.position.x, 3.4, this.position.z);
     }
 }

@@ -2,6 +2,10 @@
 // State flow: intro → explore ⇄ (dialogue | puzzle) → … → finale.
 
 import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { World } from './world.js';
 import { Player } from './player.js';
 import { PuzzleUI } from './puzzleUI.js';
@@ -13,17 +17,55 @@ import * as audio from './audio.js';
 
 const canvas = document.getElementById('scene');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 400);
+const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 900);
+
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloomPass = new UnrealBloomPass(
+    new THREE.Vector2(window.innerWidth, window.innerHeight), 0.4, 0.45, 0.9
+);
+composer.addPass(bloomPass);
+composer.addPass(new OutputPass());
 
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+    composer.setSize(window.innerWidth, window.innerHeight);
 });
+
+// Quality fallback: if a low-end Chromebook can't hold the frame rate,
+// drop bloom/shadows/pixel ratio rather than let the game chug.
+const quality = {
+    high: true,
+    frames: 0,
+    elapsed: 0,
+    settled: false,
+    apply(high) {
+        this.high = high;
+        renderer.shadowMap.enabled = high;
+        renderer.setPixelRatio(high ? Math.min(window.devicePixelRatio, 1.75) : 1);
+        scene.traverse(o => { if (o.material) o.material.needsUpdate = true; });
+    },
+    sample(dt) {
+        if (this.settled) return;
+        this.frames += 1;
+        this.elapsed += dt;
+        if (this.elapsed >= 6) {
+            const fps = this.frames / this.elapsed;
+            if (fps < 26) this.apply(false);
+            this.settled = true;
+        }
+    },
+};
 
 const world = new World(scene);
 const player = new Player(scene, camera);
@@ -178,7 +220,7 @@ interactPrompt.addEventListener('click', tryInteract);
 // ---------- main loop ----------
 
 // handle for automated playtesting; not used by the game itself
-window.__balanceKeeper = { state, player, world };
+window.__balanceKeeper = { state, player, world, quality };
 
 const clock = new THREE.Clock();
 
@@ -188,12 +230,14 @@ function animate() {
 
     const frozen = state.stage !== 'explore';
     player.update(dt, world, frozen);
-    world.update(dt);
+    world.update(dt, player.position);
+    if (state.stage !== 'intro') quality.sample(dt);
 
     const showPrompt = state.stage === 'explore' && nearPedestal();
     interactPrompt.classList.toggle('hidden', !showPrompt);
 
-    renderer.render(scene, camera);
+    if (quality.high) composer.render();
+    else renderer.render(scene, camera);
 }
 
 animate();
