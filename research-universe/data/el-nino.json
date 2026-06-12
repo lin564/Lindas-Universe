@@ -1,0 +1,344 @@
+{
+  "meta": {
+    "title": "El Niño–Southern Oscillation (ENSO)",
+    "subtitle": "A research universe for El Niño dynamics, prediction, and impacts",
+    "description": "ENSO is the dominant mode of interannual climate variability on Earth: a coupled ocean–atmosphere oscillation in the tropical Pacific that swings between warm (El Niño) and cool (La Niña) states every 2–7 years, reshaping global rainfall, drought, and temperature patterns. This universe maps the central study area, four working hypotheses with their sub-hypotheses, and the observational datasets, reanalyses, model archives, and key papers that bear on each — ranked by relevance (distance from the core), data volume or influence (node size), and type (color).",
+    "created": "2026-06-12"
+  },
+  "nodes": [
+    {
+      "id": "core",
+      "label": "El Niño–Southern Oscillation",
+      "type": "core",
+      "summary": "The central study area: what controls the onset, amplitude, flavor, and global impacts of El Niño events — and how predictable are they?",
+      "url": "https://www.climate.gov/enso",
+      "relevance": 1,
+      "size": 1,
+      "parent": "",
+      "tags": ["climate dynamics", "tropical Pacific", "interannual variability"]
+    },
+
+    {
+      "id": "h1",
+      "label": "H1: Warming increases extreme El Niño frequency",
+      "type": "hypothesis",
+      "summary": "Hypothesis: greenhouse warming increases the frequency of extreme El Niño events (e.g. 1982/83, 1997/98, 2015/16) by weakening the zonal SST gradient and making eastern-Pacific convection easier to trigger.",
+      "relevance": 0.95,
+      "size": 0.8,
+      "parent": "core",
+      "status": "contested",
+      "tags": ["climate change", "extremes"]
+    },
+    {
+      "id": "h1a",
+      "label": "Eastern-Pacific warming shifts convection thresholds",
+      "type": "subhypothesis",
+      "summary": "Sub-hypothesis: faster warming of the eastern equatorial Pacific cold tongue lowers the SST threshold for deep convection east of the dateline, making extreme (EP-type) events more likely even without changes in ENSO dynamics.",
+      "relevance": 0.8,
+      "size": 0.5,
+      "parent": "h1",
+      "status": "contested",
+      "tags": ["cold tongue", "convection"]
+    },
+    {
+      "id": "h1b",
+      "label": "CMIP6 models disagree on ENSO amplitude change",
+      "type": "subhypothesis",
+      "summary": "Sub-hypothesis: the inter-model spread in projected ENSO amplitude is dominated by each model's mean-state bias (cold-tongue bias), so bias-corrected projections converge toward more frequent extremes.",
+      "relevance": 0.75,
+      "size": 0.55,
+      "parent": "h1",
+      "status": "untested",
+      "tags": ["CMIP6", "model bias"]
+    },
+    {
+      "id": "p-cai2014",
+      "label": "Cai et al. 2014 — Increasing frequency of extreme El Niño",
+      "type": "paper",
+      "summary": "Nature Climate Change paper projecting a doubling of extreme El Niño frequency under greenhouse warming, based on CMIP ensemble rainfall criteria. The anchor reference for H1.",
+      "url": "https://www.nature.com/articles/nclimate2100",
+      "relevance": 0.85,
+      "size": 0.7,
+      "parent": "h1",
+      "tags": ["projection", "CMIP"]
+    },
+    {
+      "id": "d-cmip6",
+      "label": "CMIP6 archive (ESGF)",
+      "type": "dataset",
+      "summary": "The Coupled Model Intercomparison Project phase 6: multi-petabyte archive of coordinated climate model experiments (historical, SSP scenarios, pacemaker runs) from ~50 modeling centers. The primary testbed for ENSO-under-warming hypotheses.",
+      "url": "https://wcrp-cmip.org/cmip6/",
+      "relevance": 0.8,
+      "size": 1,
+      "parent": "h1",
+      "tags": ["model output", "petabyte-scale", "scenarios"]
+    },
+    {
+      "id": "d-ersst",
+      "label": "NOAA ERSSTv5 (1854–present)",
+      "type": "dataset",
+      "summary": "Extended Reconstructed Sea Surface Temperature: monthly 2° global SST back to 1854. The long historical record used to count and classify past El Niño events — and the basis of the official ONI index.",
+      "url": "https://www.ncei.noaa.gov/products/extended-reconstructed-sst",
+      "relevance": 0.85,
+      "size": 0.6,
+      "parent": "h1",
+      "tags": ["SST", "historical record", "monthly"]
+    },
+
+    {
+      "id": "h2",
+      "label": "H2: Westerly wind bursts set onset timing",
+      "type": "hypothesis",
+      "summary": "Hypothesis: El Niño onset timing is gated by stochastic westerly wind bursts (often tied to the MJO) acting on a recharged equatorial heat reservoir — so onset is conditionally predictable from subsurface state plus wind-burst statistics.",
+      "relevance": 0.9,
+      "size": 0.75,
+      "parent": "core",
+      "status": "supported",
+      "tags": ["onset", "stochastic forcing", "MJO"]
+    },
+    {
+      "id": "h2a",
+      "label": "Recharge oscillator preconditions events",
+      "type": "subhypothesis",
+      "summary": "Sub-hypothesis: equatorial warm water volume (recharge state) sets the susceptibility of the system, while wind bursts supply the trigger — recharge without a trigger yields no event; triggers without recharge yield weak events.",
+      "relevance": 0.85,
+      "size": 0.5,
+      "parent": "h2",
+      "status": "supported",
+      "tags": ["warm water volume", "preconditioning"]
+    },
+    {
+      "id": "h2b",
+      "label": "MJO activity modulates wind-burst statistics",
+      "type": "subhypothesis",
+      "summary": "Sub-hypothesis: active Madden–Julian Oscillation phases over the warm pool raise westerly wind burst likelihood, so MJO forecasts add skill to El Niño onset prediction in boreal spring.",
+      "relevance": 0.7,
+      "size": 0.45,
+      "parent": "h2",
+      "status": "contested",
+      "tags": ["MJO", "intraseasonal"]
+    },
+    {
+      "id": "p-jin1997",
+      "label": "Jin 1997 — The recharge oscillator paradigm",
+      "type": "paper",
+      "summary": "Journal of the Atmospheric Sciences paper formalizing ENSO as a recharge–discharge oscillation of equatorial Pacific heat content. The theoretical backbone of H2.",
+      "url": "https://journals.ametsoc.org/view/journals/atsc/54/7/1520-0469_1997_054_0811_aeorpf_2.0.co_2.xml",
+      "relevance": 0.8,
+      "size": 0.65,
+      "parent": "h2",
+      "tags": ["theory", "conceptual model"]
+    },
+    {
+      "id": "d-tao",
+      "label": "TAO/TRITON moored buoy array",
+      "type": "dataset",
+      "summary": "NOAA PMEL's equatorial Pacific mooring array: real-time winds, SST, and subsurface temperature profiles across the basin since the mid-1980s. The observational workhorse for wind bursts and subsurface heat content.",
+      "url": "https://www.pmel.noaa.gov/tao/",
+      "relevance": 0.9,
+      "size": 0.55,
+      "parent": "h2",
+      "tags": ["in situ", "real-time", "subsurface"]
+    },
+    {
+      "id": "d-era5",
+      "label": "ERA5 reanalysis (ECMWF/Copernicus)",
+      "type": "dataset",
+      "summary": "Hourly global atmospheric reanalysis at ~31 km from 1940 to present. The standard source for surface wind fields, wind-burst detection, and MJO diagnostics.",
+      "url": "https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels",
+      "relevance": 0.8,
+      "size": 0.95,
+      "parent": "h2",
+      "tags": ["reanalysis", "hourly", "winds"]
+    },
+
+    {
+      "id": "h3",
+      "label": "H3: Subsurface data breaks the spring barrier",
+      "type": "hypothesis",
+      "summary": "Hypothesis: forecast skill across the boreal-spring predictability barrier is limited mainly by subsurface ocean initial conditions — so assimilating denser Argo + mooring data measurably extends useful El Niño lead times beyond 6 months.",
+      "relevance": 0.85,
+      "size": 0.7,
+      "parent": "core",
+      "status": "untested",
+      "tags": ["prediction", "spring barrier", "data assimilation"]
+    },
+    {
+      "id": "h3a",
+      "label": "Warm water volume leads Niño-3.4 by ~2 seasons",
+      "type": "subhypothesis",
+      "summary": "Sub-hypothesis: equatorial warm water volume anomalies lead Niño-3.4 SST by 6–9 months, and this lead relationship — weaker since 2000 — is the main exploitable source of long-lead skill.",
+      "relevance": 0.75,
+      "size": 0.45,
+      "parent": "h3",
+      "status": "supported",
+      "tags": ["lead-lag", "heat content"]
+    },
+    {
+      "id": "h3b",
+      "label": "ML forecasts extend skill to 18 months",
+      "type": "subhypothesis",
+      "summary": "Sub-hypothesis: deep-learning models trained on CMIP simulations plus reanalysis (e.g. CNN approaches) beat dynamical models at long leads because they exploit global precursors that initialization-limited models miss.",
+      "relevance": 0.7,
+      "size": 0.5,
+      "parent": "h3",
+      "status": "contested",
+      "tags": ["machine learning", "long lead"]
+    },
+    {
+      "id": "d-argo",
+      "label": "Argo float array",
+      "type": "dataset",
+      "summary": "~4,000 autonomous profiling floats measuring temperature and salinity in the upper 2,000 m of the global ocean since the early 2000s. The backbone of subsurface initial conditions for ENSO forecasts.",
+      "url": "https://argo.ucsd.edu/",
+      "relevance": 0.8,
+      "size": 0.7,
+      "parent": "h3",
+      "tags": ["in situ", "profiles", "global ocean"]
+    },
+    {
+      "id": "d-oras5",
+      "label": "ORAS5 ocean reanalysis",
+      "type": "dataset",
+      "summary": "ECMWF's eddy-permitting ocean reanalysis (1958–present): the subsurface state estimate used to initialize seasonal forecasts and compute warm water volume indices.",
+      "url": "https://cds.climate.copernicus.eu/datasets/reanalysis-oras5",
+      "relevance": 0.75,
+      "size": 0.8,
+      "parent": "h3",
+      "tags": ["reanalysis", "subsurface", "initialization"]
+    },
+    {
+      "id": "d-iri",
+      "label": "IRI/CPC ENSO forecast plume",
+      "type": "dataset",
+      "summary": "Monthly compilation of ~25 dynamical and statistical model predictions of Niño-3.4, maintained by Columbia's IRI with NOAA CPC. The standard benchmark for forecast-skill claims.",
+      "url": "https://iri.columbia.edu/our-expertise/climate/forecasts/enso/current/",
+      "relevance": 0.7,
+      "size": 0.4,
+      "parent": "h3",
+      "tags": ["forecasts", "multi-model", "monthly"]
+    },
+
+    {
+      "id": "h4",
+      "label": "H4: Event flavor controls global impacts",
+      "type": "hypothesis",
+      "summary": "Hypothesis: the remote impacts of El Niño (drought, flood, monsoon failure) depend more on event flavor — eastern-Pacific vs central-Pacific (Modoki) warming — than on event amplitude, because the longitude of tropical heating sets the teleconnection pattern.",
+      "relevance": 0.85,
+      "size": 0.7,
+      "parent": "core",
+      "status": "contested",
+      "tags": ["teleconnections", "EP vs CP", "impacts"]
+    },
+    {
+      "id": "h4a",
+      "label": "CP events drive Indian monsoon deficits",
+      "type": "subhypothesis",
+      "summary": "Sub-hypothesis: central-Pacific (Modoki) events are more strongly associated with Indian summer monsoon rainfall deficits than canonical EP events of similar amplitude.",
+      "relevance": 0.7,
+      "size": 0.45,
+      "parent": "h4",
+      "status": "contested",
+      "tags": ["monsoon", "Modoki"]
+    },
+    {
+      "id": "h4b",
+      "label": "Flavor diversity is partly stochastic",
+      "type": "subhypothesis",
+      "summary": "Sub-hypothesis: EP/CP diversity does not reflect two distinct dynamical modes but a continuum shaped by noise and mean state — which would limit how predictable 'flavor' can ever be.",
+      "relevance": 0.65,
+      "size": 0.45,
+      "parent": "h4",
+      "status": "untested",
+      "tags": ["ENSO diversity", "continuum"]
+    },
+    {
+      "id": "p-timmermann2018",
+      "label": "Timmermann et al. 2018 — ENSO complexity",
+      "type": "paper",
+      "summary": "Nature review synthesizing ENSO theory, event diversity (EP/CP), and the limits of predictability — the consensus map of what is and isn't settled. Central to H4 and the universe as a whole.",
+      "url": "https://www.nature.com/articles/s41586-018-0252-6",
+      "relevance": 0.85,
+      "size": 0.75,
+      "parent": "h4",
+      "tags": ["review", "ENSO diversity"]
+    },
+    {
+      "id": "p-mcphaden2006",
+      "label": "McPhaden et al. 2006 — ENSO as an integrating concept",
+      "type": "paper",
+      "summary": "Science review framing ENSO as the integrating concept in earth-system science, connecting ocean dynamics to global impacts — useful framing for the impacts side of H4.",
+      "url": "https://www.science.org/doi/10.1126/science.1132588",
+      "relevance": 0.7,
+      "size": 0.6,
+      "parent": "h4",
+      "tags": ["review", "impacts"]
+    },
+    {
+      "id": "d-oisst",
+      "label": "NOAA OISST v2.1 (daily, 1/4°)",
+      "type": "dataset",
+      "summary": "Daily 0.25° blended satellite + in situ SST from 1981. The high-resolution record used to classify event flavor (EP vs CP) and track event evolution in near-real time.",
+      "url": "https://www.ncei.noaa.gov/products/optimum-interpolation-sst",
+      "relevance": 0.75,
+      "size": 0.65,
+      "parent": "h4",
+      "tags": ["SST", "daily", "satellite"]
+    },
+    {
+      "id": "d-soi",
+      "label": "Southern Oscillation Index (BoM)",
+      "type": "dataset",
+      "summary": "The Tahiti–Darwin pressure index maintained by the Australian Bureau of Meteorology — the atmospheric half of ENSO, with a record back to 1876. Key for separating ocean and atmosphere signatures of event flavor.",
+      "url": "http://www.bom.gov.au/climate/enso/soi/",
+      "relevance": 0.65,
+      "size": 0.35,
+      "parent": "h4",
+      "tags": ["pressure index", "long record"]
+    },
+
+    {
+      "id": "d-oni",
+      "label": "Oceanic Niño Index (NOAA CPC)",
+      "type": "dataset",
+      "summary": "NOAA's operational definition of El Niño: 3-month running mean of Niño-3.4 SST anomalies from ERSSTv5. The ground-truth event catalog every hypothesis here is tested against.",
+      "url": "https://origin.cpc.ncep.noaa.gov/products/analysis_monitoring/ensostuff/ONI_v5.php",
+      "relevance": 0.95,
+      "size": 0.3,
+      "parent": "core",
+      "tags": ["index", "event catalog", "operational"]
+    },
+    {
+      "id": "o-pmel",
+      "label": "NOAA PMEL",
+      "type": "organization",
+      "summary": "Pacific Marine Environmental Laboratory: operates the TAO array and leads tropical Pacific observing-system research. Primary contact point for mooring data questions.",
+      "url": "https://www.pmel.noaa.gov/",
+      "relevance": 0.6,
+      "size": 0.5,
+      "parent": "core",
+      "tags": ["NOAA", "observing systems"]
+    },
+    {
+      "id": "o-cpc",
+      "label": "NOAA Climate Prediction Center",
+      "type": "organization",
+      "summary": "Issues the official ENSO alert system status, ONI updates, and monthly diagnostic discussions — the operational authority on whether an event is underway.",
+      "url": "https://www.cpc.ncep.noaa.gov/products/precip/CWlink/MJO/enso.shtml",
+      "relevance": 0.65,
+      "size": 0.45,
+      "parent": "core",
+      "tags": ["NOAA", "operations", "alerts"]
+    }
+  ],
+  "links": [
+    { "source": "d-ersst", "target": "d-oni", "relation": "ONI is computed from ERSSTv5" },
+    { "source": "h2a", "target": "h3a", "relation": "same warm-water-volume mechanism" },
+    { "source": "d-tao", "target": "o-pmel", "relation": "operated by" },
+    { "source": "d-oni", "target": "o-cpc", "relation": "maintained by" },
+    { "source": "d-cmip6", "target": "h3b", "relation": "ML training data" },
+    { "source": "d-oisst", "target": "h1a", "relation": "cold-tongue trend evidence" },
+    { "source": "p-timmermann2018", "target": "core", "relation": "field overview" },
+    { "source": "d-era5", "target": "h4", "relation": "teleconnection diagnostics" }
+  ]
+}

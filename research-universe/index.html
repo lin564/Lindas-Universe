@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Universe — 3D Galaxy Knowledge Graph</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <canvas id="space"></canvas>
+
+    <header class="topbar">
+        <div class="topbar-title">
+            <h1 id="universe-title">Research Universe</h1>
+            <p id="universe-subtitle"></p>
+        </div>
+        <div class="topbar-actions">
+            <input id="search" type="search" placeholder="Search the universe…" autocomplete="off">
+            <button id="btn-sources" class="btn" title="Ranked data sources">Data Sources</button>
+            <button id="btn-new" class="btn btn-accent" title="Describe a study area and generate a universe">+ New Universe</button>
+            <button id="btn-menu" class="btn" title="Import, export, settings">⋯</button>
+        </div>
+    </header>
+
+    <div id="menu-popover" class="popover hidden">
+        <button id="btn-import" class="popover-item">Import universe JSON…</button>
+        <button id="btn-export" class="popover-item">Export universe JSON</button>
+        <button id="btn-sample" class="popover-item">Load El Niño sample</button>
+        <button id="btn-settings" class="popover-item">API settings…</button>
+        <button id="btn-about" class="popover-item">About this universe</button>
+    </div>
+    <input type="file" id="file-input" accept=".json,application/json" hidden>
+
+    <div id="tooltip" class="tooltip hidden"></div>
+
+    <aside id="node-panel" class="panel panel-right hidden">
+        <button class="panel-close" data-close="node-panel">×</button>
+        <span id="node-type" class="type-badge"></span>
+        <h2 id="node-label"></h2>
+        <p id="node-summary"></p>
+        <div id="node-meta" class="meters"></div>
+        <div id="node-tags" class="tags"></div>
+        <a id="node-url" class="btn btn-accent btn-wide" target="_blank" rel="noopener">Open source ↗</a>
+        <button id="btn-expand" class="btn btn-wide">✦ Generate sub-hypotheses with Claude</button>
+        <div id="node-children"></div>
+    </aside>
+
+    <aside id="sources-panel" class="panel panel-left hidden">
+        <button class="panel-close" data-close="sources-panel">×</button>
+        <h2>Data sources, ranked</h2>
+        <p class="panel-hint">Sorted by relevance to the core study area. Bar lengths show relevance and size.</p>
+        <ol id="sources-list"></ol>
+    </aside>
+
+    <footer class="legend" id="legend"></footer>
+
+    <div id="modal-backdrop" class="modal-backdrop hidden">
+        <div id="modal-generate" class="modal hidden">
+            <h2>Describe your study area</h2>
+            <p class="panel-hint">Write as much as you like: the topic, your own hypotheses, hunches, open questions. Claude will build the galaxy — hypotheses, sub-hypotheses, and real data sources ranked by relevance and size.</p>
+            <textarea id="gen-description" rows="8" placeholder="e.g. I study El Niño. I suspect warming is making extreme events more common, and that westerly wind bursts gate onset timing. I want the observational datasets and model archives that could test this…"></textarea>
+            <div class="modal-row">
+                <label>Model
+                    <select id="gen-model">
+                        <option value="claude-opus-4-8" selected>Claude Opus 4.8</option>
+                        <option value="claude-sonnet-4-6">Claude Sonnet 4.6</option>
+                        <option value="claude-haiku-4-5">Claude Haiku 4.5</option>
+                    </select>
+                </label>
+            </div>
+            <div class="modal-actions">
+                <button id="gen-copy-prompt" class="btn" title="No API key? Copy a prompt to paste into claude.ai, then import the JSON it returns.">Copy prompt instead</button>
+                <span class="spacer"></span>
+                <button class="btn" data-close-modal>Cancel</button>
+                <button id="gen-go" class="btn btn-accent">Generate universe</button>
+            </div>
+            <p id="gen-status" class="status"></p>
+        </div>
+
+        <div id="modal-settings" class="modal hidden">
+            <h2>API settings</h2>
+            <p class="panel-hint">Your Anthropic API key is stored only in this browser (localStorage) and sent only to api.anthropic.com. Get one at console.anthropic.com. Without a key you can still explore universes, import JSON, and use “Copy prompt”.</p>
+            <label class="modal-label">Anthropic API key
+                <input id="api-key" type="password" placeholder="sk-ant-…" autocomplete="off">
+            </label>
+            <div class="modal-actions">
+                <button id="key-clear" class="btn">Clear key</button>
+                <span class="spacer"></span>
+                <button class="btn" data-close-modal>Close</button>
+                <button id="key-save" class="btn btn-accent">Save</button>
+            </div>
+        </div>
+
+        <div id="modal-about" class="modal hidden">
+            <h2 id="about-title"></h2>
+            <p id="about-description"></p>
+            <div class="modal-actions">
+                <span class="spacer"></span>
+                <button class="btn btn-accent" data-close-modal>Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
