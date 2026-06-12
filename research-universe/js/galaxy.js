@@ -238,8 +238,8 @@ function buildDust(armAngles) {
     const rim = MAX_RADIUS + 10;
 
     const layers = [
-        { count: 9000, size: 0.4, opacity: 0.3 },
-        { count: 3000, size: 0.7, opacity: 0.24 },
+        { count: 9000, size: 0.4, opacity: 0.22 },
+        { count: 3000, size: 0.7, opacity: 0.18 },
     ];
 
     for (const { count, size, opacity } of layers) {
