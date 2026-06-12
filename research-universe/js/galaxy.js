@@ -4,10 +4,10 @@
 //   distance from core = relevance (closer = more central to the question)
 //   size of the light  = information (data volume / influence / scope)
 //   glow intensity     = research interest (how much attention the area has)
-//   color              = node type
 //
-// Nodes render as points of light — layered additive sprites (white-hot core,
-// colored body, soft interest halo) — with an invisible sphere for picking.
+// Nodes render as warm-white pinpoints of light — a sharp point plus soft
+// additive glow halos — with an invisible sphere for picking. Type is shown
+// in the UI (tooltip, panel badge, sources list), not by star color.
 
 import * as THREE from '../vendor/three.module.js';
 
@@ -151,7 +151,17 @@ function radialTexture(stops) {
     return new THREE.CanvasTexture(canvas);
 }
 
-let _coreTex = null, _haloTex = null;
+let _pinTex = null, _coreTex = null, _haloTex = null;
+// Sharp pinpoint: nearly all the energy in a tiny center, fast falloff.
+function pinTexture() {
+    return _pinTex ??= radialTexture([
+        [0, 'rgba(255,255,255,1)'],
+        [0.12, 'rgba(255,248,235,0.95)'],
+        [0.28, 'rgba(255,238,210,0.3)'],
+        [0.55, 'rgba(255,232,196,0.06)'],
+        [1, 'rgba(255,232,196,0)'],
+    ]);
+}
 function coreTexture() {
     return _coreTex ??= radialTexture([
         [0, 'rgba(255,255,255,1)'],
@@ -183,6 +193,7 @@ function lightSprite(texture, color, opacity, scale) {
 
 // --- galaxy -----------------------------------------------------------------
 
+const WARM_WHITE = 0xffe7c2;
 const pickGeo = new THREE.SphereGeometry(1, 8, 6);
 const pickMat = new THREE.MeshBasicMaterial();
 pickMat.visible = false; // never rendered; raycasting still hits the geometry
@@ -194,7 +205,6 @@ export function buildGalaxy(universe) {
     const holders = new Map();  // id -> per-node group (position + pulse scale)
 
     for (const node of universe.nodes) {
-        const color = TYPE_COLORS[node.type] ?? TYPE_COLORS.concept;
         const r = nodeRadius(node);
         const interest = nodeInterest(node);
         const isCore = node.type === 'core';
@@ -207,18 +217,18 @@ export function buildGalaxy(universe) {
         pick.userData.node = node;
         holder.add(pick);
 
-        // The point of light: white-hot center, colored body sized by `size`,
-        // and an outer halo whose reach and brightness encode `interest`.
-        const core = lightSprite(coreTexture(), 0xffffff, 0.55, r * 1.4);
-        const body = lightSprite(coreTexture(), color, 0.85, r * (isCore ? 5.5 : 3.6));
-        const haloOpacity = 0.07 + 0.5 * interest;
-        const halo = lightSprite(haloTexture(), color, haloOpacity, r * (4.5 + 8 * interest) * (isCore ? 1.4 : 1));
-        holder.add(core, body, halo);
+        // A warm-white pinpoint (sized by `size`) inside a soft aura, wrapped
+        // in an outer halo whose reach and brightness encode `interest`.
+        const pin = lightSprite(pinTexture(), 0xffffff, 1, r * (isCore ? 2.6 : 1.7));
+        const aura = lightSprite(coreTexture(), WARM_WHITE, 0.45, r * (isCore ? 4.5 : 2.6));
+        const haloOpacity = 0.06 + 0.45 * interest;
+        const halo = lightSprite(haloTexture(), WARM_WHITE, haloOpacity, r * (4 + 8 * interest) * (isCore ? 1.5 : 1));
+        holder.add(pin, aura, halo);
 
         holder.userData = {
             node,
-            sprites: [core, body, halo],
-            baseOpacities: [0.55, 0.85, haloOpacity],
+            sprites: [pin, aura, halo],
+            baseOpacities: [1, 0.45, haloOpacity],
             halo,
             // Hot areas shimmer faster; quiet ones barely breathe.
             pulseRate: 0.6 + 2.6 * interest,
@@ -254,7 +264,7 @@ export function buildGalaxy(universe) {
     for (const [a, b, opacity] of edges) {
         const geo = new THREE.BufferGeometry().setFromPoints([positions.get(a), positions.get(b)]);
         const line = new THREE.Line(geo, new THREE.LineBasicMaterial({
-            color: 0x5bc0eb, transparent: true, opacity, blending: THREE.AdditiveBlending, depthWrite: false,
+            color: WARM_WHITE, transparent: true, opacity, blending: THREE.AdditiveBlending, depthWrite: false,
         }));
         group.add(line);
     }

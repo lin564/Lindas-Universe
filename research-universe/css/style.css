@@ -240,7 +240,7 @@ body {
     white-space: nowrap;
 }
 .legend-item { display: flex; align-items: center; gap: 6px; }
-.legend-key { color: var(--core); border-right: 1px solid rgba(255, 255, 255, 0.15); padding-right: 16px; }
+.legend-key { color: var(--core); }
 .legend-dot { width: 9px; height: 9px; border-radius: 50%; }
 
 /* ---------- tooltip ---------- */

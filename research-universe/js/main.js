@@ -231,14 +231,9 @@ function shortUrl(url) {
 }
 
 function renderLegend() {
-    const used = new Set(universe.nodes.map(n => n.type));
-    const key = '<span class="legend-key">distance = relevance · size = information · glow = interest</span>';
-    $('legend').innerHTML = key + Object.entries(TYPE_LABELS)
-        .filter(([type]) => used.has(type))
-        .map(([type, label]) => {
-            const hex = '#' + TYPE_COLORS[type].toString(16).padStart(6, '0');
-            return `<span class="legend-item"><span class="legend-dot" style="background:${hex}"></span>${label}</span>`;
-        }).join('');
+    // Stars are uniform warm white; type shows in the tooltip and panels.
+    $('legend').innerHTML =
+        '<span class="legend-key">distance = relevance · size = information · glow = research interest</span>';
 }
 
 $('search').addEventListener('input', e => {
