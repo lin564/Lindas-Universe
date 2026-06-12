@@ -191,10 +191,11 @@ function lightSprite(texture, color, opacity, scale) {
     return sprite;
 }
 
-// --- galactic dust & bulge ---------------------------------------------------
-// Thousands of faint decorative stars tracing the same spiral arms the data
-// lives on, plus a glowing central bulge and a soft disk plane. Pure scenery —
-// not pickable, not searchable.
+// --- galactic scenery --------------------------------------------------------
+// What makes it read as a real galaxy: a smooth painted nebular glow for the
+// disk and arms (no particle "rings"), tens of thousands of mostly-faint
+// stars with an exponential disk profile, and a bright bulge that blends
+// into the arms. Pure scenery — not pickable, not searchable.
 
 function gauss() {
     return (Math.random() + Math.random() + Math.random() + Math.random() - 2) / 1.2;
@@ -209,45 +210,99 @@ function dustTexture() {
     ]);
 }
 
+// Paint the disk's nebular light — central glow plus blurred spiral arm
+// lanes — once, into a canvas draped over the galactic plane. This gives the
+// smooth luminosity of long-exposure galaxy photos that particles can't.
+function makeDiskGlowTexture(arms, rim) {
+    const S = 1024;
+    const c = S / 2;
+    const scale = (c - 24) / rim;
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = S;
+    const ctx = canvas.getContext('2d');
+    ctx.globalCompositeOperation = 'lighter';
+
+    const blob = (x, y, radius, alpha, color = '255,232,200') => {
+        const g = ctx.createRadialGradient(x, y, 0, x, y, radius);
+        g.addColorStop(0, `rgba(${color},${alpha})`);
+        g.addColorStop(1, `rgba(${color},0)`);
+        ctx.fillStyle = g;
+        ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
+    };
+
+    // Bulge: layered warm core.
+    blob(c, c, 90, 0.55, '255,224,178');
+    blob(c, c, 200, 0.22, '255,219,170');
+    blob(c, c, 420, 0.1, '235,212,190');
+
+    // Arms: overlapping soft blobs along each spiral, fading and widening out.
+    for (const arm of arms) {
+        for (let r = 8; r <= rim; r += 1.5) {
+            const a = arm + r * ARM_TWIST;
+            // canvas y runs opposite to world z after the plane's -PI/2 x-rotation
+            const x = c + Math.cos(a) * r * scale;
+            const y = c - Math.sin(a) * r * scale;
+            const t = r / rim;
+            blob(x, y, (30 + 26 * t) * (scale / 7), 0.05 * (1 - t * 0.75), '240,228,210');
+        }
+    }
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    tex.generateMipmaps = true;
+    return tex;
+}
+
+// Sample one scenery-star position on the galaxy: dense bulge, exponential
+// disk, most disk stars gathered into the spiral arms.
+function sampleGalaxyPoint(arms, rim) {
+    const roll = Math.random();
+    let r, a, thickness;
+    if (roll < 0.32) {
+        // bulge
+        r = Math.abs(gauss()) * 8;
+        a = Math.random() * Math.PI * 2;
+        thickness = Math.max(1.4, 4 - r * 0.2);
+    } else {
+        // exponential disk profile — dense inside, smooth fade, no hard rim
+        do { r = -Math.log(1 - Math.random()) * (rim * 0.35); } while (r > rim);
+        r += 4;
+        if (roll < 0.55) {
+            a = Math.random() * Math.PI * 2;              // inter-arm field stars
+        } else {
+            const arm = arms[(Math.random() * arms.length) | 0];
+            a = arm + r * ARM_TWIST + gauss() * (0.1 + r * 0.0042);
+        }
+        thickness = Math.max(0.7, 2.4 - r * 0.02);
+    }
+    return { x: Math.cos(a) * r, y: gauss() * thickness, z: Math.sin(a) * r, r };
+}
+
 function buildDust(armAngles) {
     const group = new THREE.Group();
     const arms = armAngles.length >= 2 ? armAngles : [0, Math.PI * 2 / 3, Math.PI * 4 / 3];
     const rim = MAX_RADIUS + 10;
 
+    // Star layers: lots of tiny faint stars, a few bright ones.
     const layers = [
-        { count: 3800, size: 1.0, opacity: 0.55 }, // fine dust
-        { count: 1400, size: 2.4, opacity: 0.2 },  // soft haze
+        { count: 26000, size: 0.45, opacity: 0.5 },
+        { count: 9000, size: 0.8, opacity: 0.5 },
+        { count: 800, size: 1.5, opacity: 0.65 },
     ];
 
     for (const { count, size, opacity } of layers) {
         const pos = new Float32Array(count * 3);
         const col = new Float32Array(count * 3);
         for (let i = 0; i < count; i++) {
-            let x, y, z, r;
-            if (Math.random() < 0.3) {
-                // central bulge: dense, slightly thicker
-                r = Math.abs(gauss()) * 9;
-                const a = Math.random() * Math.PI * 2;
-                x = Math.cos(a) * r;
-                z = Math.sin(a) * r;
-                y = gauss() * Math.max(1.2, 3.4 - r * 0.15);
-            } else {
-                // spiral arms: density falls outward, spread widens slightly
-                r = 6 + Math.pow(Math.random(), 0.75) * (rim - 6);
-                const arm = arms[(Math.random() * arms.length) | 0];
-                const a = arm + r * ARM_TWIST + gauss() * (0.14 + r * 0.0045);
-                x = Math.cos(a) * r;
-                z = Math.sin(a) * r;
-                y = gauss() * Math.max(0.8, 2.4 - r * 0.018);
-            }
-            pos.set([x, y, z], i * 3);
+            const p = sampleGalaxyPoint(arms, rim);
+            pos.set([p.x, p.y, p.z], i * 3);
 
-            // warm near the core, cooler and dimmer toward the rim
-            const tRim = Math.min(r / rim, 1);
-            const b = 0.3 + Math.random() * 0.7;
-            col[i * 3] = b * (1.0 - 0.28 * tRim);
-            col[i * 3 + 1] = b * (0.88 - 0.05 * tRim);
-            col[i * 3 + 2] = b * (0.68 + 0.32 * tRim);
+            // Mostly faint stars (steep brightness distribution); warm in the
+            // bulge, drifting cooler and dimmer toward the rim.
+            const tRim = Math.min(p.r / rim, 1);
+            const b = 0.18 + 0.82 * Math.pow(Math.random(), 2.2);
+            col[i * 3] = b * (1.0 - 0.22 * tRim);
+            col[i * 3 + 1] = b * (0.9 - 0.04 * tRim);
+            col[i * 3 + 2] = b * (0.72 + 0.28 * tRim);
         }
         const geo = new THREE.BufferGeometry();
         geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
@@ -264,19 +319,13 @@ function buildDust(armAngles) {
         })));
     }
 
-    // Glowing galactic bulge…
-    group.add(
-        lightSprite(haloTexture(), WARM_WHITE, 0.5, 30),
-        lightSprite(haloTexture(), 0xffd9a0, 0.2, 70),
-    );
-    // …and a faint disk of light in the galactic plane.
+    // The painted nebular disk (bulge glow + arm lanes), in the galactic plane.
     const disk = new THREE.Mesh(
-        new THREE.CircleGeometry(rim + 6, 64),
+        new THREE.CircleGeometry(rim + 8, 64),
         new THREE.MeshBasicMaterial({
-            map: haloTexture(),
-            color: WARM_WHITE,
+            map: makeDiskGlowTexture(arms, rim + 8),
             transparent: true,
-            opacity: 0.07,
+            opacity: 0.85,
             depthWrite: false,
             blending: THREE.AdditiveBlending,
             side: THREE.DoubleSide,
@@ -284,6 +333,9 @@ function buildDust(armAngles) {
     );
     disk.rotation.x = -Math.PI / 2;
     group.add(disk);
+
+    // A modest vertical bulge glow so the core isn't flat when seen edge-on.
+    group.add(lightSprite(haloTexture(), 0xffdfb0, 0.35, 34));
 
     return group;
 }
