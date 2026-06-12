@@ -238,8 +238,8 @@ function buildDust(armAngles) {
     const rim = MAX_RADIUS + 10;
 
     const layers = [
-        { count: 9000, size: 0.4, opacity: 0.22 },
-        { count: 3000, size: 0.7, opacity: 0.18 },
+        { count: 9000, size: 0.4, opacity: 0.14 },
+        { count: 3000, size: 0.7, opacity: 0.11 },
     ];
 
     for (const { count, size, opacity } of layers) {
@@ -301,19 +301,19 @@ export function buildGalaxy(universe) {
         pick.userData.node = node;
         holder.add(pick);
 
-        // A warm-white pinpoint (sized by `size`) inside a soft aura, wrapped
-        // in an outer halo whose reach and brightness encode `interest`.
+        // Just a point of light (sized by `size`), with a faint halo whose
+        // reach and brightness encode `interest`.
         const pin = lightSprite(pinTexture(), 0xffffff, 1, r * (isCore ? 2.6 : 1.7));
-        const aura = lightSprite(coreTexture(), WARM_WHITE, 0.45, r * (isCore ? 4.5 : 2.6));
-        const haloOpacity = 0.06 + 0.45 * interest;
-        const halo = lightSprite(haloTexture(), WARM_WHITE, haloOpacity, r * (4 + 8 * interest) * (isCore ? 1.5 : 1));
-        holder.add(pin, aura, halo);
+        const haloOpacity = 0.05 + 0.3 * interest;
+        const halo = lightSprite(haloTexture(), WARM_WHITE, haloOpacity, r * (2.5 + 5 * interest) * (isCore ? 1.5 : 1));
+        holder.add(pin, halo);
 
         holder.userData = {
             node,
-            sprites: [pin, aura, halo],
-            baseOpacities: [1, 0.45, haloOpacity],
+            sprites: [pin, halo],
+            baseOpacities: [1, haloOpacity],
             halo,
+            haloBase: haloOpacity,
             // Hot areas shimmer faster; quiet ones barely breathe.
             pulseRate: 0.6 + 2.6 * interest,
             pulsePhase: hashSeed(node.id)() * Math.PI * 2,

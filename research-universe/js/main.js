@@ -443,7 +443,7 @@ function animate() {
             const pulse = isSel ? 1 + 0.15 * Math.sin(t * 4) : 1;
             holder.scale.setScalar(pulse * (hovered && id === hovered.id ? 1.25 : 1));
             // Interest shimmer: hotter areas of research breathe faster and brighter.
-            u.halo.material.opacity = u.baseOpacities[2] * u.dim * (0.82 + 0.28 * Math.sin(t * u.pulseRate + u.pulsePhase));
+            u.halo.material.opacity = u.haloBase * u.dim * (0.82 + 0.28 * Math.sin(t * u.pulseRate + u.pulsePhase));
         }
     }
 
