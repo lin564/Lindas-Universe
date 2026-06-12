@@ -112,7 +112,7 @@ export function layoutUniverse(universe) {
         if (parentPos) positions.get(n.id).lerp(parentPos, 0.35);
     });
 
-    return { positions, coreId };
+    return { positions, coreId, armAngles: [...armAngle.values()] };
 }
 
 function makeLabelSprite(text, color) {
@@ -191,6 +191,89 @@ function lightSprite(texture, color, opacity, scale) {
     return sprite;
 }
 
+// --- faint galactic dust ------------------------------------------------------
+// A whisper of scenery: sparse, dim stars tracing the bulge, disk, and the
+// same spiral arms the data lives on. Deliberately faint so the data spots
+// stay the unambiguous focus. Not pickable, not searchable.
+
+function gauss() {
+    return (Math.random() + Math.random() + Math.random() + Math.random() - 2) / 1.2;
+}
+
+let _dustTex = null;
+function dustTexture() {
+    return _dustTex ??= radialTexture([
+        [0, 'rgba(255,255,255,1)'],
+        [0.3, 'rgba(255,255,255,0.5)'],
+        [1, 'rgba(255,255,255,0)'],
+    ]);
+}
+
+function sampleGalaxyPoint(arms, rim) {
+    const roll = Math.random();
+    let r, a, thickness;
+    if (roll < 0.3) {
+        // bulge
+        r = Math.abs(gauss()) * 8;
+        a = Math.random() * Math.PI * 2;
+        thickness = Math.max(1.4, 4 - r * 0.2);
+    } else {
+        // exponential disk profile — dense inside, smooth fade, no hard rim
+        do { r = -Math.log(1 - Math.random()) * (rim * 0.35); } while (r > rim);
+        r += 4;
+        if (roll < 0.52) {
+            a = Math.random() * Math.PI * 2;              // inter-arm field stars
+        } else {
+            const arm = arms[(Math.random() * arms.length) | 0];
+            a = arm + r * ARM_TWIST + gauss() * (0.1 + r * 0.0042);
+        }
+        thickness = Math.max(0.8, 2.6 - r * 0.02);
+    }
+    return { x: Math.cos(a) * r, y: gauss() * thickness, z: Math.sin(a) * r, r };
+}
+
+function buildDust(armAngles) {
+    const group = new THREE.Group();
+    const arms = armAngles.length >= 2 ? armAngles : [0, Math.PI * 2 / 3, Math.PI * 4 / 3];
+    const rim = MAX_RADIUS + 10;
+
+    const layers = [
+        { count: 9000, size: 0.4, opacity: 0.22 },
+        { count: 3000, size: 0.7, opacity: 0.18 },
+    ];
+
+    for (const { count, size, opacity } of layers) {
+        const pos = new Float32Array(count * 3);
+        const col = new Float32Array(count * 3);
+        for (let i = 0; i < count; i++) {
+            const p = sampleGalaxyPoint(arms, rim);
+            pos.set([p.x, p.y, p.z], i * 3);
+
+            // Faint throughout: warm near the bulge, cooler toward the rim.
+            const tRim = Math.min(p.r / rim, 1);
+            const b = 0.1 + 0.45 * Math.pow(Math.random(), 2.2);
+            col[i * 3] = b * (1.0 - 0.22 * tRim);
+            col[i * 3 + 1] = b * (0.9 - 0.04 * tRim);
+            col[i * 3 + 2] = b * (0.72 + 0.28 * tRim);
+        }
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+        geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+        group.add(new THREE.Points(geo, new THREE.PointsMaterial({
+            map: dustTexture(),
+            size,
+            sizeAttenuation: true,
+            vertexColors: true,
+            transparent: true,
+            opacity,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending,
+        })));
+    }
+
+    return group;
+}
+
 // --- galaxy -----------------------------------------------------------------
 
 const WARM_WHITE = 0xffe7c2;
@@ -200,7 +283,8 @@ pickMat.visible = false; // never rendered; raycasting still hits the geometry
 
 export function buildGalaxy(universe) {
     const group = new THREE.Group();
-    const { positions, coreId } = layoutUniverse(universe);
+    const { positions, coreId, armAngles } = layoutUniverse(universe);
+    group.add(buildDust(armAngles));
     const meshes = new Map();   // id -> invisible pick mesh (raycast targets)
     const holders = new Map();  // id -> per-node group (position + pulse scale)
 
