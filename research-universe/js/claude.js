@@ -41,12 +41,13 @@ const NODE_SCHEMA = {
         summary: { type: 'string', description: '1-3 sentences: what it is and why it matters to the study area' },
         url: { type: 'string', description: 'Real, stable URL (agency landing page, DOI, data portal). Empty string if none.' },
         relevance: { type: 'number', description: '0-1 relevance to the core study area. Controls distance from the galactic core.' },
-        size: { type: 'number', description: '0-1. Datasets: data volume/coverage. Papers: influence. Hypotheses: scope.' },
+        size: { type: 'number', description: '0-1. Datasets: data volume/coverage. Papers: influence. Hypotheses: scope. Controls the size of the light.' },
+        interest: { type: 'number', description: '0-1 current research interest: publication/funding momentum, community attention, public salience. Controls how brightly the star glows and pulses.' },
         parent: { type: 'string', description: 'id of the parent node ("core" for top-level). Empty string for the core itself.' },
         status: { type: 'string', enum: ['supported', 'contested', 'untested'], description: 'For hypotheses only' },
         tags: { type: 'array', items: { type: 'string' } },
     },
-    required: ['id', 'label', 'type', 'summary', 'relevance', 'size', 'parent'],
+    required: ['id', 'label', 'type', 'summary', 'relevance', 'size', 'interest', 'parent'],
     additionalProperties: false,
 };
 
@@ -100,9 +101,10 @@ Structure:
 - 8-16 "dataset", "paper", and "organization" nodes attached to whichever hypothesis they bear on most (or to "core" for field-wide resources like indices and review papers).
 - "links" holds cross-connections beyond the parent tree (an index computed from a dataset, two sub-hypotheses sharing a mechanism), with a short relation phrase.
 
-Scoring:
-- relevance (0.3-1.0): how central the node is to the core question. Higher relevance renders closer to the galactic core.
-- size (0.2-1.0): datasets by data volume and coverage; papers by influence; hypotheses by scope.
+Scoring (these drive the rendering — score them thoughtfully and use the full range):
+- relevance (0.3-1.0): how central the node is to the core question. Distance from the galactic core.
+- size (0.2-1.0): datasets by data volume and coverage; papers by influence; hypotheses by scope. The size of the light.
+- interest (0.1-1.0): how much research attention the area has right now — publication and funding momentum, conference buzz, public salience. The glow: hot areas blaze and shimmer, quiet backwaters barely flicker. A foundational 1990s theory paper may be high-size but low-interest; a contested new ML approach may be the reverse.
 
 Data sources are the point of this tool. Prefer authoritative, long-lived sources: national agencies (NOAA, NASA, ECMWF, USGS...), data portals (Copernicus, ESGF, ICPSR...), DOI links for papers. URLs must be real and likely to resolve — if you are not confident in a deep link, use the organization's main domain or a well-known landing page instead. Never invent plausible-looking URLs.
 

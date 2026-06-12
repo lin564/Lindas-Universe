@@ -1,10 +1,16 @@
 # Research Universe — 3D Galaxy Knowledge Graph
 
 Describe a study area and your hypotheses; explore them as a galaxy. The core
-star is your study area, spiral arms are your hypotheses, and the stars in
-orbit are sub-hypotheses, datasets, papers, and organizations — positioned by
-relevance (distance from the core), sized by data volume or influence, and
-colored by type.
+star is your study area, spiral arms are your hypotheses, and the points of
+light in orbit are sub-hypotheses, datasets, papers, and organizations.
+
+Visual encoding:
+
+- **distance from the core** = relevance to the study area
+- **size of the light** = information content (data volume, influence, scope)
+- **glow** = current research interest — hot areas blaze and shimmer fast,
+  quiet ones barely breathe
+- **color** = node type
 
 Ships with a fully curated **El Niño / ENSO** universe: 4 working hypotheses,
 sub-hypotheses for each, and 12 real data sources (NOAA ONI, ERSSTv5, OISST,
@@ -59,7 +65,8 @@ Two paths:
     "summary": "…",
     "url": "https://…",          // optional; real sources only
     "relevance": 0.9,            // 0-1 → distance from the galactic core
-    "size": 0.6,                 // 0-1 → star size (data volume / influence / scope)
+    "size": 0.6,                 // 0-1 → size of the light (data volume / influence / scope)
+    "interest": 0.8,             // 0-1 → glow: current research attention/momentum
     "parent": "core",            // structural edge
     "status": "supported | contested | untested",  // hypotheses only
     "tags": ["…"]

@@ -109,8 +109,8 @@ function pickNode() {
 function selectNode(node, fly = true) {
     selected = node;
     renderNodePanel(node);
-    if (fly && galaxy.meshes.has(node.id)) {
-        flyTarget = galaxy.meshes.get(node.id).position.clone();
+    if (fly && galaxy.holders.has(node.id)) {
+        flyTarget = galaxy.holders.get(node.id).position.clone();
     }
 }
 
@@ -128,7 +128,11 @@ function renderNodePanel(node) {
     const meters = $('node-meta');
     meters.innerHTML = '';
     if (node.type !== 'core') {
-        meters.append(meter('Relevance', node.relevance), meter('Size / influence', node.size));
+        meters.append(
+            meter('Relevance — distance from core', node.relevance),
+            meter('Information — size of the light', node.size),
+            meter('Research interest — glow', node.interest ?? 0.5),
+        );
         if (node.status) {
             const s = document.createElement('p');
             s.className = 'panel-hint';
@@ -208,10 +212,12 @@ function renderSources() {
             li.innerHTML = `<div class="src-name">${escapeHtml(n.label)}</div>
                 ${n.url ? `<a href="${escapeHtml(n.url)}" target="_blank" rel="noopener">${escapeHtml(shortUrl(n.url))} ↗</a>` : ''}
                 <div class="src-bars">
-                    <span class="src-bar rel" style="width:${(n.relevance ?? 0) * 70}px"></span>
+                    <span class="src-bar rel" style="width:${(n.relevance ?? 0) * 56}px"></span>
                     <span class="src-bar-label">rel</span>
-                    <span class="src-bar siz" style="width:${(n.size ?? 0) * 70}px"></span>
+                    <span class="src-bar siz" style="width:${(n.size ?? 0) * 56}px"></span>
                     <span class="src-bar-label">size</span>
+                    <span class="src-bar glow" style="width:${(n.interest ?? 0.5) * 56}px"></span>
+                    <span class="src-bar-label">glow</span>
                 </div>`;
             li.addEventListener('click', e => {
                 if (e.target.tagName !== 'A') selectNode(n);
@@ -226,7 +232,8 @@ function shortUrl(url) {
 
 function renderLegend() {
     const used = new Set(universe.nodes.map(n => n.type));
-    $('legend').innerHTML = Object.entries(TYPE_LABELS)
+    const key = '<span class="legend-key">distance = relevance · size = information · glow = interest</span>';
+    $('legend').innerHTML = key + Object.entries(TYPE_LABELS)
         .filter(([type]) => used.has(type))
         .map(([type, label]) => {
             const hex = '#' + TYPE_COLORS[type].toString(16).padStart(6, '0');
@@ -237,12 +244,12 @@ function renderLegend() {
 $('search').addEventListener('input', e => {
     const q = e.target.value.trim().toLowerCase();
     if (!galaxy) return;
-    for (const [id, mesh] of galaxy.meshes) {
-        const n = mesh.userData.node;
+    for (const holder of galaxy.holders.values()) {
+        const u = holder.userData;
+        const n = u.node;
         const hit = !q || `${n.label} ${n.summary} ${(n.tags ?? []).join(' ')}`.toLowerCase().includes(q);
-        mesh.material.transparent = true;
-        mesh.material.opacity = hit ? 1 : 0.12;
-        if (mesh.userData.glow) mesh.userData.glow.material.opacity = hit ? (n.type === 'core' ? 0.9 : 0.45) : 0.03;
+        u.dim = hit ? 1 : 0.06;
+        u.sprites.forEach((s, i) => { s.material.opacity = u.baseOpacities[i] * u.dim; });
     }
 });
 $('search').addEventListener('keydown', e => {
@@ -435,11 +442,13 @@ function animate() {
         }
         if (hovered) { tooltip.style.left = `${mouseClient.x}px`; tooltip.style.top = `${mouseClient.y}px`; }
 
-        for (const [id, mesh] of galaxy.meshes) {
-            const base = mesh.userData.baseScale ?? (mesh.userData.baseScale = mesh.scale.x);
+        for (const [id, holder] of galaxy.holders) {
+            const u = holder.userData;
             const isSel = selected && id === selected.id;
-            const pulse = isSel ? 1 + 0.18 * Math.sin(t * 4) : 1;
-            mesh.scale.setScalar(base * pulse * (hovered && id === hovered.id ? 1.25 : 1));
+            const pulse = isSel ? 1 + 0.15 * Math.sin(t * 4) : 1;
+            holder.scale.setScalar(pulse * (hovered && id === hovered.id ? 1.25 : 1));
+            // Interest shimmer: hotter areas of research breathe faster and brighter.
+            u.halo.material.opacity = u.baseOpacities[2] * u.dim * (0.82 + 0.28 * Math.sin(t * u.pulseRate + u.pulsePhase));
         }
     }
 

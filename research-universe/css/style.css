@@ -220,6 +220,7 @@ body {
 .src-bar { height: 4px; border-radius: 2px; }
 .src-bar.rel { background: var(--accent); }
 .src-bar.siz { background: var(--paper); }
+.src-bar.glow { background: var(--core); }
 .src-bar-label { font-size: 0.62rem; color: var(--text-dim); }
 
 /* ---------- legend ---------- */
@@ -239,6 +240,7 @@ body {
     white-space: nowrap;
 }
 .legend-item { display: flex; align-items: center; gap: 6px; }
+.legend-key { color: var(--core); border-right: 1px solid rgba(255, 255, 255, 0.15); padding-right: 16px; }
 .legend-dot { width: 9px; height: 9px; border-radius: 50%; }
 
 /* ---------- tooltip ---------- */

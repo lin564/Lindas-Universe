@@ -1,7 +1,13 @@
 // Builds the 3D galaxy from a universe JSON document.
-// Layout: the core study area sits at the origin; each top-level hypothesis
-// anchors a spiral arm; every node's distance from the core is (1 - relevance)
-// and its radius is its size. Colors encode node type.
+//
+// Visual encoding:
+//   distance from core = relevance (closer = more central to the question)
+//   size of the light  = information (data volume / influence / scope)
+//   glow intensity     = research interest (how much attention the area has)
+//   color              = node type
+//
+// Nodes render as points of light — layered additive sprites (white-hot core,
+// colored body, soft interest halo) — with an invisible sphere for picking.
 
 import * as THREE from '../vendor/three.module.js';
 
@@ -46,6 +52,10 @@ function hashSeed(str) {
 function nodeRadius(node) {
     if (node.type === 'core') return 3.2;
     return 0.7 + 1.6 * THREE.MathUtils.clamp(node.size ?? 0.5, 0, 1);
+}
+
+function nodeInterest(node) {
+    return THREE.MathUtils.clamp(node.interest ?? 0.5, 0, 1);
 }
 
 // Assign every node a position. Hypotheses get evenly-spaced arm angles;
@@ -128,40 +138,102 @@ function makeLabelSprite(text, color) {
     return sprite;
 }
 
+// --- light textures ---------------------------------------------------------
+
+function radialTexture(stops) {
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = 128;
+    const ctx = canvas.getContext('2d');
+    const grad = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+    stops.forEach(([offset, color]) => grad.addColorStop(offset, color));
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 128, 128);
+    return new THREE.CanvasTexture(canvas);
+}
+
+let _coreTex = null, _haloTex = null;
+function coreTexture() {
+    return _coreTex ??= radialTexture([
+        [0, 'rgba(255,255,255,1)'],
+        [0.22, 'rgba(255,255,255,0.65)'],
+        [0.55, 'rgba(255,255,255,0.14)'],
+        [1, 'rgba(255,255,255,0)'],
+    ]);
+}
+function haloTexture() {
+    return _haloTex ??= radialTexture([
+        [0, 'rgba(255,255,255,0.32)'],
+        [0.45, 'rgba(255,255,255,0.1)'],
+        [1, 'rgba(255,255,255,0)'],
+    ]);
+}
+
+function lightSprite(texture, color, opacity, scale) {
+    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: texture,
+        color,
+        transparent: true,
+        opacity,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+    }));
+    sprite.scale.setScalar(scale);
+    return sprite;
+}
+
+// --- galaxy -----------------------------------------------------------------
+
+const pickGeo = new THREE.SphereGeometry(1, 8, 6);
+const pickMat = new THREE.MeshBasicMaterial();
+pickMat.visible = false; // never rendered; raycasting still hits the geometry
+
 export function buildGalaxy(universe) {
     const group = new THREE.Group();
     const { positions, coreId } = layoutUniverse(universe);
-    const meshes = new Map();
-    const sphereGeo = new THREE.SphereGeometry(1, 24, 18);
+    const meshes = new Map();   // id -> invisible pick mesh (raycast targets)
+    const holders = new Map();  // id -> per-node group (position + pulse scale)
 
     for (const node of universe.nodes) {
         const color = TYPE_COLORS[node.type] ?? TYPE_COLORS.concept;
-        const mat = new THREE.MeshBasicMaterial({ color });
-        const mesh = new THREE.Mesh(sphereGeo, mat);
-        mesh.position.copy(positions.get(node.id));
-        mesh.scale.setScalar(nodeRadius(node));
-        mesh.userData.node = node;
-        group.add(mesh);
-        meshes.set(node.id, mesh);
+        const r = nodeRadius(node);
+        const interest = nodeInterest(node);
+        const isCore = node.type === 'core';
 
-        // Soft glow billboard behind every star.
-        const glow = new THREE.Sprite(new THREE.SpriteMaterial({
-            map: glowTexture(),
-            color,
-            transparent: true,
-            opacity: node.type === 'core' ? 0.9 : 0.45,
-            depthWrite: false,
-            blending: THREE.AdditiveBlending,
-        }));
-        glow.scale.setScalar(nodeRadius(node) * (node.type === 'core' ? 9 : 5));
-        glow.position.copy(mesh.position);
-        group.add(glow);
-        mesh.userData.glow = glow;
+        const holder = new THREE.Group();
+        holder.position.copy(positions.get(node.id));
 
-        if (node.type === 'core' || node.type === 'hypothesis') {
+        const pick = new THREE.Mesh(pickGeo, pickMat);
+        pick.scale.setScalar(Math.max(r * 1.5, 1.4));
+        pick.userData.node = node;
+        holder.add(pick);
+
+        // The point of light: white-hot center, colored body sized by `size`,
+        // and an outer halo whose reach and brightness encode `interest`.
+        const core = lightSprite(coreTexture(), 0xffffff, 0.55, r * 1.4);
+        const body = lightSprite(coreTexture(), color, 0.85, r * (isCore ? 5.5 : 3.6));
+        const haloOpacity = 0.07 + 0.5 * interest;
+        const halo = lightSprite(haloTexture(), color, haloOpacity, r * (4.5 + 8 * interest) * (isCore ? 1.4 : 1));
+        holder.add(core, body, halo);
+
+        holder.userData = {
+            node,
+            sprites: [core, body, halo],
+            baseOpacities: [0.55, 0.85, haloOpacity],
+            halo,
+            // Hot areas shimmer faster; quiet ones barely breathe.
+            pulseRate: 0.6 + 2.6 * interest,
+            pulsePhase: hashSeed(node.id)() * Math.PI * 2,
+            dim: 1,
+        };
+
+        group.add(holder);
+        holders.set(node.id, holder);
+        meshes.set(node.id, pick);
+
+        if (isCore || node.type === 'hypothesis') {
             const label = makeLabelSprite(node.label, '#e8edf7');
-            label.position.copy(mesh.position);
-            label.position.y += nodeRadius(node) + 2.2;
+            label.position.copy(holder.position);
+            label.position.y += r + 2.2;
             group.add(label);
         }
     }
@@ -187,23 +259,7 @@ export function buildGalaxy(universe) {
         group.add(line);
     }
 
-    return { group, meshes, coreId };
-}
-
-let _glowTexture = null;
-function glowTexture() {
-    if (_glowTexture) return _glowTexture;
-    const canvas = document.createElement('canvas');
-    canvas.width = canvas.height = 64;
-    const ctx = canvas.getContext('2d');
-    const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-    grad.addColorStop(0, 'rgba(255,255,255,0.8)');
-    grad.addColorStop(0.4, 'rgba(255,255,255,0.18)');
-    grad.addColorStop(1, 'rgba(255,255,255,0)');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, 64, 64);
-    _glowTexture = new THREE.CanvasTexture(canvas);
-    return _glowTexture;
+    return { group, meshes, holders, coreId };
 }
 
 export function buildStarfield(count = 2200) {
