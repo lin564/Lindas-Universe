@@ -209,10 +209,10 @@ function dustTexture() {
     ]);
 }
 
-function sampleGalaxyPoint(arms, rim) {
+function sampleGalaxyPoint(dustArms, rim) {
     const roll = Math.random();
     let r, a, thickness;
-    if (roll < 0.3) {
+    if (roll < 0.25) {
         // bulge
         r = Math.abs(gauss()) * 8;
         a = Math.random() * Math.PI * 2;
@@ -221,10 +221,12 @@ function sampleGalaxyPoint(arms, rim) {
         // exponential disk profile — dense inside, smooth fade, no hard rim
         do { r = -Math.log(1 - Math.random()) * (rim * 0.35); } while (r > rim);
         r += 4;
-        if (roll < 0.52) {
-            a = Math.random() * Math.PI * 2;              // inter-arm field stars
+        if (roll < 0.55) {
+            a = Math.random() * Math.PI * 2;              // sparse field stars
         } else {
-            const arm = arms[(Math.random() * arms.length) | 0];
+            // dust lanes run BETWEEN the data arms, so the clusters sit
+            // against dark sky instead of inside fog patches
+            const arm = dustArms[(Math.random() * dustArms.length) | 0];
             a = arm + r * ARM_TWIST + gauss() * (0.1 + r * 0.0042);
         }
         thickness = Math.max(0.8, 2.6 - r * 0.02);
@@ -234,7 +236,10 @@ function sampleGalaxyPoint(arms, rim) {
 
 function buildDust(armAngles) {
     const group = new THREE.Group();
+    const materials = [];
     const arms = armAngles.length >= 2 ? armAngles : [0, Math.PI * 2 / 3, Math.PI * 4 / 3];
+    // Interleave: dust arms sit halfway between the data arms.
+    const dustArms = arms.map(a => a + Math.PI / arms.length);
     const rim = MAX_RADIUS + 10;
 
     const layers = [
@@ -246,7 +251,7 @@ function buildDust(armAngles) {
         const pos = new Float32Array(count * 3);
         const col = new Float32Array(count * 3);
         for (let i = 0; i < count; i++) {
-            const p = sampleGalaxyPoint(arms, rim);
+            const p = sampleGalaxyPoint(dustArms, rim);
             pos.set([p.x, p.y, p.z], i * 3);
 
             // Faint throughout: warm near the bulge, cooler toward the rim.
@@ -259,7 +264,7 @@ function buildDust(armAngles) {
         const geo = new THREE.BufferGeometry();
         geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
         geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
-        group.add(new THREE.Points(geo, new THREE.PointsMaterial({
+        const material = new THREE.PointsMaterial({
             map: dustTexture(),
             size,
             sizeAttenuation: true,
@@ -268,10 +273,13 @@ function buildDust(armAngles) {
             opacity,
             depthWrite: false,
             blending: THREE.AdditiveBlending,
-        })));
+        });
+        material.userData.baseOpacity = opacity;
+        materials.push(material);
+        group.add(new THREE.Points(geo, material));
     }
 
-    return group;
+    return { group, materials };
 }
 
 // --- galaxy -----------------------------------------------------------------
@@ -284,7 +292,8 @@ pickMat.visible = false; // never rendered; raycasting still hits the geometry
 export function buildGalaxy(universe) {
     const group = new THREE.Group();
     const { positions, coreId, armAngles } = layoutUniverse(universe);
-    group.add(buildDust(armAngles));
+    const dust = buildDust(armAngles);
+    group.add(dust.group);
     const meshes = new Map();   // id -> invisible pick mesh (raycast targets)
     const holders = new Map();  // id -> per-node group (position + pulse scale)
 
@@ -353,7 +362,7 @@ export function buildGalaxy(universe) {
         group.add(line);
     }
 
-    return { group, meshes, holders, coreId };
+    return { group, meshes, holders, coreId, dustMaterials: dust.materials };
 }
 
 export function buildStarfield(count = 2200) {

@@ -437,6 +437,11 @@ function animate() {
         }
         if (hovered) { tooltip.style.left = `${mouseClient.x}px`; tooltip.style.top = `${mouseClient.y}px`; }
 
+        // Dust is galaxy context: full when zoomed out, gone when zoomed
+        // into a cluster so the working view is pure data.
+        const dustFade = THREE.MathUtils.clamp((orbit.dist - 40) / 70, 0, 1);
+        for (const m of galaxy.dustMaterials) m.opacity = m.userData.baseOpacity * dustFade;
+
         for (const [id, holder] of galaxy.holders) {
             const u = holder.userData;
             const isSel = selected && id === selected.id;
