@@ -33,7 +33,7 @@ export const TYPE_LABELS = {
 
 const MIN_RADIUS = 14;   // most relevant nodes orbit this close
 const MAX_RADIUS = 60;   // least relevant nodes drift out here
-const ARM_TWIST = 0.035; // radians of spiral per unit radius
+const ARM_TWIST = 0.05;  // radians of spiral per unit radius
 
 // Deterministic per-node jitter so layouts are stable across reloads.
 function hashSeed(str) {
@@ -91,7 +91,7 @@ export function layoutUniverse(universe) {
         const rel = THREE.MathUtils.clamp(node.relevance ?? 0.5, 0, 1);
         const r = THREE.MathUtils.lerp(MAX_RADIUS, MIN_RADIUS, rel) * (0.92 + rand() * 0.16);
         const angle = baseAngle + (rand() - 0.5) * spread + r * ARM_TWIST;
-        const y = (rand() - 0.5) * 7;
+        const y = (rand() - 0.5) * 4.5; // keep the data in the galactic plane
         positions.set(node.id, new THREE.Vector3(Math.cos(angle) * r, y, Math.sin(angle) * r));
     }
 
@@ -112,7 +112,7 @@ export function layoutUniverse(universe) {
         if (parentPos) positions.get(n.id).lerp(parentPos, 0.35);
     });
 
-    return { positions, coreId };
+    return { positions, coreId, armAngles: [...armAngle.values()] };
 }
 
 function makeLabelSprite(text, color) {
@@ -191,6 +191,103 @@ function lightSprite(texture, color, opacity, scale) {
     return sprite;
 }
 
+// --- galactic dust & bulge ---------------------------------------------------
+// Thousands of faint decorative stars tracing the same spiral arms the data
+// lives on, plus a glowing central bulge and a soft disk plane. Pure scenery —
+// not pickable, not searchable.
+
+function gauss() {
+    return (Math.random() + Math.random() + Math.random() + Math.random() - 2) / 1.2;
+}
+
+let _dustTex = null;
+function dustTexture() {
+    return _dustTex ??= radialTexture([
+        [0, 'rgba(255,255,255,1)'],
+        [0.3, 'rgba(255,255,255,0.5)'],
+        [1, 'rgba(255,255,255,0)'],
+    ]);
+}
+
+function buildDust(armAngles) {
+    const group = new THREE.Group();
+    const arms = armAngles.length >= 2 ? armAngles : [0, Math.PI * 2 / 3, Math.PI * 4 / 3];
+    const rim = MAX_RADIUS + 10;
+
+    const layers = [
+        { count: 3800, size: 1.0, opacity: 0.55 }, // fine dust
+        { count: 1400, size: 2.4, opacity: 0.2 },  // soft haze
+    ];
+
+    for (const { count, size, opacity } of layers) {
+        const pos = new Float32Array(count * 3);
+        const col = new Float32Array(count * 3);
+        for (let i = 0; i < count; i++) {
+            let x, y, z, r;
+            if (Math.random() < 0.3) {
+                // central bulge: dense, slightly thicker
+                r = Math.abs(gauss()) * 9;
+                const a = Math.random() * Math.PI * 2;
+                x = Math.cos(a) * r;
+                z = Math.sin(a) * r;
+                y = gauss() * Math.max(1.2, 3.4 - r * 0.15);
+            } else {
+                // spiral arms: density falls outward, spread widens slightly
+                r = 6 + Math.pow(Math.random(), 0.75) * (rim - 6);
+                const arm = arms[(Math.random() * arms.length) | 0];
+                const a = arm + r * ARM_TWIST + gauss() * (0.14 + r * 0.0045);
+                x = Math.cos(a) * r;
+                z = Math.sin(a) * r;
+                y = gauss() * Math.max(0.8, 2.4 - r * 0.018);
+            }
+            pos.set([x, y, z], i * 3);
+
+            // warm near the core, cooler and dimmer toward the rim
+            const tRim = Math.min(r / rim, 1);
+            const b = 0.3 + Math.random() * 0.7;
+            col[i * 3] = b * (1.0 - 0.28 * tRim);
+            col[i * 3 + 1] = b * (0.88 - 0.05 * tRim);
+            col[i * 3 + 2] = b * (0.68 + 0.32 * tRim);
+        }
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+        geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+        group.add(new THREE.Points(geo, new THREE.PointsMaterial({
+            map: dustTexture(),
+            size,
+            sizeAttenuation: true,
+            vertexColors: true,
+            transparent: true,
+            opacity,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending,
+        })));
+    }
+
+    // Glowing galactic bulge…
+    group.add(
+        lightSprite(haloTexture(), WARM_WHITE, 0.5, 30),
+        lightSprite(haloTexture(), 0xffd9a0, 0.2, 70),
+    );
+    // …and a faint disk of light in the galactic plane.
+    const disk = new THREE.Mesh(
+        new THREE.CircleGeometry(rim + 6, 64),
+        new THREE.MeshBasicMaterial({
+            map: haloTexture(),
+            color: WARM_WHITE,
+            transparent: true,
+            opacity: 0.07,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending,
+            side: THREE.DoubleSide,
+        }),
+    );
+    disk.rotation.x = -Math.PI / 2;
+    group.add(disk);
+
+    return group;
+}
+
 // --- galaxy -----------------------------------------------------------------
 
 const WARM_WHITE = 0xffe7c2;
@@ -200,7 +297,8 @@ pickMat.visible = false; // never rendered; raycasting still hits the geometry
 
 export function buildGalaxy(universe) {
     const group = new THREE.Group();
-    const { positions, coreId } = layoutUniverse(universe);
+    const { positions, coreId, armAngles } = layoutUniverse(universe);
+    group.add(buildDust(armAngles));
     const meshes = new Map();   // id -> invisible pick mesh (raycast targets)
     const holders = new Map();  // id -> per-node group (position + pulse scale)
 
