@@ -290,6 +290,7 @@ body {
     outline: none;
 }
 .modal textarea:focus, .modal input:focus, .modal select:focus { border-color: var(--accent); }
+.modal select option { background: #ffffff; color: #000000; }
 .modal-row { margin-top: 12px; display: flex; gap: 12px; }
 .modal-row label, .modal-label { display: block; font-size: 0.8rem; color: var(--text-dim); }
 .modal-row select { margin-top: 4px; width: auto; }
