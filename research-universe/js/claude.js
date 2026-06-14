@@ -114,9 +114,26 @@ function extractJson(message) {
     if (message.stop_reason === 'refusal') {
         throw new Error('Claude declined this request' + (message.stop_details?.explanation ? `: ${message.stop_details.explanation}` : '.'));
     }
+    if (message.stop_reason === 'max_tokens') {
+        throw new Error('The universe was too large to finish in one response. Try a more focused description.');
+    }
     const text = message.content.find(b => b.type === 'text')?.text;
     if (!text) throw new Error('Empty response from the API.');
-    return JSON.parse(text);
+    return parseJsonLoose(text);
+}
+
+// Structured outputs return raw JSON, but tolerate a model (or older SDK) that
+// wraps it in prose or a ```json fence.
+function parseJsonLoose(text) {
+    try { return JSON.parse(text); } catch { /* try harder below */ }
+    const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
+    if (fenced) { try { return JSON.parse(fenced[1]); } catch { /* fall through */ } }
+    const start = text.indexOf('{');
+    const end = text.lastIndexOf('}');
+    if (start !== -1 && end > start) {
+        try { return JSON.parse(text.slice(start, end + 1)); } catch { /* fall through */ }
+    }
+    throw new Error('Could not parse the universe JSON from Claude’s response.');
 }
 
 async function runStructured({ system, prompt, schema, maxTokens, onStatus }) {
@@ -141,7 +158,7 @@ export async function generateUniverse(description, onStatus) {
     onStatus?.('Asking Claude to chart the universe…');
     const universe = await runStructured({
         system: SYSTEM_PROMPT,
-        prompt: `Build a research universe for the following study area. Today's date is ${new Date().toISOString().slice(0, 10)}.\n\n<study_area>\n${description}\n</study_area>`,
+        prompt: `Build a research universe for the following study area. Today's date is ${new Date().toISOString().slice(0, 10)}.\n\n<study_area>\n${description}\n</study_area>\n\nRespond with only the JSON document — no prose, no code fences.`,
         schema: UNIVERSE_SCHEMA,
         maxTokens: 32000,
         onStatus,
@@ -161,7 +178,7 @@ export async function expandNode(universe, node, onStatus) {
     };
     const result = await runStructured({
         system: SYSTEM_PROMPT,
-        prompt: `Within the research universe described below, expand one node: generate 3-5 NEW child nodes for it — sub-hypotheses that sharpen or challenge it, plus the 1-3 most useful datasets or papers for testing them. Every new node's parent must be "${node.id}" (or a new sub-hypothesis id you introduce). New ids must not collide with existing_ids. Do not repeat existing nodes.\n\n${JSON.stringify(context, null, 2)}`,
+        prompt: `Within the research universe described below, expand one node: generate 3-5 NEW child nodes for it — sub-hypotheses that sharpen or challenge it, plus the 1-3 most useful datasets or papers for testing them. Every new node's parent must be "${node.id}" (or a new sub-hypothesis id you introduce). New ids must not collide with existing_ids. Do not repeat existing nodes.\n\n${JSON.stringify(context, null, 2)}\n\nRespond with only the JSON document — no prose, no code fences.`,
         schema: EXPANSION_SCHEMA,
         maxTokens: 16000,
         onStatus,
