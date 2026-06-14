@@ -53,6 +53,25 @@ Two paths:
    included) on your clipboard. Paste it into claude.ai, save the JSON reply
    to a file, and import it.
 
+## Pulling real data from NASA's DAACs
+
+Select any node (a hypothesis, the core, a sub-hypothesis, or an existing
+dataset) and click **🛰 Find NASA DAAC datasets**. The app queries NASA's
+[CMR](https://cmr.earthdata.nasa.gov) — the public catalog that indexes every
+DAAC's collections — using the node's label and tags, and drops the best
+matches into the universe as new dataset stars:
+
+- **relevance (distance)** — placed near the node they were attached to, easing
+  outward by match rank
+- **size (information)** — temporal coverage of the record (longer / ongoing =
+  bigger)
+- **glow (interest)** — community-usage rank (CMR `sort_key=-usage_score`)
+
+Each star is tagged with its DAAC (PO.DAAC, GES DISC, NSIDC DAAC, LP DAAC, …)
+and links to the collection in Earthdata Search (or its DOI). Collection search
+needs no key and runs entirely in your browser — nothing is proxied. Results
+merge into the current universe, so they export and persist like any other node.
+
 ## Universe JSON format
 
 ```jsonc

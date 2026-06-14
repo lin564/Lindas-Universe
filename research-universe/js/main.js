@@ -1,6 +1,7 @@
 import * as THREE from '../vendor/three.module.js';
 import { buildGalaxy, buildStarfield, TYPE_COLORS, TYPE_LABELS } from './galaxy.js';
 import * as claude from './claude.js';
+import { searchDAAC } from './nasa.js';
 
 const $ = id => document.getElementById(id);
 
@@ -156,6 +157,8 @@ function renderNodePanel(node) {
 
     const expandable = ['core', 'hypothesis', 'subhypothesis', 'concept'].includes(node.type);
     $('btn-expand').classList.toggle('hidden', !expandable);
+    // Datasets can pull NASA DAAC data too; only papers/orgs can't anchor a search.
+    $('btn-nasa').classList.toggle('hidden', node.type === 'organization' || node.type === 'paper');
 
     const childrenBox = $('node-children');
     childrenBox.innerHTML = '';
@@ -361,6 +364,28 @@ $('btn-expand').addEventListener('click', async () => {
         setUniverse(universe);          // rebuild galaxy with the new nodes
         selectNode(nodeById(node.id) ?? universe.nodes[0], false);
         btn.textContent = `Added ${added} new nodes ✓`;
+    } catch (err) {
+        btn.textContent = original;
+        alert(err.message);
+    } finally {
+        btn.disabled = false;
+        setTimeout(() => { btn.textContent = original; }, 2500);
+    }
+});
+
+$('btn-nasa').addEventListener('click', async () => {
+    if (!selected) return;
+    const node = selected;
+    const btn = $('btn-nasa');
+    btn.disabled = true;
+    const original = btn.textContent;
+    btn.textContent = '🛰 Searching NASA DAACs…';
+    try {
+        const added = await searchDAAC(node, universe);
+        universe.nodes.push(...added);
+        setUniverse(universe);          // rebuild galaxy with the new dataset stars
+        selectNode(nodeById(node.id) ?? universe.nodes[0], false);
+        btn.textContent = `Added ${added.length} NASA datasets ✓`;
     } catch (err) {
         btn.textContent = original;
         alert(err.message);
