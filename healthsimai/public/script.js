@@ -167,7 +167,7 @@
   /* ---------- Lead capture (contact + gated downloads) ---------- */
   // When the lead-intake Worker is deployed, set this to its URL (e.g. "/api/lead").
   // While empty, the site degrades gracefully to an email fallback so nothing breaks.
-  const LEAD_ENDPOINT = '';
+  const LEAD_ENDPOINT = 'https://healthsimai-lead-intake.ultisim.workers.dev';
 
   const FREE_EMAIL = /@(gmail|yahoo|outlook|hotmail|live|icloud|aol|proton(mail)?|gmx|mail)\./i;
 
