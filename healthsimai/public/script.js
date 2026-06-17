@@ -164,23 +164,130 @@
   const runBtn = document.getElementById('runScenario');
   if (runBtn) runBtn.addEventListener('click', () => scenNums.forEach(animateCount));
 
-  /* ---------- Contact form ---------- */
-  const form = document.getElementById('contactForm');
-  if (form) form.addEventListener('submit', e => {
-    e.preventDefault();
-    const data = new FormData(form);
-    const subject = encodeURIComponent('Demo request: ' + (data.get('organization') || data.get('name')));
+  /* ---------- Lead capture (contact + gated downloads) ---------- */
+  // When the lead-intake Worker is deployed, set this to its URL (e.g. "/api/lead").
+  // While empty, the site degrades gracefully to an email fallback so nothing breaks.
+  const LEAD_ENDPOINT = '';
+
+  const FREE_EMAIL = /@(gmail|yahoo|outlook|hotmail|live|icloud|aol|proton(mail)?|gmx|mail)\./i;
+
+  function downloadsCount() {
+    return parseInt(localStorage.getItem('hsai_downloads') || '0', 10);
+  }
+
+  // Mirrors the server-side scoring so the CRM gets a hint even before sync.
+  function scoreLead(d) {
+    let s = 0;
+    const email = (d.email || '').trim();
+    if (email && !FREE_EMAIL.test(email)) s += 40;        // work email
+    if ((d.organization || '').trim()) s += 20;
+    const role = (d.role || '').toLowerCase();
+    if (/chief|c[-\s]?level|\bceo\b|\bcio\b|\bcfo\b|\bcmo\b|\bcoo\b|president|vp|vice president|head of|director|officer|administrator/.test(role)) s += 25;
+    else if (/manager|lead|principal/.test(role)) s += 10;
+    if ((d.interest || '').trim()) s += 10;
+    s += Math.min(downloadsCount() * 5, 20);
+    const tier = s >= 70 ? 'hot' : s >= 40 ? 'warm' : 'cold';
+    return { score: s, tier: tier };
+  }
+
+  function mailtoFallback(d) {
+    const subject = encodeURIComponent(
+      (d.source === 'download' ? 'Resource request: ' + (d.asset || '') : 'Demo request: ' + (d.organization || d.name)));
     const body = encodeURIComponent(
-      'Name: ' + data.get('name') +
-      '\nEmail: ' + data.get('email') +
-      '\nOrganization: ' + (data.get('organization') || 'n/a') +
-      '\nInterest: ' + (data.get('interest') || 'n/a') +
-      '\n\n' + (data.get('message') || ''));
+      'Name: ' + (d.name || '') +
+      '\nEmail: ' + (d.email || '') +
+      '\nOrganization: ' + (d.organization || 'n/a') +
+      '\nRole: ' + (d.role || 'n/a') +
+      (d.asset ? '\nResource: ' + d.asset : '') +
+      (d.interest ? '\nInterest: ' + d.interest : '') +
+      '\n\n' + (d.message || ''));
     window.location.href = 'mailto:info@healthsimai.com?subject=' + subject + '&body=' + body;
-    const note = document.createElement('p');
-    note.className = 'form-success';
-    note.textContent = 'Opening your email client… If nothing happens, email us at info@healthsimai.com.';
-    form.appendChild(note);
-    setTimeout(() => note.remove(), 8000);
+  }
+
+  // Returns a promise that resolves true if the lead reached the endpoint.
+  function submitLead(d) {
+    const payload = Object.assign({}, d, scoreLead(d), {
+      downloads_count: downloadsCount(),
+      user_agent: navigator.userAgent,
+      page: location.pathname,
+      ts: new Date().toISOString()
+    });
+    if (!LEAD_ENDPOINT) {
+      mailtoFallback(d);
+      return Promise.resolve(false);
+    }
+    return fetch(LEAD_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(r => r.ok).catch(() => { mailtoFallback(d); return false; });
+  }
+
+  function formData(form) {
+    const o = {};
+    new FormData(form).forEach((v, k) => { o[k] = v; });
+    return o;
+  }
+
+  function showSuccess(form, msg) {
+    let note = form.querySelector('.form-success');
+    if (!note) { note = document.createElement('p'); note.className = 'form-success'; form.appendChild(note); }
+    note.textContent = msg;
+  }
+
+  /* Contact / demo form */
+  const contactForm = document.getElementById('contactForm');
+  if (contactForm) contactForm.addEventListener('submit', e => {
+    e.preventDefault();
+    if (!contactForm.checkValidity()) { contactForm.reportValidity(); return; }
+    const d = formData(contactForm);
+    submitLead(d).then(sent => {
+      showSuccess(contactForm, sent
+        ? "Thanks — your request is in. A HealthSimAI specialist will reach out shortly."
+        : "Opening your email client… If nothing happens, email us at info@healthsimai.com.");
+    });
   });
+
+  /* Gated-download modal */
+  const modal = document.getElementById('downloadModal');
+  if (modal) {
+    const titleEl = document.getElementById('modalTitle');
+    const assetEl = document.getElementById('modalAsset');
+    const dlForm = document.getElementById('downloadForm');
+    let lastTrigger = null;
+
+    function openModal(asset) {
+      assetEl.value = asset;
+      titleEl.textContent = 'Get the ' + asset;
+      modal.hidden = false;
+      document.body.style.overflow = 'hidden';
+      const first = dlForm.querySelector('input[name="name"]');
+      if (first) first.focus();
+    }
+    function closeModal() {
+      modal.hidden = true;
+      document.body.style.overflow = '';
+      const note = dlForm.querySelector('.form-success');
+      if (note) note.remove();
+      dlForm.reset();
+      if (lastTrigger) lastTrigger.focus();
+    }
+
+    document.querySelectorAll('.js-download').forEach(btn => {
+      btn.addEventListener('click', () => { lastTrigger = btn; openModal(btn.dataset.doc || 'guide'); });
+    });
+    modal.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', closeModal));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !modal.hidden) closeModal(); });
+
+    dlForm.addEventListener('submit', e => {
+      e.preventDefault();
+      if (!dlForm.checkValidity()) { dlForm.reportValidity(); return; }
+      const d = formData(dlForm);
+      localStorage.setItem('hsai_downloads', String(downloadsCount() + 1));
+      submitLead(d).then(() => {
+        showSuccess(dlForm, "Thanks — we've emailed the " + (d.asset || 'resource') + " to " + d.email + ".");
+        setTimeout(closeModal, 3500);
+      });
+    });
+  }
 })();

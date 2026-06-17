@@ -534,3 +534,101 @@ input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; border-radius
   .section { padding: 64px 0; }
   .footer-grid { grid-template-columns: 1fr; }
 }
+
+/* ============ Keith review: marketing-pass additions ============ */
+
+/* Logo tagline readability (slides 2 & 16) */
+.logo-tag { font-size: .7rem; color: #aab8d0; letter-spacing: .015em; }
+.kicker-cased { text-transform: none; letter-spacing: .01em; font-size: 1rem; }
+.kicker-cased .logo-ai { color: var(--cyan); }
+
+/* Hero subhead: no orphaned word (slide 2) */
+.hero-sub { text-wrap: balance; }
+.hero-foot { font-size: .78rem; color: var(--muted-d); margin-top: 1rem; }
+.hero-star { color: var(--cyan); font-size: .6em; vertical-align: super; }
+
+/* Operational View framing (slide 3) */
+.opview-intro { max-width: 50rem; margin: 0 auto 1.6rem; text-align: center; }
+.opview-eyebrow { font-size: .74rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--cyan); }
+.opview-intro h2 { font-size: clamp(1.4rem, 2.4vw, 1.9rem); font-weight: 800; letter-spacing: -.02em; margin: .4rem 0 .6rem; }
+.opview-intro p { color: var(--muted-d); font-size: 1.02rem; }
+.dash.framed { border-color: rgba(34, 211, 238, .35); box-shadow: var(--shadow), 0 0 0 4px rgba(34, 211, 238, .06); }
+.opview-features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.2rem; }
+.opview-features div { background: var(--panel); border: 1px solid var(--line-d); border-radius: 12px; padding: 1rem 1.1rem; }
+.opview-features b { display: block; color: var(--white); font-size: .98rem; margin-bottom: .2rem; }
+.opview-features span { color: var(--muted-d); font-size: .86rem; }
+
+/* "Model your own facility" link on the scenario panel */
+.scen-try { display: inline-block; margin-top: .3rem; color: var(--cyan); font-weight: 700; font-size: .72rem; }
+.scen-try:hover { text-decoration: underline; }
+
+/* Solutions provided to: prominent stacked logos (slide 4) */
+.trust-strip { flex-direction: column; gap: 1rem; text-align: center; }
+.trust-lead { font-size: 1rem; font-weight: 700; color: var(--text-d); letter-spacing: .01em; }
+.trust-logos { gap: 2.6rem; justify-content: center; }
+.trust-strip .tlogo { font-size: 1.08rem; opacity: 1; }
+
+/* Value-path heading (slide 4) */
+.valuepath-head { text-align: center; max-width: 46rem; margin: 0 auto -1.4rem; }
+.valuepath-head h2 { font-size: clamp(1.2rem, 2.2vw, 1.6rem); font-weight: 700; color: var(--text-d); letter-spacing: -.01em; }
+
+/* Why-card trends (slide 5) */
+.why-trend { display: inline-block; margin-top: .5rem; font-size: .72rem; font-weight: 700; padding: .2rem .55rem; border-radius: 999px; }
+.why-trend.up { color: #b91c1c; background: rgba(248, 113, 113, .12); }
+.why-trend.flat { color: #b45309; background: rgba(251, 191, 36, .14); }
+.why-foot { grid-column: 1 / -1; text-align: center; font-size: .76rem; color: var(--slate); margin-top: 1.4rem; }
+
+/* Platform KPI explainer + reliable-data framing (slide 6) */
+.kpi-explain { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin: 2.2rem 0 .5rem; }
+.kpi-explain div { background: var(--panel); border: 1px solid var(--line-d); border-radius: 12px; padding: 1rem 1.1rem; }
+.kpi-explain b { display: block; color: var(--cyan); font-size: .9rem; margin-bottom: .25rem; }
+.kpi-explain span { color: var(--muted-d); font-size: .84rem; }
+.pipeline-head { text-align: center; max-width: 44rem; margin: 2.6rem auto -1rem; }
+.pipeline-head h3 { font-size: clamp(1.2rem, 2.2vw, 1.6rem); font-weight: 800; letter-spacing: -.01em; }
+.pipeline-head p { color: var(--muted-d); font-size: .98rem; margin-top: .4rem; }
+
+/* Solutions focus heading + prominent tabs (slide 7) */
+.focus-head { text-align: center; font-size: clamp(1.2rem, 2.2vw, 1.55rem); font-weight: 800; letter-spacing: -.01em; margin: 2.4rem 0 1.2rem; }
+.tabs.prominent .tab-list { justify-content: center; }
+.tabs.prominent .tab { font-size: 1rem; padding: .9rem 1.7rem; }
+
+/* Impact estimator guidance (slide 8) */
+.roi-guide { color: var(--blue); font-weight: 600; font-size: .9rem; margin-top: .5rem; }
+.roi-result-sub { display: block; font-size: .78rem; color: var(--slate); margin-top: .5rem; line-height: 1.45; }
+
+/* Expertise + partners credibility links (slides 10 & 11) */
+.exp-link, .results-link { display: inline-block; margin-top: 1rem; color: var(--cyan); font-weight: 700; font-size: .9rem; }
+.exp-link:hover, .results-link:hover { text-decoration: underline; }
+.results-link { color: var(--blue); }
+
+/* Resource items are now buttons too */
+.res-item { font-family: inherit; text-align: left; width: 100%; cursor: pointer; }
+
+/* Contact tagline (slide 14) */
+.cta-tag { font-size: .82rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--cyan); margin-bottom: .5rem; }
+
+/* ===== Gated-download modal ===== */
+.modal { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; padding: 1.2rem; }
+.modal[hidden] { display: none; }
+.modal-backdrop { position: absolute; inset: 0; background: rgba(4, 8, 15, .72); backdrop-filter: blur(4px); }
+.modal-card { position: relative; width: min(520px, 100%); background: var(--bg-1); border: 1px solid var(--line-d); border-radius: 16px; padding: 2rem; box-shadow: var(--shadow); animation: modalIn .2s ease; }
+@keyframes modalIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.modal-x { position: absolute; top: .8rem; right: 1rem; background: none; border: none; color: var(--muted-d); font-size: 1.6rem; line-height: 1; cursor: pointer; }
+.modal-x:hover { color: var(--white); }
+.modal-eyebrow { font-size: .72rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--cyan); }
+.modal-card h3 { font-size: 1.5rem; font-weight: 800; letter-spacing: -.02em; margin: .3rem 0 .4rem; }
+.modal-sub { color: var(--muted-d); font-size: .95rem; margin-bottom: 1.2rem; }
+.modal-card .contact-form { gap: .8rem; }
+
+@media (max-width: 860px) {
+  .opview-features, .kpi-explain { grid-template-columns: 1fr; }
+  .trust-logos { gap: 1.4rem 2rem; }
+}
+
+/* ===== Legal pages ===== */
+.legal-page { padding-top: 130px; }
+.legal-banner { background: rgba(34,211,238,.08); border: 1px solid rgba(34,211,238,.3); border-radius: 12px; padding: 1rem 1.2rem; color: var(--slate); font-size: .9rem; max-width: 48rem; margin-bottom: 2rem; }
+.legal-body { max-width: 48rem; }
+.legal-body h3 { font-size: 1.1rem; font-weight: 800; margin: 1.6rem 0 .4rem; color: var(--ink); }
+.legal-body p { color: var(--slate); margin-bottom: .6rem; }
+.legal-body a { color: var(--blue); }
