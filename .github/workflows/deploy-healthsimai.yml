@@ -14,10 +14,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Deploy Worker
+      - name: Deploy static site Worker
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ab0fe0d5a72e29f4c9d40da04c603e2e
           workingDirectory: healthsimai
+          wranglerVersion: "4.100.0"
+
+      - name: Deploy lead-intake Worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ab0fe0d5a72e29f4c9d40da04c603e2e
+          workingDirectory: healthsimai/lead-intake
           wranglerVersion: "4.100.0"
