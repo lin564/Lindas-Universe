@@ -4,15 +4,24 @@
  * Routes:
  *   POST /                          Lead intake (contact form + gated downloads)
  *   GET  /doc/:slug                 Download a document (streams from R2)
- *   GET  /admin/documents           List documents          [requires ADMIN_TOKEN]
- *   POST /admin/documents           Upload a document       [requires ADMIN_TOKEN]
- *   DELETE /admin/documents/:slug   Deactivate a document   [requires ADMIN_TOKEN]
- *   PUT    /admin/documents/:slug   Reactivate a document   [requires ADMIN_TOKEN]
  *
- * Secrets (set with `npx wrangler secret put <NAME>`):
- *   ADMIN_TOKEN    — bearer token for the admin API / admin.html
- *   RIKOH_TOKEN    — auth for Ri Koh CRM forwarding
- *   RESEND_API_KEY — enables email delivery via Resend (resend.com)
+ *   GET  /admin/documents           List documents          [admin]
+ *   POST /admin/documents           Upload a document       [admin]
+ *   DELETE /admin/documents/:slug   Deactivate a document   [admin]
+ *   PUT    /admin/documents/:slug   Reactivate a document   [admin]
+ *
+ *   GET  /admin/users               List admin users        [admin]
+ *   POST /admin/users               Create admin user       [admin]
+ *   DELETE /admin/users/:id         Deactivate user         [admin]
+ *   PUT    /admin/users/:id         Reactivate user         [admin]
+ *
+ * Auth: Bearer token checked against env.ADMIN_TOKEN (master) or
+ *       SHA-256 hash in admin_users table.
+ *
+ * Secrets (npx wrangler secret put <NAME> --name healthsimai-lead-intake):
+ *   ADMIN_TOKEN    — master bootstrap token (always works)
+ *   RIKOH_TOKEN    — Ri Koh CRM auth
+ *   RESEND_API_KEY — email delivery via resend.com
  */
 
 const FREE_EMAIL = /@(gmail|yahoo|outlook|hotmail|live|icloud|aol|proton(mail)?|gmx|mail)\./i;
@@ -31,10 +40,28 @@ function json(obj, status = 200) {
   });
 }
 
-function requireAdmin(request, env) {
-  if (!env.ADMIN_TOKEN) return false;
+async function hashToken(token) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(token));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function generateToken() {
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function requireAdmin(request, env) {
   const auth = (request.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '');
-  return auth === env.ADMIN_TOKEN;
+  if (!auth) return false;
+  // Master bootstrap token
+  if (env.ADMIN_TOKEN && auth === env.ADMIN_TOKEN) return true;
+  // Named user token — check hashed value in D1
+  const hash = await hashToken(auth);
+  const row = await env.LEADS_DB.prepare(
+    `SELECT id FROM admin_users WHERE token_hash = ? AND active = 1`
+  ).bind(hash).first();
+  return !!row;
 }
 
 // ── Lead scoring (mirrors client-side in script.js) ───────────────────────────
@@ -106,7 +133,6 @@ async function handleLead(request, env) {
     `INSERT INTO lead_events (lead_id,event_type,detail) VALUES (?,?,?)`
   ).bind(leadId, d.source || 'form', d.asset || d.interest || '').run();
 
-  // Forward to Ri Koh CRM
   if (env.RIKOH_ENDPOINT && env.RIKOH_TOKEN) {
     try {
       await fetch(env.RIKOH_ENDPOINT, {
@@ -115,18 +141,15 @@ async function handleLead(request, env) {
         body: JSON.stringify({ pipeline: 'healthsimai', lead_id: leadId, score, tier, ...d })
       });
       await env.LEADS_DB.prepare(`UPDATE leads SET synced_to_rikoh = 1 WHERE id = ?`).bind(leadId).run();
-    } catch { /* leave synced_to_rikoh = 0 for a retry job */ }
+    } catch { /* retry job */ }
   }
 
-  // Email the requested resource
   let emailed = false;
   if (d.source === 'download' && d.asset && env.DOCS) {
     const doc = await env.LEADS_DB.prepare(
       `SELECT slug, display_name FROM documents WHERE slug = ? AND active = 1`
     ).bind(d.asset).first();
-    if (doc) {
-      emailed = await sendResourceEmail(env, d.email, d.name, doc.slug, doc.display_name);
-    }
+    if (doc) emailed = await sendResourceEmail(env, d.email, d.name, doc.slug, doc.display_name);
   }
 
   return json({ ok: true, lead_id: leadId, tier, emailed });
@@ -159,7 +182,7 @@ async function handleServeDoc(slug, env) {
   });
 }
 
-// ── Admin: list documents ─────────────────────────────────────────────────────
+// ── Admin: documents ──────────────────────────────────────────────────────────
 
 async function handleListDocs(env) {
   const { results } = await env.LEADS_DB.prepare(
@@ -168,8 +191,6 @@ async function handleListDocs(env) {
   ).all();
   return json({ documents: results || [] });
 }
-
-// ── Admin: upload document ────────────────────────────────────────────────────
 
 async function handleUploadDoc(request, env) {
   if (!env.DOCS) return json({ error: 'R2 not bound — deploy with updated wrangler.jsonc' }, 503);
@@ -187,13 +208,11 @@ async function handleUploadDoc(request, env) {
   if (!slug) slug = displayName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
   if (!/^[a-z0-9-]+$/.test(slug)) return json({ error: 'slug: lowercase letters, numbers, hyphens only' }, 400);
 
-  const ext     = (file.name || 'document.pdf').split('.').pop().toLowerCase();
-  const r2Key   = `docs/${slug}.${ext}`;
+  const ext      = (file.name || 'document.pdf').split('.').pop().toLowerCase();
+  const r2Key    = `docs/${slug}.${ext}`;
   const mimeType = file.type || 'application/pdf';
 
-  await env.DOCS.put(r2Key, await file.arrayBuffer(), {
-    httpMetadata: { contentType: mimeType }
-  });
+  await env.DOCS.put(r2Key, await file.arrayBuffer(), { httpMetadata: { contentType: mimeType } });
 
   await env.LEADS_DB.prepare(
     `INSERT INTO documents (slug, display_name, r2_key, mime_type, description) VALUES (?,?,?,?,?)
@@ -208,11 +227,48 @@ async function handleUploadDoc(request, env) {
   return json({ ok: true, slug, r2_key: r2Key, display_name: displayName });
 }
 
-// ── Admin: toggle active ──────────────────────────────────────────────────────
-
 async function handleToggleDoc(slug, active, env) {
   await env.LEADS_DB.prepare(`UPDATE documents SET active = ? WHERE slug = ?`).bind(active, slug).run();
   return json({ ok: true, slug, active: Boolean(active) });
+}
+
+// ── Admin: users ──────────────────────────────────────────────────────────────
+
+async function handleListUsers(env) {
+  const { results } = await env.LEADS_DB.prepare(
+    `SELECT id, name, email, active, created_at FROM admin_users ORDER BY created_at ASC`
+  ).all();
+  return json({ users: results || [] });
+}
+
+async function handleCreateUser(request, env) {
+  let body;
+  try { body = await request.json(); } catch { return json({ error: 'bad json' }, 400); }
+
+  const name  = (body.name  || '').trim();
+  const email = (body.email || '').trim().toLowerCase();
+
+  if (!name)                              return json({ error: 'name is required' }, 400);
+  if (!email || !/.+@.+\..+/.test(email)) return json({ error: 'valid email required' }, 400);
+
+  const token = generateToken();
+  const hash  = await hashToken(token);
+
+  try {
+    await env.LEADS_DB.prepare(
+      `INSERT INTO admin_users (name, email, token_hash) VALUES (?, ?, ?)`
+    ).bind(name, email, hash).run();
+  } catch (e) {
+    if (String(e).includes('UNIQUE')) return json({ error: 'email already exists' }, 409);
+    throw e;
+  }
+
+  return json({ ok: true, name, email, token });
+}
+
+async function handleToggleUser(id, active, env) {
+  await env.LEADS_DB.prepare(`UPDATE admin_users SET active = ? WHERE id = ?`).bind(active, id).run();
+  return json({ ok: true, id, active: Boolean(active) });
 }
 
 // ── Router ────────────────────────────────────────────────────────────────────
@@ -229,16 +285,30 @@ export default {
     }
 
     if (path.startsWith('/admin/')) {
-      if (!requireAdmin(request, env)) return json({ error: 'unauthorized' }, 401);
+      if (!await requireAdmin(request, env)) return json({ error: 'unauthorized' }, 401);
+
+      // Documents
       if (path === '/admin/documents') {
         if (method === 'GET')  return handleListDocs(env);
         if (method === 'POST') return handleUploadDoc(request, env);
       }
-      const m = path.match(/^\/admin\/documents\/([^/]+)$/);
-      if (m) {
-        if (method === 'DELETE') return handleToggleDoc(m[1], 0, env);
-        if (method === 'PUT')    return handleToggleDoc(m[1], 1, env);
+      const docMatch = path.match(/^\/admin\/documents\/([^/]+)$/);
+      if (docMatch) {
+        if (method === 'DELETE') return handleToggleDoc(docMatch[1], 0, env);
+        if (method === 'PUT')    return handleToggleDoc(docMatch[1], 1, env);
       }
+
+      // Users
+      if (path === '/admin/users') {
+        if (method === 'GET')  return handleListUsers(env);
+        if (method === 'POST') return handleCreateUser(request, env);
+      }
+      const userMatch = path.match(/^\/admin\/users\/(\d+)$/);
+      if (userMatch) {
+        if (method === 'DELETE') return handleToggleUser(parseInt(userMatch[1]), 0, env);
+        if (method === 'PUT')    return handleToggleUser(parseInt(userMatch[1]), 1, env);
+      }
+
       return json({ error: 'not found' }, 404);
     }
 

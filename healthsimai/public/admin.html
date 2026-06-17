@@ -181,6 +181,36 @@
     .actions { display: flex; gap: 6px; }
     .empty { text-align: center; color: var(--muted); padding: 48px 0; font-size: 14px; }
 
+    /* ── Team section ── */
+    .team-add { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: end; margin-bottom: 16px; }
+    @media (max-width: 600px) { .team-add { grid-template-columns: 1fr; } }
+    .team-add .btn { white-space: nowrap; }
+    #addUserMsg { font-size: 13px; margin-top: 8px; }
+    #addUserMsg.ok  { color: var(--green); }
+    #addUserMsg.err { color: var(--red); }
+
+    .token-reveal {
+      background: var(--navy3);
+      border: 1px solid var(--cyan);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-top: 12px;
+      display: none;
+    }
+    .token-reveal p { font-size: 13px; color: var(--amber); margin-bottom: 8px; }
+    .token-box {
+      display: flex; gap: 8px; align-items: center;
+    }
+    .token-box code {
+      flex: 1; background: var(--navy); padding: 8px 12px; border-radius: 4px;
+      font-family: monospace; font-size: 13px; color: var(--cyan); word-break: break-all;
+    }
+    .btn-copy { background: var(--navy3); border: 1px solid var(--border); color: var(--muted); font-size: 12px; padding: 6px 12px; white-space: nowrap; }
+    .btn-copy:hover { border-color: var(--cyan); color: var(--cyan); }
+
+    .user-name { font-weight: 600; color: var(--text); }
+    .user-email { color: var(--muted); font-size: 12px; margin-top: 2px; }
+
     /* ── Progress overlay ── */
     #uploadProgress {
       position: fixed; inset: 0;
@@ -279,6 +309,51 @@
       </div>
     </div>
 
+    <!-- Team section -->
+    <div style="margin-top:40px">
+      <div class="table-header">
+        <h2 style="color:var(--cyan);font-size:16px;font-weight:600">Team Access</h2>
+        <button class="btn btn-sm" id="refreshUsersBtn" onclick="loadUsers()" style="background:none;border:1px solid var(--border);color:var(--muted)">Refresh</button>
+      </div>
+      <div class="card">
+        <h2>Add Team Member</h2>
+        <div class="team-add">
+          <div>
+            <label for="newUserName">Name</label>
+            <input type="text" id="newUserName" placeholder="Jane Smith">
+          </div>
+          <div>
+            <label for="newUserEmail">Email</label>
+            <input type="text" id="newUserEmail" placeholder="jane@healthsimai.com">
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="createUser()">Generate Token</button>
+        </div>
+        <div id="addUserMsg"></div>
+        <div class="token-reveal" id="tokenReveal">
+          <p>&#9888; Save this token now — it will not be shown again.</p>
+          <div class="token-box">
+            <code id="newTokenValue"></code>
+            <button class="btn btn-copy" onclick="copyToken()">Copy</button>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <table>
+          <thead>
+            <tr>
+              <th>Team Member</th>
+              <th>Added</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="usersBody">
+            <tr><td colspan="4" class="empty">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </main>
 </div>
 
@@ -315,6 +390,7 @@
     document.getElementById('app').style.display = 'block';
     document.getElementById('headerToken').textContent = 'Signed in';
     loadDocs();
+    loadUsers();
   }
 
   // Check for stored token on load
@@ -464,6 +540,102 @@
 
   function esc(str) {
     return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  // ── Team / users ──────────────────────────────────────────────────────────
+
+  async function loadUsers() {
+    const tbody = document.getElementById('usersBody');
+    tbody.innerHTML = '<tr><td colspan="4" class="empty">Loading…</td></tr>';
+    try {
+      const r = await fetch(`${API}/admin/users`, { headers: { Authorization: `Bearer ${token}` } });
+      const data = await r.json();
+      renderUsers(data.users || []);
+    } catch {
+      tbody.innerHTML = '<tr><td colspan="4" class="empty" style="color:var(--red)">Failed to load</td></tr>';
+    }
+  }
+
+  function renderUsers(users) {
+    const tbody = document.getElementById('usersBody');
+    if (!users.length) {
+      tbody.innerHTML = '<tr><td colspan="4" class="empty">No team members yet — add one above.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = users.map(u => `
+      <tr>
+        <td>
+          <div class="user-name">${esc(u.name)}</div>
+          <div class="user-email">${esc(u.email)}</div>
+        </td>
+        <td>${u.created_at ? u.created_at.slice(0, 10) : '—'}</td>
+        <td>
+          <span class="badge ${u.active ? 'badge-active' : 'badge-inactive'}">
+            ${u.active ? 'Active' : 'Revoked'}
+          </span>
+        </td>
+        <td class="actions">
+          ${u.active
+            ? `<button class="btn btn-danger" onclick="toggleUser(${u.id}, false)">Revoke</button>`
+            : `<button class="btn btn-restore" onclick="toggleUser(${u.id}, true)">Restore</button>`
+          }
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  async function createUser() {
+    const msg   = document.getElementById('addUserMsg');
+    const reveal = document.getElementById('tokenReveal');
+    msg.textContent = '';
+    msg.className = '';
+    reveal.style.display = 'none';
+
+    const name  = document.getElementById('newUserName').value.trim();
+    const email = document.getElementById('newUserEmail').value.trim();
+    if (!name)  { msg.textContent = 'Name is required.';  msg.className = 'err'; return; }
+    if (!email) { msg.textContent = 'Email is required.'; msg.className = 'err'; return; }
+
+    try {
+      const r = await fetch(`${API}/admin/users`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email })
+      });
+      const data = await r.json();
+      if (r.ok) {
+        document.getElementById('newTokenValue').textContent = data.token;
+        reveal.style.display = 'block';
+        msg.textContent = `Token created for ${data.name}. Share it securely — it won't be shown again.`;
+        msg.className = 'ok';
+        document.getElementById('newUserName').value = '';
+        document.getElementById('newUserEmail').value = '';
+        loadUsers();
+      } else {
+        msg.textContent = data.error || 'Failed to create user';
+        msg.className = 'err';
+      }
+    } catch {
+      msg.textContent = 'Network error';
+      msg.className = 'err';
+    }
+  }
+
+  async function toggleUser(id, active) {
+    await fetch(`${API}/admin/users/${id}`, {
+      method: active ? 'PUT' : 'DELETE',
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    loadUsers();
+  }
+
+  function copyToken() {
+    const val = document.getElementById('newTokenValue').textContent;
+    navigator.clipboard.writeText(val).then(() => {
+      const btn = document.querySelector('.btn-copy');
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+    });
   }
 </script>
 </body>
