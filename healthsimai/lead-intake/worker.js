@@ -26,17 +26,29 @@
 
 const FREE_EMAIL = /@(gmail|yahoo|outlook|hotmail|live|icloud|aol|proton(mail)?|gmx|mail)\./i;
 
-const CORS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-};
+const ALLOWED_ORIGINS = new Set([
+  'https://healthsimai.com',
+  'https://www.healthsimai.com',
+  'https://healthsimai.ultisim.workers.dev'
+]);
+
+function corsHeaders(request) {
+  const origin = request.headers.get('Origin') || '';
+  const allowed = ALLOWED_ORIGINS.has(origin) ? origin : 'https://healthsimai.com';
+  return {
+    'Access-Control-Allow-Origin': allowed,
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Vary': 'Origin'
+  };
+}
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function json(obj, status = 200) {
+function json(obj, status = 200, cors = null) {
+  const c = cors || { 'Access-Control-Allow-Origin': 'https://healthsimai.com', 'Vary': 'Origin' };
   return new Response(JSON.stringify(obj), {
-    status, headers: { 'Content-Type': 'application/json', ...CORS }
+    status, headers: { 'Content-Type': 'application/json', ...c }
   });
 }
 
@@ -109,10 +121,10 @@ async function sendResourceEmail(env, toEmail, toName, slug, displayName) {
 
 // ── Lead intake ───────────────────────────────────────────────────────────────
 
-async function handleLead(request, env) {
+async function handleLead(request, env, cors) {
   let d;
-  try { d = await request.json(); } catch { return json({ error: 'bad json' }, 400); }
-  if (!d.email || !/.+@.+\..+/.test(d.email)) return json({ error: 'valid email required' }, 400);
+  try { d = await request.json(); } catch { return json({ error: 'bad json' }, 400, cors); }
+  if (!d.email || !/.+@.+\..+/.test(d.email)) return json({ error: 'valid email required' }, 400, cors);
 
   const { score, tier } = scoreLead(d);
   const domain = (d.email.split('@')[1] || '').toLowerCase();
@@ -152,20 +164,20 @@ async function handleLead(request, env) {
     if (doc) emailed = await sendResourceEmail(env, d.email, d.name, doc.slug, doc.display_name);
   }
 
-  return json({ ok: true, lead_id: leadId, tier, emailed });
+  return json({ ok: true, lead_id: leadId, tier, emailed }, 200, cors);
 }
 
 // ── Document serving ──────────────────────────────────────────────────────────
 
-async function handleServeDoc(slug, env) {
+async function handleServeDoc(slug, env, cors) {
   const doc = await env.LEADS_DB.prepare(
     `SELECT * FROM documents WHERE slug = ? AND active = 1`
   ).bind(slug).first();
-  if (!doc) return json({ error: 'not found' }, 404);
-  if (!env.DOCS) return json({ error: 'storage not configured' }, 503);
+  if (!doc) return json({ error: 'not found' }, 404, cors);
+  if (!env.DOCS) return json({ error: 'storage not configured' }, 503, cors);
 
   const object = await env.DOCS.get(doc.r2_key);
-  if (!object) return json({ error: 'file not in storage' }, 404);
+  if (!object) return json({ error: 'file not in storage' }, 404, cors);
 
   await env.LEADS_DB.prepare(
     `UPDATE documents SET download_count = download_count + 1 WHERE slug = ?`
@@ -177,36 +189,36 @@ async function handleServeDoc(slug, env) {
       'Content-Type': doc.mime_type || 'application/pdf',
       'Content-Disposition': `attachment; filename="${doc.slug}.${ext}"`,
       'Cache-Control': 'no-store',
-      ...CORS
+      ...cors
     }
   });
 }
 
 // ── Admin: documents ──────────────────────────────────────────────────────────
 
-async function handleListDocs(env) {
+async function handleListDocs(env, cors) {
   const { results } = await env.LEADS_DB.prepare(
     `SELECT id, slug, display_name, description, mime_type, active, created_at, download_count
      FROM documents ORDER BY created_at DESC`
   ).all();
-  return json({ documents: results || [] });
+  return json({ documents: results || [] }, 200, cors);
 }
 
-async function handleUploadDoc(request, env) {
-  if (!env.DOCS) return json({ error: 'R2 not bound — deploy with updated wrangler.jsonc' }, 503);
+async function handleUploadDoc(request, env, cors) {
+  if (!env.DOCS) return json({ error: 'R2 not bound — deploy with updated wrangler.jsonc' }, 503, cors);
 
   let form;
-  try { form = await request.formData(); } catch { return json({ error: 'expected multipart/form-data' }, 400); }
+  try { form = await request.formData(); } catch { return json({ error: 'expected multipart/form-data' }, 400, cors); }
 
   const file        = form.get('file');
   const displayName = (form.get('display_name') || '').trim();
   let   slug        = (form.get('slug') || '').trim().toLowerCase().replace(/\s+/g, '-');
   const description = (form.get('description') || '').trim();
 
-  if (!file || !file.size) return json({ error: 'file is required' }, 400);
-  if (!displayName)         return json({ error: 'display_name is required' }, 400);
+  if (!file || !file.size) return json({ error: 'file is required' }, 400, cors);
+  if (!displayName)         return json({ error: 'display_name is required' }, 400, cors);
   if (!slug) slug = displayName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-  if (!/^[a-z0-9-]+$/.test(slug)) return json({ error: 'slug: lowercase letters, numbers, hyphens only' }, 400);
+  if (!/^[a-z0-9-]+$/.test(slug)) return json({ error: 'slug: lowercase letters, numbers, hyphens only' }, 400, cors);
 
   const ext      = (file.name || 'document.pdf').split('.').pop().toLowerCase();
   const r2Key    = `docs/${slug}.${ext}`;
@@ -224,32 +236,32 @@ async function handleUploadDoc(request, env) {
        active       = 1`
   ).bind(slug, displayName, r2Key, mimeType, description || null).run();
 
-  return json({ ok: true, slug, r2_key: r2Key, display_name: displayName });
+  return json({ ok: true, slug, r2_key: r2Key, display_name: displayName }, 200, cors);
 }
 
-async function handleToggleDoc(slug, active, env) {
+async function handleToggleDoc(slug, active, env, cors) {
   await env.LEADS_DB.prepare(`UPDATE documents SET active = ? WHERE slug = ?`).bind(active, slug).run();
-  return json({ ok: true, slug, active: Boolean(active) });
+  return json({ ok: true, slug, active: Boolean(active) }, 200, cors);
 }
 
 // ── Admin: users ──────────────────────────────────────────────────────────────
 
-async function handleListUsers(env) {
+async function handleListUsers(env, cors) {
   const { results } = await env.LEADS_DB.prepare(
     `SELECT id, name, email, active, created_at FROM admin_users ORDER BY created_at ASC`
   ).all();
-  return json({ users: results || [] });
+  return json({ users: results || [] }, 200, cors);
 }
 
-async function handleCreateUser(request, env) {
+async function handleCreateUser(request, env, cors) {
   let body;
-  try { body = await request.json(); } catch { return json({ error: 'bad json' }, 400); }
+  try { body = await request.json(); } catch { return json({ error: 'bad json' }, 400, cors); }
 
   const name  = (body.name  || '').trim();
   const email = (body.email || '').trim().toLowerCase();
 
-  if (!name)                              return json({ error: 'name is required' }, 400);
-  if (!email || !/.+@.+\..+/.test(email)) return json({ error: 'valid email required' }, 400);
+  if (!name)                              return json({ error: 'name is required' }, 400, cors);
+  if (!email || !/.+@.+\..+/.test(email)) return json({ error: 'valid email required' }, 400, cors);
 
   const token = generateToken();
   const hash  = await hashToken(token);
@@ -259,60 +271,61 @@ async function handleCreateUser(request, env) {
       `INSERT INTO admin_users (name, email, token_hash) VALUES (?, ?, ?)`
     ).bind(name, email, hash).run();
   } catch (e) {
-    if (String(e).includes('UNIQUE')) return json({ error: 'email already exists' }, 409);
+    if (String(e).includes('UNIQUE')) return json({ error: 'email already exists' }, 409, cors);
     throw e;
   }
 
-  return json({ ok: true, name, email, token });
+  return json({ ok: true, name, email, token }, 200, cors);
 }
 
-async function handleToggleUser(id, active, env) {
+async function handleToggleUser(id, active, env, cors) {
   await env.LEADS_DB.prepare(`UPDATE admin_users SET active = ? WHERE id = ?`).bind(active, id).run();
-  return json({ ok: true, id, active: Boolean(active) });
+  return json({ ok: true, id, active: Boolean(active) }, 200, cors);
 }
 
 // ── Router ────────────────────────────────────────────────────────────────────
 
 export default {
   async fetch(request, env) {
-    if (request.method === 'OPTIONS') return new Response(null, { headers: CORS });
+    const cors = corsHeaders(request);
+    if (request.method === 'OPTIONS') return new Response(null, { headers: cors });
 
     const path   = new URL(request.url).pathname.replace(/\/$/, '') || '/';
     const method = request.method;
 
     if (path.startsWith('/doc/') && method === 'GET') {
-      return handleServeDoc(path.slice(5), env);
+      return handleServeDoc(path.slice(5), env, cors);
     }
 
     if (path.startsWith('/admin/')) {
-      if (!await requireAdmin(request, env)) return json({ error: 'unauthorized' }, 401);
+      if (!await requireAdmin(request, env)) return json({ error: 'unauthorized' }, 401, cors);
 
       // Documents
       if (path === '/admin/documents') {
-        if (method === 'GET')  return handleListDocs(env);
-        if (method === 'POST') return handleUploadDoc(request, env);
+        if (method === 'GET')  return handleListDocs(env, cors);
+        if (method === 'POST') return handleUploadDoc(request, env, cors);
       }
       const docMatch = path.match(/^\/admin\/documents\/([^/]+)$/);
       if (docMatch) {
-        if (method === 'DELETE') return handleToggleDoc(docMatch[1], 0, env);
-        if (method === 'PUT')    return handleToggleDoc(docMatch[1], 1, env);
+        if (method === 'DELETE') return handleToggleDoc(docMatch[1], 0, env, cors);
+        if (method === 'PUT')    return handleToggleDoc(docMatch[1], 1, env, cors);
       }
 
       // Users
       if (path === '/admin/users') {
-        if (method === 'GET')  return handleListUsers(env);
-        if (method === 'POST') return handleCreateUser(request, env);
+        if (method === 'GET')  return handleListUsers(env, cors);
+        if (method === 'POST') return handleCreateUser(request, env, cors);
       }
       const userMatch = path.match(/^\/admin\/users\/(\d+)$/);
       if (userMatch) {
-        if (method === 'DELETE') return handleToggleUser(parseInt(userMatch[1]), 0, env);
-        if (method === 'PUT')    return handleToggleUser(parseInt(userMatch[1]), 1, env);
+        if (method === 'DELETE') return handleToggleUser(parseInt(userMatch[1]), 0, env, cors);
+        if (method === 'PUT')    return handleToggleUser(parseInt(userMatch[1]), 1, env, cors);
       }
 
-      return json({ error: 'not found' }, 404);
+      return json({ error: 'not found' }, 404, cors);
     }
 
-    if (method === 'POST') return handleLead(request, env);
-    return json({ error: 'not found' }, 404);
+    if (method === 'POST') return handleLead(request, env, cors);
+    return json({ error: 'not found' }, 404, cors);
   }
 };
