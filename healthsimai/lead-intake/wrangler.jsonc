@@ -1,12 +1,10 @@
 {
-  // HealthSimAI lead-intake API. Deploy separately from the static site:
-  //   cd healthsimai/lead-intake && npx wrangler deploy
+  // HealthSimAI lead-intake API.  Deploy: cd healthsimai/lead-intake && npx wrangler deploy
   "name": "healthsimai-lead-intake",
   "main": "worker.js",
   "compatibility_date": "2026-01-01",
   "account_id": "ab0fe0d5a72e29f4c9d40da04c603e2e",
 
-  // The "HealthSimAI pipeline" leads store (already created + schema applied).
   "d1_databases": [
     {
       "binding": "LEADS_DB",
@@ -15,11 +13,10 @@
     }
   ],
 
-  // Optional: gated-download files live in a private R2 bucket.
-  // Create it (`npx wrangler r2 bucket create healthsimai-docs`) then uncomment:
-  // "r2_buckets": [{ "binding": "DOCS", "bucket_name": "healthsimai-docs" }],
+  // Private R2 bucket for gated-download PDFs.
+  "r2_buckets": [{ "binding": "DOCS", "bucket_name": "healthsimai-docs" }],
 
-  // Non-secret vars. Set secrets with `npx wrangler secret put RIKOH_TOKEN`.
+  // Non-secret vars.  Secrets: `npx wrangler secret put ADMIN_TOKEN` etc.
   "vars": {
     "EMAIL_FROM": ""
     // "RIKOH_ENDPOINT": "https://rikoh-unified-api.<...>.workers.dev/leads"
