@@ -553,7 +553,7 @@ input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; border-radius
 .opview-intro h2 { font-size: clamp(1.4rem, 2.4vw, 1.9rem); font-weight: 800; letter-spacing: -.02em; margin: .4rem 0 .6rem; }
 .opview-intro p { color: var(--muted-d); font-size: 1.02rem; }
 .dash.framed { border-color: rgba(34, 211, 238, .35); box-shadow: var(--shadow), 0 0 0 4px rgba(34, 211, 238, .06); }
-.opview-features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.2rem; }
+.opview-features { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 1.2rem; }
 .opview-features div { background: var(--panel); border: 1px solid var(--line-d); border-radius: 12px; padding: 1rem 1.1rem; }
 .opview-features b { display: block; color: var(--white); font-size: .98rem; margin-bottom: .2rem; }
 .opview-features span { color: var(--muted-d); font-size: .86rem; }
