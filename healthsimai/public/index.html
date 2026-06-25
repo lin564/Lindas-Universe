@@ -229,21 +229,6 @@
                 <div class="fnode"><span class="ficon" style="background:#14532d;color:#86efac">✓</span><b>28</b><small>Discharged<br>patients</small></div>
               </div>
             </div>
-
-            <div class="dash-scenario">
-              <div class="scenario-head">
-                <span class="band-label">What-If Scenario Modeling</span>
-                <p>Simulate changes. Predict outcomes. Make better decisions.</p>
-                <a class="scen-try" href="#roi-calculator">Model your own facility &rarr;</a>
-              </div>
-              <div class="scenario-row">
-                <div class="scen-def"><b>Scenario: Add 10 Day Beds</b><small>Duration: 7 Days</small></div>
-                <div class="scen-card"><span>ED Wait Time</span><b class="down scen-num" data-count="18" data-prefix="↓" data-suffix="%">↓18%</b><small>from 42 to 34 min</small><svg viewBox="0 0 80 20" class="spark s-cyan"><polyline points="2,4 14,7 26,6 38,10 50,9 62,13 78,16"/></svg></div>
-                <div class="scen-card"><span>Bed Occupancy</span><b class="down scen-num" data-count="9" data-prefix="↓" data-suffix="%">↓9%</b><small>from 87% to 78%</small><svg viewBox="0 0 80 20" class="spark s-green"><polyline points="2,5 14,8 26,7 38,11 50,10 62,14 78,16"/></svg></div>
-                <div class="scen-card"><span>Discharges</span><b class="up scen-num" data-count="14" data-prefix="↑" data-suffix="%">↑14%</b><small>from 28 to 32</small><svg viewBox="0 0 80 20" class="spark s-green"><polyline points="2,16 14,13 26,14 38,10 50,11 62,7 78,4"/></svg></div>
-                <div class="scen-card"><span>Operating Margin</span><b class="up scen-num" data-count="1.2" data-prefix="↑$" data-suffix="M" data-decimals="1">↑$1.2M</b><small>Projected Improvement</small><button class="btn btn-blue btn-xs" id="runScenario" type="button">Run This Scenario</button></div>
-              </div>
-            </div>
           </div>
 
           <!-- right panels -->
@@ -298,6 +283,21 @@
               </ul>
             </div>
           </aside>
+        </div>
+
+        <div class="dash-scenario dash-scenario-full">
+          <div class="scenario-head">
+            <span class="band-label">What-If Scenario Modeling</span>
+            <p>Simulate changes. Predict outcomes. Make better decisions.</p>
+            <a class="scen-try" href="#roi-calculator">Model your own facility &rarr;</a>
+          </div>
+          <div class="scenario-row">
+            <div class="scen-def"><b>Scenario: Add 10 Day Beds</b><small>Duration: 7 Days</small></div>
+            <div class="scen-card"><span>ED Wait Time</span><b class="down scen-num" data-count="18" data-prefix="↓" data-suffix="%">↓18%</b><small>from 42 to 34 min</small><svg viewBox="0 0 80 20" class="spark s-cyan"><polyline points="2,4 14,7 26,6 38,10 50,9 62,13 78,16"/></svg></div>
+            <div class="scen-card"><span>Bed Occupancy</span><b class="down scen-num" data-count="9" data-prefix="↓" data-suffix="%">↓9%</b><small>from 87% to 78%</small><svg viewBox="0 0 80 20" class="spark s-green"><polyline points="2,5 14,8 26,7 38,11 50,10 62,14 78,16"/></svg></div>
+            <div class="scen-card"><span>Discharges</span><b class="up scen-num" data-count="14" data-prefix="↑" data-suffix="%">↑14%</b><small>from 28 to 32</small><svg viewBox="0 0 80 20" class="spark s-green"><polyline points="2,16 14,13 26,14 38,10 50,11 62,7 78,4"/></svg></div>
+            <div class="scen-card"><span>Operating Margin</span><b class="up scen-num" data-count="1.2" data-prefix="↑$" data-suffix="M" data-decimals="1">↑$1.2M</b><small>Projected Improvement</small><button class="btn btn-blue btn-xs" id="runScenario" type="button">Run This Scenario</button></div>
+          </div>
         </div>
       </div>
       <div class="opview-features reveal">
