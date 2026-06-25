@@ -51,6 +51,7 @@ a { color: inherit; text-decoration: none; }
 .btn-sm { padding: .55rem 1.2rem; font-size: .85rem; }
 .btn-lg { padding: 1rem 2.1rem; font-size: 1.02rem; }
 .btn-xs { padding: .42rem .8rem; font-size: .72rem; border-radius: 8px; }
+.btn-round { border-radius: 999px; }
 
 /* ---------- Header ---------- */
 .site-header {
