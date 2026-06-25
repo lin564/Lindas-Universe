@@ -569,7 +569,7 @@ input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; border-radius
 .trust-strip .tlogo { font-size: 1.08rem; opacity: 1; }
 
 /* Value-path heading (slide 4) */
-.valuepath-head { text-align: center; max-width: 46rem; margin: 3rem auto -1.4rem; }
+.valuepath-head { text-align: center; max-width: 46rem; margin: 6rem auto -1.4rem; }
 .valuepath-head h2 { font-size: clamp(1.2rem, 2.2vw, 1.6rem); font-weight: 700; color: var(--text-d); letter-spacing: -.01em; }
 
 /* Why-card trends (slide 5) */
