@@ -375,7 +375,7 @@ input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; border-radius
 
 /* ---------- Resources / Knowledge Center ---------- */
 .kicker { font-size: .76rem; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; color: var(--cyan); margin-bottom: .7rem; }
-.resources-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; margin: 2.4rem 0 3.2rem; }
+.resources-grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; max-width: 36rem; margin: 2.4rem auto 3.2rem; }
 .res-col h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 1.1rem; color: var(--cyan); }
 .res-item {
   display: flex; gap: 1rem; align-items: center;
