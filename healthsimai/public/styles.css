@@ -373,23 +373,8 @@ input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; border-radius
 .leader-role { font-size: .76rem; letter-spacing: .1em; text-transform: uppercase; font-weight: 800; color: var(--blue); margin: .15rem 0 .6rem; }
 .leader-bio { font-size: .85rem; color: var(--slate); }
 
-/* ---------- Resources / Knowledge Center ---------- */
+/* ---------- Section kicker ---------- */
 .kicker { font-size: .76rem; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; color: var(--cyan); margin-bottom: .7rem; }
-.resources-grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; max-width: 36rem; margin: 2.4rem auto 3.2rem; }
-.res-col h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 1.1rem; color: var(--cyan); }
-.res-item {
-  display: flex; gap: 1rem; align-items: center;
-  background: var(--panel); border: 1px solid var(--line-d); border-radius: 12px;
-  padding: 1rem 1.2rem; margin-bottom: .8rem; transition: .15s;
-}
-.res-item:hover { border-color: var(--cyan); background: rgba(34, 211, 238, .07); transform: translateX(4px); }
-.res-type {
-  flex: 0 0 56px; height: 40px; display: flex; align-items: center; justify-content: center;
-  border: 1px solid rgba(34, 211, 238, .45); border-radius: 8px;
-  color: var(--cyan); font-size: .7rem; font-weight: 800; letter-spacing: .05em;
-}
-.res-item strong { font-size: .96rem; color: var(--text-d); }
-.res-item small { color: var(--muted-d); font-size: .8rem; }
 .recognition h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 1.1rem; color: var(--cyan); }
 .recognition-row { display: flex; flex-wrap: wrap; gap: .7rem; }
 .badge-pill {
@@ -510,7 +495,6 @@ input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; border-radius
   .outcome-grid { grid-template-columns: repeat(3, 1fr); }
   .results-grid { grid-template-columns: 1fr; }
   .leader-grid { grid-template-columns: repeat(2, 1fr); }
-  .resources-grid { grid-template-columns: 1fr; gap: 1.6rem; }
   .expertise-grid, .why-grid { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
 }
@@ -610,9 +594,6 @@ input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; border-radius
 .exp-link, .results-link { display: inline-block; margin-top: 1rem; color: var(--cyan); font-weight: 700; font-size: .9rem; }
 .exp-link:hover, .results-link:hover { text-decoration: underline; }
 .results-link { color: var(--blue); }
-
-/* Resource items are now buttons too */
-.res-item { font-family: inherit; text-align: left; width: 100%; cursor: pointer; }
 
 /* Contact tagline (slide 14) */
 .cta-tag { font-size: .82rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--cyan); margin-bottom: .5rem; }
