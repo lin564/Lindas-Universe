@@ -597,19 +597,6 @@ input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; border-radius
 .pipeline-head h3 { font-size: clamp(1.2rem, 2.2vw, 1.6rem); font-weight: 800; letter-spacing: -.01em; }
 .pipeline-head p { color: var(--muted-d); font-size: .98rem; margin-top: .4rem; }
 
-/* The 4 V's of Data table */
-.vtable-head { margin: 4rem auto 1.4rem; }
-.vtable { max-width: 60rem; margin: 0 auto; background: var(--panel); border: 1px solid var(--line-d); border-radius: 14px; overflow: hidden; }
-.vtable table { width: 100%; border-collapse: collapse; }
-.vtable th { text-align: left; font-size: .82rem; font-weight: 700; color: var(--white); padding: 1rem 1.3rem; background: var(--panel-2); border-bottom: 1px solid var(--line-d); }
-.vtable td { font-size: .9rem; color: var(--muted-d); padding: 1rem 1.3rem; border-bottom: 1px solid var(--line-d); vertical-align: top; line-height: 1.5; }
-.vtable tbody tr:last-child td { border-bottom: none; }
-.vtable .vname { color: var(--cyan); font-weight: 800; font-size: .98rem; white-space: nowrap; }
-@media (max-width: 720px) {
-  .vtable { overflow-x: auto; }
-  .vtable th, .vtable td { padding: .75rem .8rem; font-size: .82rem; }
-}
-
 /* Solutions focus heading + prominent tabs (slide 7) */
 .focus-head { text-align: center; font-size: clamp(1.2rem, 2.2vw, 1.55rem); font-weight: 800; letter-spacing: -.01em; margin: 2.4rem 0 1.2rem; }
 .tabs.prominent .tab-list { justify-content: center; }
