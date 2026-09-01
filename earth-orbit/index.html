@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tilt — Earth, Sun &amp; Moon</title>
+    <meta name="description" content="An orbital simulation of the Earth, Sun and Moon in which you can change the Earth's axial tilt and watch the temperature at a chosen place on the surface respond.">
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <canvas id="sky"></canvas>
+
+    <header class="topbar">
+        <div class="topbar-title">
+            <h1>Tilt</h1>
+            <p>The Earth, the Sun and the Moon — and what happens to a place on the
+               surface when you change the angle of the axis.</p>
+        </div>
+        <div class="topbar-actions">
+            <div class="segmented">
+                <button id="view-system" class="seg">Orbit</button>
+                <button id="view-earth" class="seg">Earth</button>
+            </div>
+            <a class="btn" href="../index.html">← Back</a>
+        </div>
+    </header>
+
+    <!-- ---------------------------------------------------------------- -->
+    <aside id="controls" class="panel panel-left">
+        <button class="panel-toggle" data-toggle="controls" title="Collapse">–</button>
+        <h2>Controls</h2>
+
+        <section class="control">
+            <label for="tilt">Axial tilt <span id="tilt-value" class="value">23.4°</span></label>
+            <input id="tilt" type="range" min="0" max="90" step="0.1" value="23.44">
+            <div id="tilt-presets" class="chips"></div>
+        </section>
+
+        <section class="control">
+            <label for="date">Day of year</label>
+            <input id="date" type="range" min="0" max="364.99" step="0.01" value="172">
+        </section>
+
+        <section class="control">
+            <label for="speed">Speed <span id="speed-value" class="value"></span></label>
+            <input id="speed" type="range" min="-2.2" max="1.7" step="0.01" value="-0.22">
+            <div class="row">
+                <button id="play" class="btn btn-wide">❚❚ Pause</button>
+            </div>
+        </section>
+
+        <section class="control">
+            <label for="location">Place on the surface</label>
+            <select id="location"></select>
+            <div class="coords">
+                <label class="coord">Lat <input id="lat" type="number" step="0.0001" min="-89.5" max="89.5"></label>
+                <label class="coord">Lon <input id="lon" type="number" step="0.0001" min="-180" max="180"></label>
+            </div>
+        </section>
+
+        <section class="control">
+            <label class="check"><input id="orbits" type="checkbox" checked> Orbits, equator &amp; circles</label>
+        </section>
+
+        <p class="disclaimer">
+            Bodies and distances are <strong>not to scale</strong> — at true scale the
+            Earth would be a fraction of a pixel. The angles are.
+        </p>
+    </aside>
+
+    <!-- ---------------------------------------------------------------- -->
+    <aside id="readout" class="panel panel-right">
+        <button class="panel-toggle" data-toggle="readout" title="Collapse">–</button>
+
+        <div class="temp-head">
+            <div>
+                <div id="temp-now" class="temp-now">—</div>
+                <div id="temp-f" class="temp-f">—</div>
+            </div>
+            <span id="sun-state" class="pill">—</span>
+        </div>
+
+        <dl class="stats">
+            <div><dt>Today's low / high</dt><dd id="temp-range">—</dd></div>
+            <div><dt>Annual range</dt><dd id="temp-annual">—</dd></div>
+            <div><dt>Annual mean</dt><dd id="temp-mean">—</dd></div>
+        </dl>
+
+        <canvas id="chart" class="chart"></canvas>
+
+        <dl class="stats">
+            <div><dt>Date</dt><dd id="r-date">—</dd></div>
+            <div><dt>Local solar time</dt><dd id="r-time">—</dd></div>
+            <div><dt>Season</dt><dd id="r-season">—</dd></div>
+            <div><dt>Sun elevation</dt><dd id="r-elev">—</dd></div>
+            <div><dt>Daylight</dt><dd id="r-daylen">—</dd></div>
+            <div><dt>Solar declination</dt><dd id="r-dec">—</dd></div>
+            <div><dt>Sunlight overhead</dt><dd id="r-insol">—</dd></div>
+            <div><dt>Sub-solar point</dt><dd id="r-subsolar">—</dd></div>
+            <div><dt>Distance to Sun</dt><dd id="r-dist">—</dd></div>
+            <div><dt>Moon</dt><dd id="r-moon">—</dd></div>
+        </dl>
+
+        <h3>What this tilt means</h3>
+        <ul id="facts" class="facts"></ul>
+
+        <p class="disclaimer">
+            Temperature comes from an idealised energy-balance model, calibrated so
+            that present-day Chapel Hill lands on its real climate. It shows how
+            temperature <em>responds</em> to tilt — it is not a forecast.
+        </p>
+    </aside>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
