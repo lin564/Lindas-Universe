@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Emergent Discussion</title>
+<meta name="description" content="An interactive simulation of collaborative discourse and argumentation: facilitate a classroom discussion with talk moves and watch whether a group insight emerges.">
+<link rel="icon" href="../../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap">
+<style>
+/* ─────────── tokens ─────────── */
+:root{
+  --paper:#F2F4F4; --surface:#FFFFFF; --surface-2:#E9EDED; --sunk:#E3E8E8;
+  --ink:#141A1E; --ink-2:#4A565C; --ink-3:#7C878C; --rule:#D2D9D9;
+  --teal:#0E7F76; --teal-soft:#DCEBE8;
+  --indigo:#4B41B8; --amber:#A9761A; --clay:#B24A32; --slate:#6B7378;
+  --s-maya:#A63C77; --s-deshawn:#5B4BC4; --s-priya:#22648F; --s-eli:#3F7A3A;
+  --shadow:0 1px 2px rgba(20,26,30,.06), 0 6px 18px -10px rgba(20,26,30,.22);
+  --f-voice:'Newsreader', Georgia, 'Times New Roman', serif;
+  --f-ui:'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  --f-code:'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0F1417; --surface:#161D21; --surface-2:#1D262A; --sunk:#121A1D;
+    --ink:#E7EDEC; --ink-2:#A6B3B3; --ink-3:#76858A; --rule:#2A353A;
+    --teal:#4FD1C0; --teal-soft:#12332F;
+    --indigo:#9A8FF5; --amber:#DFAE55; --clay:#E8836A; --slate:#93A0A5;
+    --s-maya:#E080B4; --s-deshawn:#A79BFF; --s-priya:#6FB3DC; --s-eli:#84C57C;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0F1417; --surface:#161D21; --surface-2:#1D262A; --sunk:#121A1D;
+  --ink:#E7EDEC; --ink-2:#A6B3B3; --ink-3:#76858A; --rule:#2A353A;
+  --teal:#4FD1C0; --teal-soft:#12332F;
+  --indigo:#9A8FF5; --amber:#DFAE55; --clay:#E8836A; --slate:#93A0A5;
+  --s-maya:#E080B4; --s-deshawn:#A79BFF; --s-priya:#6FB3DC; --s-eli:#84C57C;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:var(--f-ui); font-size:15px; line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px; margin:0 auto; padding:34px 22px 70px}
+h1,h2,h3{margin:0; text-wrap:balance}
+p{margin:0}
+button{font:inherit; color:inherit}
+
+.eyebrow{
+  font-family:var(--f-code); font-size:10.5px; font-weight:500;
+  letter-spacing:.16em; text-transform:uppercase; color:var(--teal);
+}
+
+/* ─────────── masthead ─────────── */
+.masthead{display:flex; flex-direction:column; gap:14px; padding-bottom:26px}
+.masthead h1{
+  font-family:var(--f-voice); font-weight:600; letter-spacing:-.015em;
+  font-size:clamp(2.1rem, 5vw, 3.15rem); line-height:1.04;
+}
+.lede{font-family:var(--f-voice); font-size:1.16rem; line-height:1.62; color:var(--ink-2); max-width:63ch}
+.lede em{color:var(--ink); font-style:italic}
+.masthead-foot{
+  display:flex; flex-wrap:wrap; gap:8px 20px; align-items:baseline;
+  border-top:1px solid var(--rule); padding-top:14px; margin-top:4px;
+  font-size:13px; color:var(--ink-3);
+}
+.masthead-foot b{font-weight:600; color:var(--ink-2)}
+
+/* ─────────── console shell ─────────── */
+.console{
+  display:grid; gap:16px; align-items:start;
+  grid-template-columns:206px minmax(0,1fr) 322px;
+  grid-template-areas:"roster floor panel" "roster palette panel";
+}
+@media (max-width:1080px){
+  .console{grid-template-columns:minmax(0,1fr) 300px;
+    grid-template-areas:"roster roster" "floor panel" "palette panel";}
+}
+@media (max-width:820px){
+  .console{grid-template-columns:minmax(0,1fr);
+    grid-template-areas:"roster" "floor" "palette" "panel";}
+}
+.panel{
+  background:var(--surface); border:1px solid var(--rule); border-radius:10px;
+  box-shadow:var(--shadow);
+}
+.panel-head{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:11px 14px; border-bottom:1px solid var(--rule);
+}
+.panel-head h2{
+  font-size:11px; font-weight:700; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--ink-3);
+}
+.meta{font-family:var(--f-code); font-size:11px; color:var(--ink-3); font-variant-numeric:tabular-nums}
+
+/* ─────────── roster ─────────── */
+.roster{grid-area:roster}
+.roster-list{display:flex; flex-direction:column}
+@media (max-width:1080px){.roster-list{flex-direction:row; flex-wrap:wrap}
+  .student{flex:1 1 210px; border-bottom:none !important; border-right:1px solid var(--rule)}
+  .student:last-child{border-right:none}}
+@media (max-width:520px){.student{flex:1 1 100%; border-right:none !important; border-bottom:1px solid var(--rule) !important}
+  .roster-list .student:last-child{border-bottom:none !important}}
+.student{display:grid; grid-template-columns:26px 1fr; gap:9px; padding:11px 13px; border-bottom:1px solid var(--rule)}
+.roster-list .student:last-child{border-bottom:none}
+.chip{
+  width:26px; height:26px; border-radius:50%; display:grid; place-items:center;
+  font-family:var(--f-code); font-size:11px; font-weight:600;
+  color:var(--c); background:color-mix(in srgb, var(--c) 15%, transparent);
+  border:1px solid color-mix(in srgb, var(--c) 42%, transparent);
+}
+.student-name{font-size:13.5px; font-weight:600; line-height:1.25}
+.student-trait{font-size:11.5px; color:var(--ink-3); line-height:1.35; margin-top:1px}
+.turnbar{margin-top:6px; height:4px; border-radius:2px; background:var(--sunk); overflow:hidden}
+.turnbar i{display:block; height:100%; background:var(--c); border-radius:2px; transition:width .45s ease}
+.turns-n{font-family:var(--f-code); font-size:10px; color:var(--ink-3); float:right}
+
+/* ─────────── transcript ─────────── */
+.floor{grid-area:floor; display:flex; flex-direction:column; min-width:0}
+.legend{display:flex; flex-wrap:wrap; gap:5px; padding:9px 14px; border-bottom:1px solid var(--rule); background:var(--sunk)}
+.key{
+  display:inline-flex; align-items:center; gap:5px; font-family:var(--f-code);
+  font-size:10px; letter-spacing:.03em; color:var(--ink-2);
+  background:var(--surface); border:1px solid var(--rule); border-radius:4px; padding:2px 6px;
+}
+.key i{width:3px; height:11px; border-radius:1px; background:var(--k)}
+.transcript{padding:4px 0 8px; max-height:352px; overflow-y:auto; scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){.transcript{scroll-behavior:auto}}
+.beat{display:grid; grid-template-columns:32px minmax(0,1fr); gap:10px; padding:9px 14px 9px 10px}
+.beat + .beat{border-top:1px dashed var(--rule)}
+.rail{display:flex; flex-direction:column; align-items:center; gap:5px}
+.rail .code{font-family:var(--f-code); font-size:9.5px; font-weight:600; letter-spacing:.06em; color:var(--k)}
+.rail i{flex:1; width:3px; border-radius:2px; background:var(--k); min-height:14px}
+.beat[data-code="EX"]{--k:var(--teal)} .beat[data-code="CU"]{--k:var(--amber)}
+.beat[data-code="DI"]{--k:var(--clay)} .beat[data-code="RE"]{--k:var(--slate)}
+.beat[data-code="SI"]{--k:var(--ink-3)}
+.lines{display:flex; flex-direction:column; gap:8px; min-width:0}
+.line{display:grid; grid-template-columns:2.2ch 22px minmax(0,1fr); gap:9px; align-items:start}
+.ln{font-family:var(--f-code); font-size:10px; color:var(--ink-3); text-align:right; padding-top:5px; font-variant-numeric:tabular-nums}
+.line .chip{width:22px; height:22px; font-size:10px}
+.says{font-family:var(--f-voice); font-size:15.5px; line-height:1.5}
+.line.teacher .says{color:var(--ink-2); font-size:14.5px}
+.line.teacher .chip{--c:var(--slate)}
+.line.stage .says{font-style:italic; color:var(--ink-3)}
+.pop{animation:pop .32s cubic-bezier(.2,.8,.3,1) both}
+@keyframes pop{from{opacity:0; transform:translateY(5px)} to{opacity:1; transform:none}}
+
+/* ─────────── palette ─────────── */
+.palette{grid-area:palette}
+.moves{display:grid; grid-template-columns:repeat(auto-fill, minmax(196px,1fr)); gap:8px; padding:12px}
+.move{
+  text-align:left; background:var(--surface); border:1px solid var(--rule);
+  border-radius:8px; padding:9px 11px 10px; cursor:pointer; display:flex;
+  flex-direction:column; gap:5px; transition:border-color .16s, background .16s, transform .16s;
+}
+.move:hover:not(:disabled){border-color:var(--teal); background:var(--teal-soft); transform:translateY(-1px)}
+.move:focus-visible{outline:2px solid var(--teal); outline-offset:2px}
+.move:disabled{opacity:.36; cursor:not-allowed}
+.move .say{font-family:var(--f-voice); font-size:14.5px; line-height:1.34}
+.move .tag{display:flex; align-items:center; justify-content:space-between; gap:8px}
+.move .construct{font-family:var(--f-code); font-size:9.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3)}
+.move .struct{font-family:var(--f-code); font-size:9.5px; font-weight:600; color:var(--indigo)}
+.move[data-tone="trap"] .construct{color:var(--slate)}
+.note{
+  display:flex; gap:10px; padding:11px 14px; border-top:1px solid var(--rule);
+  background:var(--sunk); border-radius:0 0 10px 10px;
+}
+.note .marker{font-family:var(--f-code); font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--teal); padding-top:3px; white-space:nowrap}
+.note p{font-family:var(--f-voice); font-size:14.5px; line-height:1.5; color:var(--ink-2)}
+.note p b{color:var(--ink); font-weight:600}
+
+/* ─────────── analysis panel ─────────── */
+.side{grid-area:panel; display:flex; flex-direction:column; gap:16px}
+.web{padding:8px 10px 12px}
+.web svg{width:100%; height:auto; display:block}
+.node rect{fill:var(--surface); stroke:var(--rule); stroke-width:1.2}
+.node text{font-family:var(--f-ui); font-size:9.5px; font-weight:500; fill:var(--ink)}
+.node .badge{font-family:var(--f-code); font-size:7.5px; font-weight:600}
+.node.q rect{fill:var(--surface-2); stroke:var(--ink-3); stroke-dasharray:3 2}
+.node.synth rect{fill:var(--teal-soft); stroke:var(--teal); stroke-width:2}
+.node.synth text{fill:var(--ink); font-weight:700}
+.edge{stroke:var(--ink-3); stroke-width:1; fill:none; opacity:.42}
+.grow{animation:grow .4s ease both}
+@keyframes grow{from{opacity:0; transform:scale(.9)} to{opacity:1; transform:none}}
+.web-empty{font-family:var(--f-voice); font-size:13px; color:var(--ink-3); padding:0 6px 4px; line-height:1.45}
+
+.meters{padding:12px 14px 14px; display:flex; flex-direction:column; gap:11px}
+.meter-name{display:flex; justify-content:space-between; align-items:baseline; gap:8px; font-size:12px; font-weight:600}
+.meter-name span:last-child{font-family:var(--f-code); font-size:11px; color:var(--ink-2); font-variant-numeric:tabular-nums}
+.track{height:5px; border-radius:3px; background:var(--sunk); overflow:hidden; margin-top:4px}
+.track i{display:block; height:100%; border-radius:3px; background:var(--teal); transition:width .5s cubic-bezier(.3,.8,.3,1)}
+.meter-why{font-size:11px; color:var(--ink-3); line-height:1.35; margin-top:3px}
+
+.dial{padding:12px 14px 16px; border-top:1px solid var(--rule)}
+.dial-ends{display:flex; justify-content:space-between; font-family:var(--f-code); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-3); margin-bottom:6px}
+.dial-track{position:relative; height:9px; border-radius:5px; background:var(--sunk)}
+.dial-zone{position:absolute; inset-block:0; left:36%; width:30%; background:var(--teal-soft); border-left:1px solid var(--teal); border-right:1px solid var(--teal)}
+.dial-mark{position:absolute; top:-4px; width:3px; height:17px; border-radius:2px; background:var(--indigo); transition:left .5s cubic-bezier(.3,.8,.3,1); transform:translateX(-1.5px)}
+.dial-read{font-size:11.5px; color:var(--ink-3); margin-top:8px; line-height:1.4}
+
+/* ─────────── debrief ─────────── */
+.debrief{padding:16px 16px 18px; display:flex; flex-direction:column; gap:14px}
+.verdict{font-family:var(--f-voice); font-size:1.35rem; line-height:1.22; font-weight:600}
+.verdict.win{color:var(--teal)} .verdict.mid{color:var(--amber)} .verdict.low{color:var(--clay)}
+.verdict-sub{font-family:var(--f-voice); font-size:15px; color:var(--ink-2); line-height:1.5; max-width:62ch}
+.mix{display:flex; height:26px; border-radius:5px; overflow:hidden; border:1px solid var(--rule)}
+.mix span{display:grid; place-items:center; font-family:var(--f-code); font-size:10px; font-weight:600; color:#fff; min-width:0}
+.mix-legend{display:flex; flex-wrap:wrap; gap:4px 14px; font-size:11.5px; color:var(--ink-3)}
+.findings{display:flex; flex-direction:column; gap:9px; margin:0; padding:0; list-style:none}
+.findings li{display:grid; grid-template-columns:auto minmax(0,1fr); gap:10px; font-size:14px; line-height:1.5}
+.findings .mark{font-family:var(--f-code); font-size:10px; font-weight:600; letter-spacing:.06em; padding:2px 6px; border-radius:4px; height:fit-content; white-space:nowrap}
+.mark.up{color:var(--teal); background:var(--teal-soft)}
+.mark.down{color:var(--clay); background:color-mix(in srgb, var(--clay) 13%, transparent)}
+.credits{font-size:13px; color:var(--ink-2); line-height:1.55; border-top:1px solid var(--rule); padding-top:12px}
+.credits b{color:var(--ink)}
+.btn{
+  align-self:flex-start; background:var(--ink); color:var(--paper); border:none;
+  border-radius:7px; padding:9px 17px; font-size:13.5px; font-weight:600; cursor:pointer;
+  transition:opacity .16s;
+}
+.btn:hover{opacity:.86}
+.btn:focus-visible{outline:2px solid var(--teal); outline-offset:2px}
+
+/* ─────────── concept notes ─────────── */
+.notes{margin-top:56px; border-top:1px solid var(--rule); padding-top:34px}
+.notes h2{font-family:var(--f-voice); font-size:1.75rem; font-weight:600; margin-bottom:6px}
+.notes-lede{font-family:var(--f-voice); font-size:1.02rem; color:var(--ink-2); max-width:62ch; margin-bottom:26px}
+.cards{display:grid; grid-template-columns:repeat(auto-fit, minmax(272px,1fr)); gap:1px; background:var(--rule); border:1px solid var(--rule); border-radius:10px; overflow:hidden}
+.card{background:var(--surface); padding:18px 18px 20px; display:flex; flex-direction:column; gap:8px}
+.card h3{font-family:var(--f-voice); font-size:1.12rem; font-weight:600}
+.card p{font-size:14px; line-height:1.6; color:var(--ink-2)}
+.card .in-sim{
+  margin-top:auto; padding-top:10px; border-top:1px dashed var(--rule);
+  font-size:12.5px; color:var(--ink-3); line-height:1.5;
+}
+.card .in-sim b{font-family:var(--f-code); font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--teal); display:block; margin-bottom:2px}
+.sources{margin-top:26px; font-size:12.5px; color:var(--ink-3); line-height:1.75; max-width:78ch}
+.sources h3{font-family:var(--f-code); font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-2); margin-bottom:7px}
+.sources i{color:var(--ink-2)}
+
+/* ─────────── swarm callout ─────────── */
+.swarm{
+  display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,1fr); gap:0;
+  border:1px solid var(--rule); border-radius:10px; overflow:hidden;
+  background:var(--surface); box-shadow:var(--shadow); margin:0 0 26px;
+}
+@media (max-width:820px){.swarm{grid-template-columns:minmax(0,1fr)}}
+.swarm-story{padding:18px 20px 20px; display:flex; flex-direction:column; gap:9px}
+.swarm-story h2{font-family:var(--f-voice); font-size:1.24rem; font-weight:600}
+.swarm-story p{font-family:var(--f-voice); font-size:14.8px; line-height:1.58; color:var(--ink-2)}
+.swarm-story p b{color:var(--ink); font-weight:600}
+.swarm-map{background:var(--sunk); border-left:1px solid var(--rule); padding:18px 20px 20px; display:flex; flex-direction:column}
+@media (max-width:820px){.swarm-map{border-left:none; border-top:1px solid var(--rule)}}
+.swarm-map h3{font-family:var(--f-code); font-size:10px; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-3); margin-bottom:12px}
+.swarm-map dl{margin:0; display:flex; flex-direction:column; gap:9px}
+.swarm-map .row{display:grid; grid-template-columns:minmax(0,1fr) 16px minmax(0,1fr); gap:8px; align-items:baseline}
+.swarm-map dt{font-size:12.8px; color:var(--ink-3); line-height:1.4}
+.swarm-map .arrow{font-family:var(--f-code); font-size:11px; color:var(--teal); text-align:center}
+.swarm-map dd{margin:0; font-size:12.8px; font-weight:600; color:var(--ink); line-height:1.4}
+.caveat{
+  margin-top:auto; font-size:12.5px; line-height:1.55; color:var(--ink-3);
+  padding-top:12px; border-top:1px dashed var(--rule);
+}
+@media (prefers-reduced-motion:reduce){*{animation:none !important; transition:none !important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="eyebrow">Collaborative discourse &amp; argumentation · after Keith Sawyer</p>
+    <h1>The Emergent Discussion</h1>
+    <p class="lede">A real classroom discussion is not a set of answers taking turns. It is
+      <em>collaboratively emergent</em>: the idea the group ends with belongs to the group, and
+      no single member — the teacher included — was carrying it at the start. Your job is not to
+      deliver the insight. It is to keep alive the conditions in which one can assemble itself.</p>
+    <div class="masthead-foot">
+      <span><b>You are:</b> the facilitator of a fourteen-turn discussion</span>
+      <span><b>They are:</b> four eighth-graders, mid-argument</span>
+      <span><b>The question:</b> an acorn weighs a gram; the oak weighs two tons</span>
+    </div>
+  </header>
+
+  <!-- The anchoring analogy -->
+  <section class="swarm" aria-labelledby="swarm-h">
+    <div class="swarm-story">
+      <p class="eyebrow">The dance floor</p>
+      <h2 id="swarm-h">How a swarm argues</h2>
+      <p>When a colony outgrows its hive, ten thousand bees hang in a cluster on a branch while a few
+        hundred scouts fly out to find a new home. A scout who finds a candidate cavity comes back and
+        <b>dances it</b> — direction, distance, and, in the number of circuits she runs, how good she
+        judges it to be. A rich site gets a long, insistent dance; a mediocre one gets a perfunctory shuffle.</p>
+      <p>Here is the part that matters. The other scouts <b>do not take her word for it.</b> They fly out
+        and inspect the site themselves, and dance according to their own assessment. And every scout
+        winds her own dance down a little on each return, so no site stays on the floor through sheer
+        repetition — support has to be <b>independently renewed</b> or it dies out. When one site
+        accumulates enough scouts, the swarm lifts off.</p>
+      <p>No bee visited every option. No bee compared them. No bee was in charge. The colony still chose
+        well — because <b>the decision was distributed across the argument</b>, not held inside any one
+        of its members.</p>
+    </div>
+    <div class="swarm-map">
+      <h3>The same mechanism, in a classroom</h3>
+      <dl>
+        <div class="row"><dt>A scout dances a site</dt><span class="arrow">→</span><dd>A student puts a claim on the floor</dd></div>
+        <div class="row"><dt>Dance length signals quality</dt><span class="arrow">→</span><dd>The claim arrives with a reason attached</dd></div>
+        <div class="row"><dt>Others fly out and check</dt><span class="arrow">→</span><dd>Peers test the claim instead of deferring</dd></div>
+        <div class="row"><dt>Each dance decays on return</dt><span class="arrow">→</span><dd>Repetition alone wins nothing</dd></div>
+        <div class="row"><dt>Quorum, then liftoff</dt><span class="arrow">→</span><dd>A position the group can defend</dd></div>
+        <div class="row"><dt>No bee is in charge</dt><span class="arrow">→</span><dd>Collaborative emergence</dd></div>
+      </dl>
+      <p class="caveat">The move that does the most work below — <i>“Do you agree with Maya? Why?”</i> — is
+        the classroom form of sending a scout out to look for herself. Every time you answer, evaluate,
+        or revoice instead, you are dancing on their behalf.</p>
+    </div>
+  </section>
+
+  <!-- ─────────── the console ─────────── -->
+  <div class="console">
+
+    <section class="panel roster" aria-labelledby="roster-h">
+      <div class="panel-head">
+        <h2 id="roster-h">The floor</h2>
+        <span class="meta" id="airtime-read">—</span>
+      </div>
+      <div class="roster-list" id="roster"></div>
+    </section>
+
+    <section class="panel floor" aria-labelledby="floor-h">
+      <div class="panel-head">
+        <h2 id="floor-h">Transcript</h2>
+        <span class="meta" id="turn-read">turn 0 / 14</span>
+      </div>
+      <div class="legend" aria-label="Discourse coding key">
+        <span class="key" style="--k:var(--teal)" title="Reasoning is made visible and stays open to challenge"><i></i>EX · exploratory</span>
+        <span class="key" style="--k:var(--amber)" title="Ideas are accepted and piled up without being tested"><i></i>CU · cumulative</span>
+        <span class="key" style="--k:var(--clay)" title="Disagreement with no reasons offered"><i></i>DI · disputational</span>
+        <span class="key" style="--k:var(--slate)" title="Teacher initiates, student responds, teacher evaluates"><i></i>RE · recitation</span>
+      </div>
+      <div class="transcript" id="transcript" role="log" aria-live="polite" aria-label="Discussion transcript"></div>
+    </section>
+
+    <section class="panel palette" aria-labelledby="palette-h">
+      <div class="panel-head">
+        <h2 id="palette-h">Your move</h2>
+        <span class="meta">talk moves</span>
+      </div>
+      <div class="moves" id="moves"></div>
+      <div class="note">
+        <span class="marker">Note</span>
+        <p id="note-text">Maya has put the first claim on the floor and is waiting for you to confirm it.
+          Whatever you do next sets the rules for the other three.</p>
+      </div>
+    </section>
+
+    <aside class="side">
+      <section class="panel" aria-labelledby="web-h">
+        <div class="panel-head">
+          <h2 id="web-h">What the group is building</h2>
+          <span class="meta" id="web-count">2 ideas</span>
+        </div>
+        <div class="web">
+          <svg id="web" viewBox="0 0 360 300" role="img" aria-labelledby="web-desc">
+            <desc id="web-desc">A concept map of the ideas students have put on the floor, each badged with the initial of the student who contributed it.</desc>
+            <g id="edges"></g><g id="nodes"></g>
+          </svg>
+          <p class="web-empty">Each chip is an idea someone put on the floor, badged with whose it was.
+            A group insight is one that ends up wearing several badges at once.</p>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="meters-h">
+        <div class="panel-head"><h2 id="meters-h">Conditions</h2></div>
+        <div class="meters" id="meters"></div>
+        <div class="dial">
+          <div class="dial-ends"><span>improvisation</span><span>structure</span></div>
+          <div class="dial-track"><div class="dial-zone"></div><div class="dial-mark" id="dial-mark" style="left:50%"></div></div>
+          <p class="dial-read" id="dial-read">Sawyer’s paradox: creativity needs constraint. Too little
+            structure and the talk wanders; too much and there is nothing left to discover. The shaded
+            band is where a discussion stays generative.</p>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  <!-- ─────────── concept notes ─────────── -->
+  <section class="notes">
+    <h2>What the simulation is modelling</h2>
+    <p class="notes-lede">Six ideas do the work under the surface. Each one is visible somewhere in the
+      console above, and each comes out of a specific line of research on classroom talk.</p>
+
+    <div class="cards">
+      <article class="card">
+        <h3>Collaborative emergence</h3>
+        <p>In an improvised group performance, the outcome is not the sum of individual intentions — it is
+          built turn by turn, and every contribution constrains what can come next. Sawyer’s claim is that
+          a good classroom discussion works the same way, which is why it cannot be scripted in advance and
+          cannot be judged by whether it reached the answer you had planned.</p>
+        <p class="in-sim"><b>In the console</b>The synthesis chip appears only when several students’ ideas
+          are load-bearing at once. Deliver it yourself and it still appears — badged <span style="font-family:var(--f-code)">T</span>, and the debrief will say so.</p>
+      </article>
+
+      <article class="card">
+        <h3>Disciplined improvisation</h3>
+        <p>The creative paradox: unstructured classrooms do not produce creative learning, and neither do
+          fully scripted ones. Effective teaching is improvisation <i>within</i> constraint — the teacher
+          holds the frame and the objective while leaving the path genuinely open.</p>
+        <p class="in-sim"><b>In the console</b>The structure dial. Every move shifts it, and sitting at
+          either end costs you: the talk either wanders or goes quiet and waits to be told.</p>
+      </article>
+
+      <article class="card">
+        <h3>Exploratory talk</h3>
+        <p>Neil Mercer’s three registers of group talk. <i>Disputational:</i> disagreement with no reasons
+          offered. <i>Cumulative:</i> uncritical agreement, ideas piling up untested. <i>Exploratory:</i>
+          reasoning made public and deliberately exposed to challenge. Only the third reliably produces
+          learning, and it is the rarest without cultivation.</p>
+        <p class="in-sim"><b>In the console</b>The margin code on every beat. Watch what happens when safety
+          drops: the same disagreement turns from EX into DI without a word of its content changing.</p>
+      </article>
+
+      <article class="card">
+        <h3>The I-R-E script</h3>
+        <p>The default grammar of classroom talk: teacher <b>I</b>nitiates, a student <b>R</b>esponds,
+          teacher <b>E</b>valuates — and the sequence closes. Two turns in three belong to the teacher, and
+          praise is what ends the thinking, because the class now knows the question is settled.</p>
+        <p class="in-sim"><b>In the console</b>The card reading <i>“Exactly right. Good job.”</i> It is not a
+          trick card. It feels good, it is what students expect, and it will quietly cost you the discussion.</p>
+      </article>
+
+      <article class="card">
+        <h3>Argumentation</h3>
+        <p>An argument is a claim, the evidence for it, and the warrant connecting the two — plus the
+          rebuttals it survives. Students produce claims readily and warrants almost never, unless asked,
+          which is what makes <i>“what makes you think that?”</i> the highest-yield question in the room —
+          and why there has to be counter-evidence available to argue against.</p>
+        <p class="in-sim"><b>In the console</b>The reasoning meter, and van Helmont’s willow: a real
+          seventeenth-century measurement you can put on the table once the group can use it.</p>
+      </article>
+
+      <article class="card">
+        <h3>Uptake and wait time</h3>
+        <p>Uptake is a speaker taking hold of what the last speaker said and doing something with it — the
+          edges in the map, not the nodes. It is also what teachers suppress without meaning to, by routing
+          every turn back through themselves and by leaving under a second of silence where three seconds
+          would let a slower thinker in.</p>
+        <p class="in-sim"><b>In the console</b>The uptake meter, and the <i>Wait</i> card. Silence is a move,
+          and it is frequently the strongest one available.</p>
+      </article>
+    </div>
+
+    <div class="sources">
+      <h3>Sources</h3>
+      <p>R. Keith Sawyer, <i>The Creative Classroom: Innovative Teaching for 21st-Century Learners</i>
+        (Teachers College Press, 2019), and “Creative Teaching: Collaborative Discussion as Disciplined
+        Improvisation,” <i>Educational Researcher</i> 33(2), 2004. · Honeybee nest-site selection and the
+        waggle-dance debate: Thomas D. Seeley, <i>Honeybee Democracy</i> (Princeton, 2010). · Talk registers:
+        Neil Mercer, <i>The Guided Construction of Knowledge</i> (1995). · Revoicing and accountable talk:
+        Sarah Michaels, Catherine O’Connor &amp; Lauren Resnick (1993–2008). · The I-R-E sequence: Hugh Mehan,
+        <i>Learning Lessons</i> (1979). · Wait time: Mary Budd Rowe (1974). · The willow experiment:
+        Jan Baptist van Helmont, published 1648.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ══════════════ cast ══════════════ */
+const CAST = {
+  maya:    {name:'Maya',    initial:'M', hue:'var(--s-maya)',    trait:'Fast, certain, first to speak. Claims arrive without their reasons.'},
+  deshawn: {name:'Deshawn', initial:'D', hue:'var(--s-deshawn)', trait:'Slow and precise. Will not compete for the floor — has to be let in.'},
+  priya:   {name:'Priya',   initial:'P', hue:'var(--s-priya)',   trait:'Connector. Hears two ideas and finds the seam between them.'},
+  eli:     {name:'Eli',     initial:'E', hue:'var(--s-eli)',     trait:'Tests everything. Whether that is argument or attack depends on the room.'}
+};
+const ORDER = ['maya','deshawn','priya','eli'];
+const EAGER = {maya:3.2, deshawn:0.8, priya:1.9, eli:2.5};
+
+/* ══════════════ the idea map ══════════════ */
+const NODEDEF = {
+  q:     {label:'an acorn → 2 tons', x:180, y:22,  links:[]},
+  soil:  {label:'from the soil',          x:62,  y:78,  links:['q']},
+  water: {label:'from water',             x:180, y:78,  links:['q']},
+  sun:   {label:'from sunlight',          x:298, y:78,  links:['q']},
+  crater:{label:'no crater',              x:52,  y:134, links:['soil']},
+  mass:  {label:'water has mass',         x:176, y:134, links:['water']},
+  helm:  {label:'soil lost 2 oz',         x:300, y:134, links:['soil']},
+  burn:  {label:'wood → smoke',      x:96,  y:190, links:['mass']},
+  air:   {label:'air has mass',           x:250, y:190, links:['mass']},
+  synth: {label:'air + water + light',    x:180, y:252, links:['air','burn']}
+};
+
+/* ══════════════ talk moves ══════════════ */
+const MOVES = [
+  {k:'wait', say:'(Say nothing. Count to five.)', construct:'wait time', st:-12, slots:2,
+   favors:['tentative'], fx:{}},
+  {k:'link', say:'Do you agree with {last}? Why?', construct:'uptake', st:-6, slots:2,
+   favors:['build','challenge','warrant'], fx:{uptake:13}},
+  {k:'press', say:'What makes you think that?', construct:'press for reasoning', st:6, slots:1,
+   favors:['warrant','evidence'], fx:{reasoning:10}},
+  {k:'invite', say:'{quiet}, what do you think?', construct:'equitable participation', st:2, slots:1,
+   target:'quiet', favors:['tentative'], fx:{}},
+  {k:'revoice', say:'So you’re saying it has to come from something we could weigh?', construct:'revoicing', st:4, slots:1,
+   favors:['build'], fx:{uptake:6, reasoning:6}},
+  {k:'norm', say:'We argue with the idea, not the person. Say the part that convinced you.', construct:'psychological safety', st:7, slots:1,
+   favors:['warrant'], fx:{safety:20}},
+  {k:'provoke', say:'Van Helmont, 1648. A five-pound willow, two hundred pounds of dried soil, five years of nothing but rain water. The tree gained 164 pounds. The soil lost two ounces.',
+   construct:'a constraint that opens', st:11, slots:2, once:true, fx:{reasoning:9}},
+  {k:'summarize', say:'Someone sum up where we’ve got to. Claim first, then why.', construct:'consolidation', st:3, slots:1,
+   favors:['synthesis'], fx:{reasoning:7, uptake:5}},
+  {k:'evaluate', say:'Exactly right. Good job.', construct:'I-R-E · evaluation closes the turn', st:17, slots:1,
+   tone:'trap', recitation:true, fx:{uptake:-15, safety:5}},
+  {k:'tell', say:'Let me just explain it. Leaves take carbon dioxide out of the air, and that carbon is what the wood is made of.',
+   construct:'direct instruction', st:26, slots:1, tone:'trap', recitation:true, ends:true, fx:{uptake:-22, reasoning:6}}
+];
+const MOVEMAP = {}; MOVES.forEach(m => MOVEMAP[m.k] = m);
+
+/* ══════════════ the utterance bank ══════════════ */
+/* flags: claim · warrant · evidence · challenge · build · revise · synthesis · tentative · defer */
+const BANK = [
+/* ── phase 1 · claims surface ── */
+ {id:'p1_water', by:'eli', ph:[1], node:'water', flags:['claim','warrant'], fx:{reasoning:4},
+  text:'Water. You have to water it or it dies, so it must be made of the water.'},
+ {id:'p1_sun', by:'deshawn', ph:[1], node:'sun', flags:['claim','tentative'], fx:{reasoning:6},
+  text:'Sunlight? Plants need sun… except sunlight doesn’t weigh anything, so I don’t know how that would work.'},
+ {id:'p1_maya_hold', by:'maya', ph:[1,2], flags:['claim'], fx:{},
+  text:'Dirt is right there. It goes in the dirt, it gets huge. I don’t know what else you want from me.'},
+ {id:'p1_priya_open', by:'priya', ph:[1,2], flags:['build'], fx:{uptake:6}, req:s=>s.nodes.length>=3,
+  text:'Could it be more than one of them at the same time?'},
+
+/* ── phase 2 · divergence ── */
+ {id:'p2_crater', by:'eli', ph:[2,3], node:'crater', flags:['challenge','warrant'], fx:{reasoning:8, uptake:7},
+  text:'If a tree ate two tons of dirt there’d be a crater around every tree in the forest. Go outside. There isn’t one.'},
+ {id:'p2_maya_defend', by:'maya', ph:[2,3], flags:['warrant'], fx:{reasoning:6}, req:s=>s.has('crater'),
+  text:'Maybe the roots go out so far that the hole is spread too thin to see.'},
+ {id:'p2_mass', by:'deshawn', ph:[2,3], node:'mass', flags:['claim','evidence','warrant'], fx:{reasoning:9},
+  text:'Water has mass, though. A gallon is about eight pounds. A hundred years of rain is a lot of gallons.'},
+ {id:'p2_priya_seam', by:'priya', ph:[2,3], flags:['build','challenge'], fx:{uptake:11, reasoning:4}, req:s=>s.nodes.length>=3,
+  text:'You’re both assuming it has to come from somewhere you can point at. What if it doesn’t?'},
+ {id:'p2_maya_howknow', by:'maya', ph:[2], flags:['challenge'], fx:{reasoning:4},
+  text:'How would anybody even know? You can’t sit and watch a tree for a hundred years.'},
+ {id:'p2_eli_dry', by:'eli', ph:[2,3], flags:['challenge','warrant'], fx:{reasoning:7},
+  text:'If it’s water, why isn’t a log wet?'},
+
+/* ── phase 3 · the evidence is on the table ── */
+ {id:'p3_maya_revise', by:'maya', ph:[3], node:'helm', flags:['revise','warrant'], fx:{reasoning:9, safety:6},
+  text:'Two ounces. Two. Ounces. Fine — it isn’t the dirt. I hate this.'},
+ {id:'p3_eli_water', by:'eli', ph:[3], flags:['claim','warrant'], fx:{reasoning:5},
+  text:'Then it’s water. Water was the only thing he added. Done.'},
+ {id:'p3_maya_doubt', by:'maya', ph:[3], flags:['challenge','warrant'], fx:{reasoning:6},
+  text:'How do we know he weighed the soil properly? It was the sixteen-hundreds.'},
+ {id:'p3_burn', by:'deshawn', ph:[3,4], node:'burn', flags:['challenge','evidence','warrant'], fx:{reasoning:11, uptake:8},
+  req:s=>s.has('helm')||s.helmont,
+  text:'A log isn’t water, though. Burn one and it doesn’t steam — it goes to smoke and a handful of ash. So where did the wood go?'},
+
+/* ── phase 4 · the impasse ── */
+ {id:'p4_air', by:'priya', ph:[4], node:'air', flags:['claim','build'], fx:{uptake:11, reasoning:5}, req:s=>s.has('burn'),
+  text:'If the wood leaves as smoke and the smoke goes into the air… could the wood have come out of the air to start with?'},
+ {id:'p4_maya_absurd', by:'maya', ph:[4], flags:['challenge'], fx:{}, req:s=>s.has('air'),
+  text:'Air is nothing. You cannot build a two-ton tree out of nothing.'},
+ {id:'p4_eli_wind', by:'eli', ph:[4], flags:['challenge','warrant'], fx:{reasoning:8, safety:2}, req:s=>s.has('air'),
+  text:'Nothing? Stand outside in a storm and tell me air is nothing. It puts fences down. That is mass, moving.',
+  low:{flags:['challenge'], fx:{safety:-9}, text:'That is the dumbest thing anyone has said today.'}},
+ {id:'p4_balloon', by:'deshawn', ph:[4], flags:['evidence','warrant'], fx:{reasoning:10}, req:s=>s.has('air'),
+  text:'A balloon full of air weighs more than an empty one. We measured it in sixth grade. It’s a tiny difference, but it isn’t zero.'},
+ {id:'p4_priya_pack', by:'priya', ph:[4], flags:['build','warrant'], fx:{uptake:10, reasoning:7}, req:s=>s.has('air'),
+  text:'So air has mass, it’s just spread thin. If a tree pulled it in every day for a hundred years and packed it down into wood—'},
+
+/* ── phase 5 · emergence ── */
+ {id:'p5_synth', by:'priya', ph:[5], node:'synth', flags:['synthesis','warrant','build'], fx:{uptake:12, reasoning:10},
+  text:'Then the tree is mostly air and water, put together. The soil only gives it the little extra bits. The two ounces.'},
+ {id:'p5_maya_react', by:'maya', ph:[5,6], flags:['build'], fx:{uptake:6}, req:s=>s.has('synth'),
+  text:'The tree is solid air. That is revolting. That is the best thing I have ever heard.'},
+ {id:'p5_deshawn_energy', by:'deshawn', ph:[5,6], flags:['build','warrant'], fx:{reasoning:9, uptake:7}, req:s=>s.has('synth'),
+  text:'And the sunlight is what sticks it together — that’s the part with no weight. It’s why leaves are flat. They’re catching both at once.'},
+ {id:'p5_eli_test', by:'eli', ph:[5,6], flags:['challenge','warrant'], fx:{reasoning:7}, req:s=>s.has('synth'),
+  text:'Then a tree in a sealed jar with water and light should stop growing. That’s how we’d check it.'},
+
+/* ── consolidation (summarize move) ── */
+ {id:'sum_full', by:'priya', ph:[1,2,3,4,5,6], flags:['synthesis','warrant'], fx:{reasoning:6}, sum:true, req:s=>s.has('synth'),
+  text:'Our claim is the mass came mostly out of the air and the water. Our evidence is van Helmont’s soil and the fact that wood burns into smoke. It works because air has mass, it’s just spread out.'},
+ {id:'sum_part', by:'deshawn', ph:[1,2,3,4,5,6], flags:['build'], fx:{}, sum:true, req:s=>!s.has('synth'),
+  text:'So far we’ve ruled some things out and we haven’t agreed on what’s left. That’s honestly where we are.'},
+
+/* ── pressure valves ── */
+ {id:'v_defer', by:'maya', ph:[1,2,3,4,5], flags:['defer'], fx:{uptake:-4}, repeat:true, req:s=>s.structure>76,
+  text:'…Which one of them is right? Just tell us and we’ll write it down.'},
+ {id:'v_test', by:'eli', ph:[1,2,3,4,5], flags:['defer'], fx:{uptake:-3}, repeat:true, req:s=>s.structure>80,
+  text:'Is this going to be on the test?'},
+ {id:'v_drift', by:'maya', ph:[1,2,3,4], flags:[], fx:{reasoning:-3}, repeat:true, req:s=>s.structure<24,
+  text:'My cousin has a bonsai and it stays tiny forever, which I feel like is relevant.'},
+ {id:'v_silence', by:'stage', ph:[1,2,3,4,5,6], flags:[], fx:{}, repeat:true, stage:true,
+  text:'Nobody fills the silence. It stretches out. Then it just sits there.'},
+ {id:'v_shrug', by:'priya', ph:[1,2,3,4,5], flags:[], fx:{}, repeat:true,
+  text:'I feel like we already said that.'}
+];
+
+/* ══════════════ tuning patches ══════════════ */
+const REQ_PATCH = {
+  p3_maya_revise: s => s.helmont,
+  p3_eli_water:   s => s.helmont,
+  p3_maya_doubt:  s => s.helmont
+};
+const WT = {v_defer:2.6, v_test:2.2, v_drift:2.2, v_shrug:0.3, p1_maya_hold:0.8, v_silence:0};
+BANK.forEach(u => { if (REQ_PATCH[u.id]) u.req = REQ_PATCH[u.id]; u.wt = (u.id in WT) ? WT[u.id] : 1; });
+
+/* ══════════════ state ══════════════ */
+const $ = id => document.getElementById(id);
+const NS = 'http://www.w3.org/2000/svg';
+const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+let S;
+
+function reset(){
+  S = {
+    turn:0, max:14, phase:1, structure:50, lineNo:0,
+    m:{uptake:28, reasoning:20, safety:56}, equity:50,
+    airtime:{maya:0, deshawn:0, priya:0, eli:0, teacher:0},
+    nodes:[], nodeSet:{}, used:{}, counts:{}, codes:[],
+    ended:false, told:false, helmont:false, lastSpeaker:'maya',
+    has(k){ return !!this.nodeSet[k]; }
+  };
+}
+
+function claimCount(){ return ['soil','water','sun'].filter(k => S.has(k)).length; }
+function quietest(){
+  return ORDER.slice().sort((a,b) => S.airtime[a] - S.airtime[b] || EAGER[a] - EAGER[b])[0];
+}
+function studentTurns(){ return ORDER.reduce((n,k) => n + S.airtime[k], 0); }
+
+function equity(){
+  const t = studentTurns();
+  if (t < 2) return 50;
+  const ideal = t / 4;
+  const dev = ORDER.reduce((n,k) => n + Math.abs(S.airtime[k] - ideal), 0);
+  return clamp(Math.round(100 * (1 - dev / (2 * t * 0.75))), 0, 100);
+}
+
+/* ══════════════ transcript ══════════════ */
+function beatEl(code){
+  const b = document.createElement('div');
+  b.className = 'beat'; b.dataset.code = code;
+  b.innerHTML = '<div class="rail"><span class="code">' + code + '</span><i></i></div><div class="lines"></div>';
+  $('transcript').appendChild(b);
+  return b.querySelector('.lines');
+}
+function addLine(host, who, text, delay){
+  const el = document.createElement('div');
+  const stage = who === 'stage';
+  el.className = 'line' + (who === 'teacher' ? ' teacher' : '') + (stage ? ' stage' : '');
+  S.lineNo++;
+  const chip = stage ? '<span></span>'
+    : '<span class="chip" style="--c:' + (who === 'teacher' ? 'var(--slate)' : CAST[who].hue) + '">' +
+      (who === 'teacher' ? 'T' : CAST[who].initial) + '</span>';
+  el.innerHTML = '<span class="ln">' + String(S.lineNo).padStart(2,'0') + '</span>' + chip +
+                 '<p class="says">' + text + '</p>';
+  host.appendChild(el);
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!still && delay){ el.style.animationDelay = delay + 'ms'; el.classList.add('pop'); }
+  else if (!still) el.classList.add('pop');
+  const t = $('transcript'); t.scrollTop = t.scrollHeight;
+}
+
+/* ══════════════ idea map ══════════════ */
+function addNode(k, by){
+  if (S.has(k)) return false;
+  S.nodeSet[k] = by; S.nodes.push({k, by});
+  return true;
+}
+function renderWeb(){
+  const eg = $('edges'), ng = $('nodes');
+  eg.textContent = ''; ng.textContent = '';
+  S.nodes.forEach(n => {
+    const d = NODEDEF[n.k];
+    d.links.forEach(p => {
+      if (!S.has(p)) return;
+      const q = NODEDEF[p];
+      const line = document.createElementNS(NS, 'path');
+      line.setAttribute('class', 'edge');
+      line.setAttribute('d', 'M' + d.x + ',' + (d.y - 12) + ' C' + d.x + ',' + (d.y - 30) +
+                             ' ' + q.x + ',' + (q.y + 30) + ' ' + q.x + ',' + (q.y + 12));
+      eg.appendChild(line);
+    });
+  });
+  S.nodes.forEach(n => {
+    const d = NODEDEF[n.k];
+    const w = d.label.length * 5.4 + 36;
+    const hue = n.by === 'teacher' ? 'var(--slate)' : CAST[n.by].hue;
+    const init = n.by === 'teacher' ? 'T' : CAST[n.by].initial;
+    const g = document.createElementNS(NS, 'g');
+    g.setAttribute('class', 'node grow' + (n.k === 'synth' ? ' synth' : n.k === 'q' ? ' q' : ''));
+    g.innerHTML =
+      '<rect x="' + (d.x - w/2) + '" y="' + (d.y - 12) + '" width="' + w + '" height="24" rx="6"></rect>' +
+      '<circle cx="' + (d.x - w/2 + 12) + '" cy="' + d.y + '" r="7" fill="' + hue + '" opacity="0.16"></circle>' +
+      '<text class="badge" x="' + (d.x - w/2 + 12) + '" y="' + (d.y + 2.6) + '" text-anchor="middle" fill="' + hue + '">' + init + '</text>' +
+      '<text x="' + (d.x - w/2 + 23) + '" y="' + (d.y + 3.2) + '">' + d.label + '</text>';
+    ng.appendChild(g);
+  });
+  const n = S.nodes.length;
+  $('web-count').textContent = n + (n === 1 ? ' idea' : ' ideas');
+}
+
+/* ══════════════ panels ══════════════ */
+function renderRoster(){
+  const t = Math.max(1, studentTurns());
+  $('roster').innerHTML = ORDER.map(k => {
+    const c = CAST[k], n = S.airtime[k];
+    return '<div class="student" style="--c:' + c.hue + '">' +
+      '<span class="chip">' + c.initial + '</span><div>' +
+      '<div class="student-name">' + c.name + '<span class="turns-n">' + n + '</span></div>' +
+      '<div class="student-trait">' + c.trait + '</div>' +
+      '<div class="turnbar"><i style="width:' + Math.round(100 * n / t) + '%"></i></div>' +
+      '</div></div>';
+  }).join('');
+  const share = Math.round(100 * t / Math.max(1, t + S.airtime.teacher));
+  $('airtime-read').textContent = share + '% theirs';
+}
+
+const METERS = [
+  {k:'uptake',    label:'Uptake',      why:'students building on each other, not on you'},
+  {k:'reasoning', label:'Reasoning',   why:'claims arriving with warrants attached'},
+  {k:'safety',    label:'Safety',      why:'whether disagreement can stay about the idea'},
+  {k:'equity',    label:'Participation', why:'how evenly the floor is shared'}
+];
+function renderMeters(){
+  S.equity = equity();
+  $('meters').innerHTML = METERS.map(mt => {
+    const v = mt.k === 'equity' ? S.equity : Math.round(S.m[mt.k]);
+    const col = v >= 62 ? 'var(--teal)' : v >= 38 ? 'var(--amber)' : 'var(--clay)';
+    return '<div><div class="meter-name"><span>' + mt.label + '</span><span>' + v + '</span></div>' +
+      '<div class="track"><i style="width:' + v + '%; background:' + col + '"></i></div>' +
+      '<div class="meter-why">' + mt.why + '</div></div>';
+  }).join('');
+  $('dial-mark').style.left = clamp(S.structure, 3, 97) + '%';
+  const d = $('dial-read');
+  if (S.structure > 66) d.innerHTML = '<b>Over-structured.</b> You are holding the frame so tightly there is nothing left for them to find. They are waiting to be told.';
+  else if (S.structure < 36) d.innerHTML = '<b>Under-structured.</b> Open, but drifting — nothing is constraining the talk toward the question.';
+  else d.innerHTML = '<b>Disciplined improvisation.</b> Enough frame to stay on the problem, enough slack for the answer to come from them.';
+}
+
+function renderMoves(){
+  const q = CAST[quietest()].name, last = CAST[S.lastSpeaker].name;
+  $('moves').innerHTML = MOVES.map(m => {
+    const spent = m.once && S.counts[m.k];
+    const say = m.say.replace('{quiet}', q).replace('{last}', last);
+    const st = m.st > 0 ? '+' + m.st : String(m.st);
+    return '<button class="move" data-k="' + m.k + '" data-tone="' + (m.tone || 'open') + '"' +
+      (spent || S.ended ? ' disabled' : '') + '>' +
+      '<span class="say">' + (m.k === 'wait' ? '' : '“') + say + (m.k === 'wait' ? '' : '”') + '</span>' +
+      '<span class="tag"><span class="construct">' + m.construct + '</span>' +
+      '<span class="struct" title="effect on the structure dial">' + st + '</span></span></button>';
+  }).join('');
+  $('moves').querySelectorAll('.move').forEach(b => b.addEventListener('click', () => play(b.dataset.k)));
+  $('turn-read').textContent = 'turn ' + S.turn + ' / ' + S.max;
+}
+
+/* ══════════════ picking what they say ══════════════ */
+function eligible(u, move, beatUsed, beatSpeakers){
+  if (u.stage) return false;
+  if (beatUsed[u.id]) return false;
+  if (!u.repeat && S.used[u.id]) return false;
+  if (u.ph.indexOf(S.phase) < 0) return false;
+  if (!!u.sum !== (move.k === 'summarize')) return false;
+  if (u.req && !u.req(S)) return false;
+  if (beatSpeakers[u.by] && Object.keys(beatSpeakers).length < 3) return false;
+  return true;
+}
+function weigh(u, move){
+  let w = (u.by === 'stage' ? 1 : EAGER[u.by]) * u.wt;
+  if (move.favors && u.flags.some(f => move.favors.indexOf(f) >= 0)) w *= 2.7;
+  if (move.target === 'quiet') w *= (u.by === quietest()) ? 9 : 0.14;
+  if (move.k === 'wait') w *= 3.0 / EAGER[u.by];
+  if (move.k === 'link' && u.by === S.lastSpeaker) w *= 0.22;
+  if (S.structure > 74 && u.flags.indexOf('defer') < 0) w *= 0.6;
+  return Math.max(0.02, w);
+}
+function pick(move, beatUsed, beatSpeakers){
+  const pool = BANK.filter(u => eligible(u, move, beatUsed, beatSpeakers));
+  if (!pool.length) return BANK.find(u => u.id === 'v_silence');
+  const total = pool.reduce((n,u) => n + weigh(u, move), 0);
+  let r = Math.random() * total;
+  for (const u of pool){ r -= weigh(u, move); if (r <= 0) return u; }
+  return pool[pool.length - 1];
+}
+
+/* ══════════════ coding the beat ══════════════ */
+function codeBeat(move, flags, quiet){
+  if (quiet) return 'SI';
+  if (move.recitation) return 'RE';
+  const has = f => flags.indexOf(f) >= 0;
+  const warranted = has('warrant') || has('evidence') || has('synthesis');
+  if (has('challenge') && !warranted) return 'DI';
+  if (warranted) return 'EX';
+  return 'CU';
+}
+
+/* ══════════════ the facilitator's note ══════════════ */
+function noteFor(move, ctx){
+  const n = S.counts[move.k], tired = n >= 3;
+  switch (move.k){
+    case 'wait':
+      if (ctx.silence) return 'Nothing came. Silence is a move, not a spell — with no live claim on the floor, there was nothing for anyone to step into.';
+      if (ctx.spoke.indexOf('deshawn') >= 0) return 'Five seconds of nothing, and <b>Deshawn walked into it on his own terms</b> rather than yours. Rowe found most teachers wait under one second.';
+      return 'You left the gap open and someone else filled it. Every second you do not spend talking is a second of floor you have handed over.';
+    case 'link':
+      return tired ? 'They are starting to answer the routine rather than the idea. Even the best move goes stale when it becomes the only one.'
+        : 'You sent them to check each other rather than to check with you. This is the scouts flying out instead of taking the dance on faith.';
+    case 'press':
+      if (S.m.safety < 40) return 'Asked into a cold room, <b>“what makes you think that” reads as an accusation.</b> Press for reasoning once the room can take it.';
+      return 'You asked for the warrant — the connective tissue between a claim and its evidence, which students almost never volunteer unbidden.';
+    case 'invite':
+      if (S.m.safety < 34) return 'The invitation landed as an ambush. Cold-calling into an unsafe room buys a sentence and costs you the next three.';
+      return 'A direct invitation is the bluntest equity instrument you have, and the most reliable. ' + CAST[ctx.target].name + ' was carrying an idea with no route to the floor.';
+    case 'revoice':
+      return tired ? '<b>Every idea in this room now passes through you.</b> Revoicing borrows against uptake, and you are well overdrawn.'
+        : 'Cleaner, and more yours. Revoicing sharpens the idea and quietly makes you the hub it has to travel through.';
+    case 'norm':
+      return 'Naming the norm is not softness — it is what keeps a disagreement coded <b>EX</b> instead of <b>DI</b>. Same content, different room.';
+    case 'provoke':
+      if (ctx.wasted) return 'The evidence landed before there was a claim to test it against. <b>A constraint only opens things up when there is something to constrain.</b>';
+      return 'Disciplined improvisation in a single move: you did not narrow the answer, you widened the evidence — and then got out of the way.';
+    case 'summarize':
+      return S.has('synth') ? 'Consolidation. The claim now has a shape a student can carry out of the room and defend in it tomorrow.'
+        : 'They summarised an argument still in pieces. Useful anyway: it shows all of you exactly which piece is missing.';
+    case 'evaluate':
+      return '<b>“Good job” closed the sequence.</b> The class has just learned that the question is settled and the answer lives with you. That is the E in I-R-E.';
+    case 'tell':
+      return 'You told them, and you were right. It was also the end of the discussion: the idea <b>arrived</b> instead of emerging, and it arrived wearing your name.';
+  }
+  return '';
+}
+
+/* ══════════════ a turn ══════════════ */
+function play(k){
+  if (S.ended) return;
+  const move = MOVEMAP[k];
+  S.turn++;
+  S.counts[k] = (S.counts[k] || 0) + 1;
+  const worn = S.counts[k] >= 3 ? 0.5 : S.counts[k] === 2 ? 0.82 : 1;
+  const target = quietest();
+  const say = move.say.replace('{quiet}', CAST[target].name).replace('{last}', CAST[S.lastSpeaker].name);
+
+  const ctx = {spoke:[], target, silence:false, wasted:false};
+  const wasted = k === 'provoke' && claimCount() < 2;
+  ctx.wasted = wasted;
+
+  Object.keys(move.fx).forEach(key => {
+    S.m[key] = clamp(S.m[key] + move.fx[key] * worn * (wasted ? 0.4 : 1), 0, 100);
+  });
+
+  if (k === 'provoke'){ S.helmont = true; addNode('helm', 'teacher'); if (S.phase < 3) S.phase = 3; }
+  if (k === 'tell'){ S.told = true; addNode('synth', 'teacher'); }
+
+  const host = document.createElement('div');
+  const flags = [];
+  const beatUsed = {}, beatSpeakers = {};
+  const said = [];
+
+  for (let i = 0; i < move.slots; i++){
+    const u = pick(move, beatUsed, beatSpeakers);
+    if (!u) break;
+    beatUsed[u.id] = 1;
+    if (u.stage){ ctx.silence = true; said.push({who:'stage', text:u.text}); break; }
+    beatSpeakers[u.by] = 1;
+    S.used[u.id] = 1;
+    const low = u.low && S.m.safety < 42;
+    const text = low ? u.low.text : u.text;
+    const fx   = low ? u.low.fx   : u.fx;
+    const fl   = low ? u.low.flags : u.flags;
+    fl.forEach(f => flags.push(f));
+    Object.keys(fx || {}).forEach(key => { S.m[key] = clamp(S.m[key] + fx[key], 0, 100); });
+    if (u.node) addNode(u.node, u.by);
+    S.airtime[u.by]++; S.lastSpeaker = u.by; ctx.spoke.push(u.by);
+    said.push({who:u.by, text});
+  }
+
+  /* drift, structure, phase */
+  S.m.uptake = clamp(S.m.uptake - 2, 0, 100);
+  S.m.safety = clamp(S.m.safety - 1, 0, 100);
+  if (S.structure > 76) S.m.uptake = clamp(S.m.uptake - 4, 0, 100);
+  if (S.structure < 26) S.m.reasoning = clamp(S.m.reasoning - 4, 0, 100);
+  S.structure = clamp(S.structure + move.st * worn, 2, 98);
+  S.structure += (50 - S.structure) * 0.09;
+  advancePhase();
+
+  const code = codeBeat(move, flags, ctx.silence || !ctx.spoke.length);
+  S.codes.push(code);
+  S.airtime.teacher++;
+
+  const lines = beatEl(code);
+  addLine(lines, 'teacher', say, 0);
+  said.forEach((l, i) => addLine(lines, l.who, l.text, 130 + i * 260));
+
+  $('note-text').innerHTML = noteFor(move, ctx);
+  renderRoster(); renderMeters(); renderWeb(); renderMoves();
+
+  if (move.ends || S.turn >= S.max || (k === 'summarize' && S.has('synth'))) finish();
+}
+
+function advancePhase(){
+  if (S.phase === 1 && claimCount() >= 2) S.phase = 2;
+  if (S.phase === 2 && (S.helmont || (S.has('crater') && S.m.reasoning >= 42))) S.phase = 3;
+  if (S.phase === 3 && S.has('burn')) S.phase = 4;
+  if (S.phase === 4 && S.has('air') && S.m.uptake >= 50 && S.m.reasoning >= 56 && S.m.safety >= 44) S.phase = 5;
+  if (S.phase === 5 && S.has('synth')) S.phase = 6;
+}
+
+/* ══════════════ debrief ══════════════ */
+const CODEMETA = {
+  EX:{name:'exploratory', col:'var(--teal)'}, CU:{name:'cumulative', col:'var(--amber)'},
+  DI:{name:'disputational', col:'var(--clay)'}, RE:{name:'recitation', col:'var(--slate)'},
+  SI:{name:'silence', col:'var(--ink-3)'}
+};
+
+function findings(){
+  const out = [], c = S.counts, has = k => (c[k] || 0);
+  if (has('evaluate') >= 2) out.push(['down', 'You evaluated ' + has('evaluate') + ' times. Each one told the room the question was closed — and the next student had less reason to think out loud.']);
+  if (S.told) out.push(['down', 'You explained it. The content was right and the discussion was over: what they take away is that the answer comes from the front of the room.']);
+  if (has('revoice') >= 3) out.push(['down', 'You revoiced ' + has('revoice') + ' times. Every idea in the room ended up routed through you, which is the shape of a discussion that only looks collaborative.']);
+  if (!has('press')) out.push(['down', 'You never once asked for a warrant. Claims are cheap and students will produce them all day; the reasons are what you have to go and ask for.']);
+  if (!has('provoke')) out.push(['down', 'Van Helmont’s willow stayed in your pocket. Without counter-evidence there was nothing for the group to argue against, only opinions to take turns holding.']);
+  else if (S.counts.provoke && claimCount() < 2) out.push(['down', 'The evidence went down before there were competing claims to test with it.']);
+  if (S.equity < 45) out.push(['down', 'The floor was lopsided (' + S.equity + '/100). ' + CAST[quietest()].name + ' spoke ' + S.airtime[quietest()] + ' times all session.']);
+  if (S.codes.filter(x => x === 'DI').length >= 2) out.push(['down', 'Two or more beats coded DI. Disagreement without reasons is not rigour; it is the sound of a room that is not safe enough to give reasons in.']);
+  if (S.structure > 68) out.push(['down', 'You finished over-structured. By the end you were supplying most of the frame yourself, and that pull always runs the same way: toward a room that waits to be told.']);
+  if (S.structure < 34) out.push(['down', 'You finished under-structured. The floor was genuinely theirs, with nothing pulling the talk back toward the question they were meant to be answering.']);
+
+  if (has('link') >= 3) out.push(['up', 'You routed students to each other ' + has('link') + ' times. That single move is the engine of uptake — and the reason the map has edges at all.']);
+  if (has('wait') >= 2) out.push(['up', 'You used silence deliberately. It is the cheapest move in the room and the one most teachers cannot make themselves play.']);
+  if (has('invite') >= 1 && S.airtime.deshawn >= 3) out.push(['up', 'Deshawn spoke ' + S.airtime.deshawn + ' times. Two of this discussion’s load-bearing ideas were his, and neither would have arrived without an invitation.']);
+  if (has('norm') >= 1 && S.m.safety >= 55) out.push(['up', 'You named the norm and the room held. Eli’s challenges stayed arguments instead of curdling into insults.']);
+  if (S.m.reasoning >= 60) out.push(['up', 'Reasoning finished at ' + Math.round(S.m.reasoning) + '. By the end they were offering warrants without being asked, which is the actual goal.']);
+  if (S.equity >= 70) out.push(['up', 'Participation finished at ' + S.equity + '/100 — four voices, not one voice and an audience.']);
+
+  const up = out.filter(o => o[0] === 'up'), down = out.filter(o => o[0] === 'down');
+  return down.slice(0, 3).concat(up.slice(0, 2));
+}
+
+function finish(){
+  S.ended = true;
+  const emerged = S.has('synth') && S.nodeSet.synth !== 'teacher';
+  const contributors = ORDER.filter(k => S.nodes.some(n => n.by === k));
+  let cls, head, sub;
+  if (emerged){
+    cls = 'win'; head = 'It emerged.';
+    sub = 'The final claim is standing on ideas from ' + contributors.length + ' of the four students, and not one of them walked in holding it. ' +
+          'That is collaborative emergence: you can point at who contributed each piece and still cannot point at whose idea it was.';
+  } else if (S.told || S.nodeSet.synth === 'teacher'){
+    cls = 'low'; head = 'The idea arrived. Nobody built it.';
+    sub = 'The synthesis on the map wears your initial. It is correct, it is well phrased, and it is the one chip in the map that no student has any claim on — which is also what they will remember about it.';
+  } else if (S.has('air')){
+    cls = 'mid'; head = 'They got to the edge of it.';
+    sub = 'Air was on the floor and the group had begun to take it seriously. What was missing was the room to put the pieces together — the conditions were still assembling when the bell went.';
+  } else {
+    cls = 'low'; head = 'The discussion never left the ground.';
+    sub = 'Claims were made and repeated, but nothing was ever tested against anything, so nothing could be built. Talk is not automatically discussion.';
+  }
+
+  const tally = {EX:0, CU:0, DI:0, RE:0, SI:0};
+  S.codes.forEach(c => tally[c]++);
+  const total = S.codes.length || 1;
+  const mix = Object.keys(tally).filter(k => tally[k]).map(k =>
+    '<span style="background:' + CODEMETA[k].col + '; flex:' + tally[k] + '">' + (tally[k] / total > 0.12 ? k : '') + '</span>').join('');
+  const legend = Object.keys(tally).filter(k => tally[k]).map(k =>
+    '<span style="color:' + CODEMETA[k].col + '">■</span>&nbsp;' + tally[k] + ' ' + CODEMETA[k].name).join('');
+
+  const credit = contributors.map(k => {
+    const mine = S.nodes.filter(n => n.by === k).map(n => NODEDEF[n.k].label);
+    return '<b>' + CAST[k].name + '</b> ' + (mine.length ? mine.join(', ') : '—');
+  }).join(' · ');
+
+  const panel = document.querySelector('.palette');
+  panel.querySelector('.panel-head h2').textContent = 'Debrief';
+  panel.querySelector('.panel-head .meta').textContent = S.turn + ' turns · ' + studentTurns() + ' student contributions';
+  panel.querySelector('.moves').remove();
+  panel.querySelector('.note').remove();
+
+  const d = document.createElement('div');
+  d.className = 'debrief';
+  d.innerHTML =
+    '<p class="verdict ' + cls + '">' + head + '</p>' +
+    '<p class="verdict-sub">' + sub + '</p>' +
+    '<div><div class="mix">' + mix + '</div><p class="mix-legend" style="margin-top:6px">' + legend + '</p></div>' +
+    '<ul class="findings">' + findings().map(f =>
+      '<li><span class="mark ' + f[0] + '">' + (f[0] === 'up' ? 'held' : 'cost') + '</span><span>' + f[1] + '</span></li>').join('') + '</ul>' +
+    '<p class="credits"><b>Who put what on the floor.</b><br>' + credit + '</p>' +
+    '<button class="btn" id="again">Run it again</button>';
+  panel.appendChild(d);
+  $('again').addEventListener('click', start);
+  d.scrollIntoView({behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'nearest'});
+}
+
+/* ══════════════ boot ══════════════ */
+function start(){
+  reset();
+  $('transcript').textContent = '';
+  const panel = document.querySelector('.palette');
+  const old = panel.querySelector('.debrief');
+  if (old){
+    old.remove();
+    panel.querySelector('.panel-head h2').textContent = 'Your move';
+    panel.querySelector('.panel-head .meta').textContent = 'talk moves';
+    const mv = document.createElement('div'); mv.className = 'moves'; mv.id = 'moves';
+    const nt = document.createElement('div'); nt.className = 'note';
+    nt.innerHTML = '<span class="marker">Note</span><p id="note-text"></p>';
+    panel.appendChild(mv); panel.appendChild(nt);
+  }
+  addNode('q', 'teacher'); addNode('soil', 'maya');
+  S.airtime.teacher = 1; S.airtime.maya = 1; S.lastSpeaker = 'maya';
+  S.used.p1_maya_first = 1; S.codes.push('CU');
+  const lines = beatEl('CU');
+  addLine(lines, 'teacher', 'An acorn weighs about a gram. The oak it turns into weighs two tons. Where did the rest of it come from?', 0);
+  addLine(lines, 'maya', 'The soil. Obviously. That’s why you put it in the dirt.', 0);
+  $('note-text').innerHTML = 'Maya has put the first claim on the floor and is waiting for you to confirm it. <b>Whatever you do next sets the rules</b> for the other three.';
+  renderRoster(); renderMeters(); renderWeb(); renderMoves();
+  $('transcript').scrollTop = 0;
+}
+
+start();
+})();
+</script>
+</body>
+</html>
