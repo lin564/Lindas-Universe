@@ -1,0 +1,11 @@
+{
+  "$schema": "https://unpkg.com/wrangler/config-schema.json",
+  "name": "earth-tilt",
+  "compatibility_date": "2026-06-01",
+  "assets": {
+    "directory": "./public",
+    // One page, so anything that isn't a real asset should still land on it
+    // rather than 404 — deep links and refreshes just work.
+    "not_found_handling": "single-page-application"
+  }
+}
