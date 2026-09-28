@@ -9,17 +9,44 @@ The tilt slider is the point of the thing. Almost everything we call climate at
 a given latitude follows from one angle, and the fastest way to feel that is to
 move the angle and watch a year of temperature bend in response.
 
-## Using it
+This is a standalone site: it deploys as its own Cloudflare Worker and is not
+part of the portfolio site, though it lives in the same repository.
 
-Serve the repo root with any static server and open `earth-orbit/`:
+## Running it locally
 
 ```sh
-cd Lindas-Universe
-python3 -m http.server 8000
-# → http://localhost:8000/earth-orbit/
+cd earth-orbit
+npx wrangler@4.100.0 dev        # → http://localhost:8787
+```
+
+Or with any static server, pointed at `public/`:
+
+```sh
+cd earth-orbit/public
+python3 -m http.server 8000     # → http://localhost:8000/
 ```
 
 (Opening `index.html` over `file://` won't work — ES modules need HTTP.)
+
+## Deploying
+
+Pushing to `main` with anything under `earth-orbit/**` changed triggers
+`.github/workflows/deploy-earth-orbit.yml`, which deploys the Worker named
+`earth-tilt` using the `CLOUDFLARE_API_TOKEN` repository secret — the same
+token and account the HealthSimAI workers use. That publishes to
+`earth-tilt.<subdomain>.workers.dev`; a custom domain is attached from the
+Cloudflare dashboard under the Worker's **Settings → Domains & Routes**.
+
+To rename the site, change `name` in `wrangler.jsonc`. Note that
+`compatibility_date` must not be newer than the pinned `wranglerVersion`
+supports, or the deploy fails at startup.
+
+To deploy by hand:
+
+```sh
+cd earth-orbit
+npx wrangler@4.100.0 deploy
+```
 
 - **Orbit / Earth** switches between watching the whole system and standing off
   the planet. **Drag** to orbit the camera, **scroll** to zoom.
@@ -150,13 +177,17 @@ day/night terminator is a small custom shader.
 
 ```
 earth-orbit/
-├── index.html
-├── css/style.css
-├── js/
-│   ├── astro.js     orbital mechanics, solar geometry, climate model
-│   ├── scene.js     Three.js scene, Earth shader, per-frame placement
-│   ├── texture.js   procedurally drawn Earth and Moon maps
-│   ├── chart.js     the annual temperature plot
-│   └── main.js      controls, camera, readouts, loop
-└── vendor/          Three.js r160
+├── wrangler.jsonc          Cloudflare Worker config (serves ./public)
+├── README.md
+└── public/                 everything below here is the site
+    ├── index.html
+    ├── favicon.svg
+    ├── css/style.css
+    ├── js/
+    │   ├── astro.js        orbital mechanics, solar geometry, climate model
+    │   ├── scene.js        Three.js scene, Earth shader, per-frame placement
+    │   ├── texture.js      procedurally drawn Earth and Moon maps
+    │   ├── chart.js        the annual temperature plot
+    │   └── main.js         controls, camera, readouts, loop
+    └── vendor/             Three.js r160
 ```
